@@ -1,0 +1,33 @@
+digraph finite_state_machine {
+	rankdir=E;
+	size="8,5"
+	node [shape = doublecircle]; E1 E2 E3 E5 E7 E10 E12 E14 E16;
+	node [shape = circle];
+	E0 -> E0 [ label = "\t, \n, ' '" ];
+	E0 -> E1 [ label = "letra" ];
+	E1 -> E1 [ label = "letra | digito" ];
+	E0 -> E2 [ label = "0" ];
+	E0 -> E3 [ label = "[1..9]" ];
+	E3 -> E3 [ label = "digito" ];
+	E0 -> E4 [ label = " + | - " ];
+	E4 -> E5 [ label = "" ]; //Entero de E4 a E5 que seria doublecircle
+	E2 -> E6 [ label = "." ];
+	E3 -> E6 [ label = "." ];
+	E6 -> E6 [ label = "digito" ];
+	E6 -> E7 [ label = "[1..9]" ];
+	E2 -> E8 [ label = "E | e" ];
+	E3 -> E8 [ label = "E | e" ];
+	E8 -> E9 [ label = "-" ];
+	E9 -> E10 [ label = "natural" ];
+	E8 -> E10 [ label = "natural" ];
+	E7 -> E8 [ label = "E | e" ];
+	EO -> E11 [ label = "'" ];
+	E11 -> E11 [ label = "*" ];
+	E11 -> E12 [ label = "'" ];
+	E0 -> E13 [ label = "#" ];
+	E13 -> E13 [ label = "*" ];
+	E13 -> E14 [ label = "\n" ];
+	E0 -> E15 [ label = ":" ];
+	E15 -> E16 [ label = "=" ];	
+}
+//* Representa cualquier elemento del conjunto de caracteres numéricos y alfabéticos de los cuales dispone una computadora
