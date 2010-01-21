@@ -46,10 +46,10 @@ public class ALexico {
 		palReservadas.add("in");
 		palReservadas.add("out");
 		//Operadores de casting
-		palReservadas.add("(char)");
-		palReservadas.add("(nat)");
-		palReservadas.add("(int)");
-		palReservadas.add("(float)");
+		palReservadas.add("char");
+		palReservadas.add("nat");
+		palReservadas.add("int");
+		palReservadas.add("float");
 		//Operadores de desplazamiento
 		palReservadas.add("<<");
 		palReservadas.add(">>");
@@ -78,18 +78,18 @@ public class ALexico {
 	}
 	
 	public void scanner() {
+		Token tok = new Token();
 		quedanCar = true;
-		lex = "";
-		estado = est.e0;
+		iniciaScanner();
 		while (quedanCar && !errorLex) {
 			switch (estado) {
 				case e0:
-					if (buff[0] == ' ' || buff[0] == '\n' || buff[0] == '\t' || buff[0] == '\r') {
+					if (esBlanFLinTab(buff[0])) {
 						transita(est.e0);
 						lex = "";
 						break;
 					}
-					if ((buff[0] >= 'a' && buff[0] <= 'z') || (buff[0] >= 'A' && buff[0] <= 'Z')) {
+					if (esLetra(buff[0])) {
 						transita(est.e3);
 						break;
 					}
@@ -97,7 +97,7 @@ public class ALexico {
 						transita(est.e4);
 						break;
 					}
-					if (buff[0] >= '1' && buff[0] <= '9') {
+					if (esDigitoNo0(buff[0])) {
 						transita(est.e5);
 						break;
 					}
@@ -105,15 +105,15 @@ public class ALexico {
 						transita(est.e15);
 						break;
 					}
-					if (buff[0] == '&') {
-						tokens.add(dameToken(buff[0]));
-						transita(est.e0);
+					if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '-' ||
+							buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || 
+							buff[0] == ')') {
+						tok = dameToken(buff[0]);
+						transita(est.e27);
 						break;
 					}
-					//			e0: caso buff de
-					//				{&,;,+,-,*,/,(,),<eof>}: tok ¬ token(buff);
-					//				transita(e7);
-					//				si no error(e0)
+					else
+						error(est.e0, "");
 					break;	
 				case e1:
 					
@@ -124,16 +124,66 @@ public class ALexico {
 					break;
 				
 				case e3:
-					
+					if (esLetra(buff[0]) || esDigito(buff[0])) {
+						transita(est.e3);
+					}
+					else {
+						if (palReservadas.contains(lex)) {
+							if (esOpCast(lex) && buff[0] == ')' && 
+									tokens.lastElement().getTipoToken() == tiposToken.parCierre) {
+								tokens.add(dameTokenPalReservada(lex));
+								iniciaScanner();
+								break;
+							}
+							if (esOpCast(lex)) {
+								error(est.e3, "Operador de cast mal formado");
+								break;
+							}
+							
+						}
+						else 
+							tok = dameTokenIdentificador(lex);
+							tokens.add(tok);
+							iniciaScanner();
+					}
 					break;
 				case e4:
-					
+					if (buff[0] == '.') {
+						transita(est.e8);
+						break;
+					}
+					//Admitiremos números como 0005556 o hasta algo como 00000
+					if (esDigito(buff[0])) {
+						transita(est.e4);
+						break;
+					}
+					if (esE(buff[0])) {
+						transita(est.e10);
+						break;
+					}
+					else {
+						tokens.add(new Token(tiposToken.natural, lex));
+						iniciaScanner();
+					}
 					break;
-				
 				case e5:
-					
-					break;
-				
+					if (esDigito(buff[0])) {
+						transita(est.e5);
+						break;
+					}
+					if (buff[0] == '.') {
+						transita(est.e8);
+						break;
+					}
+					if (esE(buff[0])) {
+						transita(est.e10);
+						break;
+					}
+					else {
+						tokens.add(new Token(tiposToken.natural, lex));
+						iniciaScanner();
+					}
+					break;		
 				case e6:
 					
 					break;
@@ -169,13 +219,8 @@ public class ALexico {
 					errorLex = true;
 					break;
 				case e27:
-					if (buff[0] == ' ' || buff[0] == '\n' || buff[0] == '\t' || buff[0] == '\r') {
-						transita(est.e0);
-						lex = "";
-						break;
-					}
-					else
-						errorLex = true;
+					tokens.add(tok);
+					iniciaScanner();
 					break;
 				default:
 					transita(est.e0);
@@ -218,8 +263,10 @@ public class ALexico {
 			lex = lex + buff[0];
 			if (buff[0] == '\n')
 				contPrograma++;
-			if (bfr.read(buff) == -1)
+			if (bfr.read(buff) == -1) {
 				quedanCar = false;
+				tokens.add(new Token(tiposToken.finDeFichero));
+			}	
 			estado = estSig;
 		}
 		catch(Exception ex){
@@ -227,10 +274,58 @@ public class ALexico {
 		}
 	}
 	
-	public void error(est estSig) {
+	public void iniciaScanner(){
+		//Se usa para volver al estado 0 sin consumir ningún caracter.
+		lex = "";
+		estado = est.e0;
+	}
+	
+	public boolean esLetra(char car) {
+		if ((car >= 'a' && car <= 'z') || (car >= 'A' && car <= 'Z'))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean esDigito(char car) {
+		if (car >= '0' && car <= '9')
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean esDigitoNo0(char car) {
+		if (car >= '1' && car <= '9')
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean esBlanFLinTab(char car) {
+		if (buff[0] == ' ' || buff[0] == '\r' || buff[0] == '\n' || buff[0] == '\t')
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean esE(char car) {
+		if (buff[0] == 'e' || buff[0] == 'E')
+			return true;
+		else
+			return false;
+	}
+
+	public boolean esOpCast(String lexema) {
+		if (lexema == "char" || lexema == "int" || lexema == "nat" || lexema == "float")
+			return true;
+		else
+			return false;
+	}
+	
+	public void error(est estSig, String comentario) {
 		switch (estSig) {
 		case e0:
-
+			System.out.println("Caracter inesperado en la linea " + contPrograma + " :" + buff[0]);
 			break;	
 		case e1:
 			
@@ -259,7 +354,6 @@ public class ALexico {
 			
 			break;
 		}
-		System.out.println("Caracter inesperado en la linea " + contPrograma + " :" + buff[0]);
 		errorLex = true;
 	}
 	
@@ -273,10 +367,10 @@ public class ALexico {
 			return new Token(tiposToken.operador, "suma");
 		case '-':
 			//Distinguimos el caso del - unario
-			if (tokens.lastElement().toString() == "natural" || 
-				tokens.lastElement().toString() == "integer" ||
-				tokens.lastElement().toString() == "real" ||
-				tokens.lastElement().toString() == "parCierre")
+			if (tokens.lastElement().getLexema().toString() == "natural" || 
+				tokens.lastElement().getLexema().toString() == "integer" ||
+				tokens.lastElement().getLexema().toString() == "real" ||
+				tokens.lastElement().getLexema().toString() == "parCierre")
 				return new Token(tiposToken.operador, "resta");
 			else
 				return new Token(tiposToken.operador, "negArit");
@@ -331,16 +425,16 @@ public class ALexico {
 		if (palReservada == "out") {
 			return new Token(tiposToken.operador, "salidaPantalla");
 		}
-		if (palReservada == "(char)") {
+		if (palReservada == "char") {
 			return new Token(tiposToken.operador, "castChar");
 		}
-		if (palReservada == "(nat)") {
+		if (palReservada == "nat") {
 			return new Token(tiposToken.operador, "castNat");
 		}
-		if (palReservada == "(int)") {
+		if (palReservada == "int") {
 			return new Token(tiposToken.operador, "castInt");
 		}
-		if (palReservada == "(float)") {
+		if (palReservada == "float") {
 			return new Token(tiposToken.operador, "castFloat");
 		}
 		if (palReservada == "<<") {
@@ -350,27 +444,10 @@ public class ALexico {
 			return new Token(tiposToken.operador, "despDer");
 		}
 		return new Token();
-
-//		palReservadas.add("natural");
-//		palReservadas.add("integer");
-//		palReservadas.add("float");
-//		//Valores booleanos
-//		palReservadas.add("true");
-//		palReservadas.add("false");
-//		//Operadores booleanos
-//		palReservadas.add("and");
-//		palReservadas.add("or");
-//		//Operadores de entrada / salida
-//		palReservadas.add("in");
-//		palReservadas.add("out");
-//		//Operadores de casting
-//		palReservadas.add("(char)");
-//		palReservadas.add("(nat)");
-//		palReservadas.add("(int)");
-//		palReservadas.add("(float)");
-//		//Operadores de desplazamiento
-//		palReservadas.add("<<");
-//		palReservadas.add(">>");
+	}
+	
+	public Token dameTokenIdentificador (String lexema) {
+		return new Token(tiposToken.identificador, lexema);
 	}
 	
 //	public void extraerPalabras(String archivo){

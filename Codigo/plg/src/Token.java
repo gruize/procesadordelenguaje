@@ -1,6 +1,6 @@
 enum tiposToken {tipoVar, booleano, cadCaracteres, natural, entero, real, separador, 
 	puntoyComa, suma, resta, negArit, multiplicacion, division, resto, operador, tokenError,
-	parApertura, parCierre, identificador};
+	parApertura, parCierre, identificador, finDeFichero};
 
 public class Token {
 
