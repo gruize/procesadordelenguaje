@@ -1,0 +1,17 @@
+ 	
+k K 0 7 :
+
+---------------------
+
+# Programa de ejemplo
+cantidad: float;
+euros: integer;
+centimos: float
+&
+in(cantidad);
+euros := (int)cantidad;
+centimos := cantidad – euros;
+out(euros);
+out('.');
+out(centimos);
+out((char)10)  # Código ASCII del salto de línea

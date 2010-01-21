@@ -24,7 +24,7 @@ public class Memoria {
 	}
 	
 	/**
-     * Esta funciona obtiene el indice del ultimo elemento
+     * Esta funcion obtiene el indice del ultimo elemento
 	 * almacenado en la memoria.
 	 */
 	
