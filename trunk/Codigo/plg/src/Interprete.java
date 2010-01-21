@@ -115,7 +115,7 @@ public class Interprete {
 		if( (String.valueOf((String)sub_cima).indexOf(".") > 0) ||  (String.valueOf((String)sub_cima).indexOf("E") > 0) ||  (String.valueOf((String)sub_cima).indexOf("e") > 0))
 			//Comprobacion de tipos. Cima es el segundo operador y es un real -> Ambos reales
 			if( (String.valueOf((String)cima).indexOf(".") > 0) ||  (String.valueOf((String)cima).indexOf("E") > 0) ||  (String.valueOf((String)cima).indexOf("e") > 0))
-				this.pila.push((Float.valueOf((String)sub_cima) > Float.valueOf((String)cima)));		
+				this.pila.push((Float.valueOf((String)sub_cima) > Float.valueOf((String)cima)));
 			else{
 				//Comprobacion de tipos. Cima es el segundo operador y es un entero --> Real con entero
 				if( (String.valueOf((String)cima).indexOf("+") > 0) || (String.valueOf((String)cima).indexOf("-") > 0) ){
