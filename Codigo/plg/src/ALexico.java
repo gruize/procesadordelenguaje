@@ -109,7 +109,7 @@ public class ALexico {
 					}
 					if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '-' ||
 							buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || 
-							buff[0] == ')') {
+							buff[0] == ')' || buff.toString().equals("-")) {
 						tok = dameToken(buff[0]);
 						transita(est.e27);
 						break;
@@ -130,7 +130,7 @@ public class ALexico {
 						transita(est.e1);
 						break;
 					}
-					if (buff[0] == '"') {
+					if (buff[0] == '\'') {
 						transita(est.e13);
 						break;
 					}
@@ -161,12 +161,13 @@ public class ALexico {
 								if (buff[0] == ')' && 
 										tokens.lastElement().getTipoToken() == tiposToken.parApertura &&
 										!esBlanFLinTab(carAntConsumido[0])) {
+									tokens.remove(tokens.size() - 1);
 									tokens.add(dameTokenPalReservada(lex));
 									lex = "";
 									transita(est.e0);
 									break;
 								}
-								if (lex == "float") {
+								if (lex.equals("float")) {
 									tokens.add(new Token(tiposToken.tipoVarReal));
 									iniciaScanner();
 									break;
@@ -290,9 +291,9 @@ public class ALexico {
 					}
 					break;
 				case e13:
-					if (buff[0] == '"') {
+					if (buff[0] == '\'') {
 						lex = lex + buff[0];
-						tokens.add(dameTokenPalReservada(lex));
+						tokens.add(dameTokenCadCaracteres(lex));
 						lex = "";
 						transita(est.e0);
 						break;
@@ -461,7 +462,8 @@ public class ALexico {
 	}
 
 	public boolean esOpCast(String lexema) {
-		if (lexema == "char" || lexema == "int" || lexema == "nat" || lexema == "float")
+		if (lexema.equals("char") || lexema.equals("int") || lexema.equals("nat") ||
+				lexema.equals("float"))
 			return true;
 		else
 			return false;
@@ -471,7 +473,7 @@ public class ALexico {
 		switch (estSig) {
 		case e0:
 			System.out.println("Caracter inesperado en la linea " + 
-					contPrograma + " :" + buff[0]);
+					contPrograma + " : " + buff[0]);
 			break;	
 		case e1:
 			
@@ -483,7 +485,7 @@ public class ALexico {
 		
 		case e3:
 			System.out.println("Caracter inesperado en la linea " + 
-					contPrograma + " :" + buff[0] + comentario);
+					contPrograma + " : " + buff[0] + comentario);
 			break;
 		case e4:
 			
@@ -514,12 +516,13 @@ public class ALexico {
 			return new Token(tiposToken.suma);
 		case '-':
 			//Distinguimos el caso del - unario
-			if (tokens.lastElement().getLexema().toString() == "natural" || 
-				tokens.lastElement().getLexema().toString() == "integer" ||
-				tokens.lastElement().getLexema().toString() == "real" ||
-				tokens.lastElement().getLexema().toString() == "parCierre" ||
-				tokens.lastElement().getTipoToken() == tiposToken.identificador)
-				return new Token(tiposToken.resta);
+			if (!tokens.isEmpty()) 
+				if (tokens.lastElement().getLexema().equals("natural") || 
+						tokens.lastElement().getLexema().equals("integer") ||
+						tokens.lastElement().getLexema().equals("real") ||
+						tokens.lastElement().getLexema().equals("parCierre") ||
+						tokens.lastElement().getTipoToken() == tiposToken.identificador)
+					return new Token(tiposToken.resta);
 			else
 				return new Token(tiposToken.negArit);
 		case '*':
@@ -538,56 +541,60 @@ public class ALexico {
 	
 	public Token dameTokenPalReservada(String palReservada) {
 		//Ninguna de las palabras reservadas debe llevar lexemas
-		if (palReservada == "boolean") {
+		if (palReservada.equals("boolean")) {
 			return new Token(tiposToken.tipoVarBooleano);
 		}
-		if (palReservada == "character") {
+		if (palReservada.equals("character")) {
 			return new Token(tiposToken.tipoVarCadCaracteres);
 		}
-		if (palReservada == "natural") {
+		if (palReservada.equals("natural")) {
 			return new Token(tiposToken.tipoVarNatural);
 		}
-		if (palReservada == "integer") {
+		if (palReservada.equals("integer")) {
 			return new Token(tiposToken.tipoVarEntero);
 		}
-		if (palReservada == "true") {
+		if (palReservada.equals("true")) {
 			return new Token(tiposToken.booleanoCierto);
 		}
-		if (palReservada == "false") {
+		if (palReservada.equals("false")) {
 			return new Token(tiposToken.booleanoFalso);
 		}
-		if (palReservada == "or") {
+		if (palReservada.equals("or")) {
 			return new Token(tiposToken.oLogica);
 		}
-		if (palReservada == "and") {
+		if (palReservada.equals("and")) {
 			return new Token(tiposToken.yLogica);
 		}
-		if (palReservada == "not") {
+		if (palReservada.equals("not")) {
 			return new Token(tiposToken.negLogica);
 		}
-		if (palReservada == "in") {
+		if (palReservada.equals("in")) {
 			return new Token(tiposToken.entradaTeclado);
 		}
-		if (palReservada == "out") {
+		if (palReservada.equals("out")) {
 			return new Token(tiposToken.salidaPantalla);
 		}
-		if (palReservada == "char") {
+		if (palReservada.equals("char")) {
 			return new Token(tiposToken.castChar);
 		}
-		if (palReservada == "nat") {
+		if (palReservada.equals("nat")) {
 			return new Token(tiposToken.castNat);
 		}
-		if (palReservada == "int") {
+		if (palReservada.equals("int")) {
 			return new Token(tiposToken.castInt);
 		}
-		if (palReservada == "float") {
+		if (palReservada.equals("float")) {
 			return new Token(tiposToken.castFloat);
 		}
 		return new Token();
 	}
 	
-	public Token dameTokenIdentificador (String lexema) {
+	public Token dameTokenIdentificador(String lexema) {
 		return new Token(tiposToken.identificador, lexema);
+	}
+	
+	public Token dameTokenCadCaracteres(String lexema) {
+		return new Token(tiposToken.cadCaracteres, lexema);
 	}
 	
 //	public void extraerPalabras(String archivo){
@@ -615,11 +622,15 @@ public class ALexico {
 		
 		ALexico parser = new ALexico();
 		
+		parser.iniciaVecPalReservadas();
+		
 		parser.inicio(nombreFichero);
 		
 		parser.scanner();
 		
 		System.out.println("Lineas: " + parser.contPrograma);
+		
+		for (int i = 0; i < parser.tokens.size(); i++)
+			System.out.println(parser.tokens.get(i).getTipoToken().toString());
 	}
-
 }
