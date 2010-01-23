@@ -1,5 +1,34 @@
-x := -0025e-004456 - - -0043.0004455E-00657;
+#Booleanos
+x00x : boolean;
+x00x := not y00y;
+x00x := true or false;
+x00x := true and false;
 
+#Naturales y enteros
+x00x : natural;
+y00y : entero;
+y00y := - x00x;
+y00y := - 5050;
+x00x := 50+60;
+x00x := y00y - y00y;
+x00x := 50 * 60;
+x00x := y00y/y00y;
+
+#Reales
+x11x11 : float;
+x11x11 := - 0025e-004456 - - -0043.0004455E-00657;
+
+x00x := x11x11 > 0025e-004456;
+x00x := x11x11 >= 0025e-004456;
+x00x := x11x11 < 0025e-004456;
+x00x := x11x11 <= 0025e-004456;
+x00x := x11x11 = 0025e-004456;
+x00x := x11x11 =/= 0;
+
+x00x := x00x >> 5;
+x00x := x00x << 6;
+
+# --------------------------------------------------- #
 
 # Programa de ejemplo
 cantidad: float;
@@ -13,4 +42,19 @@ out(euros);
 out('.');
 out(centimos);
 out((char)10);  # Código ASCII del salto de línea
-out('Léxico casi terminado')
+out('Léxico casi terminado');
+
+0.00
+500.000
+5544.2323231234234;
+
+euros: integer;
+centimos: float;
+x00x := x11x11;
+c33c := 'Léxico casi terminado';
+x00x := x00x << 6
+
+&
+x00x := x11x11 < 0025e-004456
+
+

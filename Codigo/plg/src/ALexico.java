@@ -16,11 +16,11 @@ public class ALexico {
 	private boolean quedanCar;
 	private Vector<String> palReservadas;
 	private char carAntConsumido[];
+	private boolean finFichero;
 //	private boolean esCast;
 	
 	public ALexico() {
 		// TODO Auto-generated constructor stub
-		
 		buff = new char[1];
 		lex = new String();
 		tokens = new Vector<Token>();
@@ -29,6 +29,8 @@ public class ALexico {
 		quedanCar = true;
 		palReservadas = new Vector<String>();
 		carAntConsumido = new char[1];
+		finFichero = false;
+		
 //		esCast = false;
 	}
 	
@@ -81,9 +83,17 @@ public class ALexico {
 	
 	public void scanner() {
 		Token tok = new Token();
+		double realAux = 0;
+		
 		quedanCar = true;
+		finFichero = false;
 		iniciaScanner();
 		while (quedanCar && !errorLex) {
+			if (finFichero && estado == est.e0)	{
+				quedanCar = false;
+				tokens.add(new Token(tToken.finDeFichero));
+			}
+			else
 			switch (estado) {
 				case e0:
 					if (esBlanFLinTab(buff[0])) {
@@ -257,6 +267,17 @@ public class ALexico {
 						break;
 					}
 					else {
+						realAux = Double.valueOf(lex).doubleValue();
+						if (realAux == 0) {
+							tokens.add(new Token(tToken.natural, "0"));
+							iniciaScanner();
+							break;
+						}
+						if (Math.floor(realAux) == realAux) {
+							tokens.add(new Token(tToken.natural, "" + (int)realAux + ""));
+							iniciaScanner();
+							break;
+						}
 						tokens.add(new Token(tToken.real, lex));
 						iniciaScanner();
 					}
@@ -399,14 +420,14 @@ public class ALexico {
 	
 	public void transita(est estSig) {
 		try {
-			//No añadimos las comillas simples en los character
+			//No añadimos las comillas simples en los tipo character
 			if (buff[0] != '\'')
 				lex = lex + buff[0];
 			if (buff[0] == '\n')
 				contPrograma++;
 			if (bfr.read(buff) == -1) {
-				quedanCar = false;
-				tokens.add(new Token(tToken.finDeFichero));
+				finFichero = true;
+				buff[0] = ' ';
 			}	
 			estado = estSig;
 		}
