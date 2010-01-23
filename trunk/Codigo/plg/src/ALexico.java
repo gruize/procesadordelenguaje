@@ -139,8 +139,8 @@ public class ALexico {
 					break;	
 				case e1:
 					if (esFLin(buff[0])) {
-						lex = "";
 						transita(est.e0);
+						lex = "";
 						break;
 					}
 					else
@@ -159,16 +159,16 @@ public class ALexico {
 							//Distinguimos aquí también el caso del float como operador y como tipo
 							if (esOpCast(lex)) {
 								if (buff[0] == ')' && 
-										tokens.lastElement().getTipoToken() == tiposToken.parApertura &&
+										tokens.lastElement().getTipoToken() == tToken.parApertura &&
 										!esBlanFLinTab(carAntConsumido[0])) {
 									tokens.remove(tokens.size() - 1);
 									tokens.add(dameTokenPalReservada(lex));
-									lex = "";
 									transita(est.e0);
+									lex = "";
 									break;
 								}
 								if (lex.equals("float")) {
-									tokens.add(new Token(tiposToken.tipoVarReal));
+									tokens.add(new Token(tToken.tipoVarReal));
 									iniciaScanner();
 									break;
 								}
@@ -185,9 +185,10 @@ public class ALexico {
 								iniciaScanner();
 							}
 						}
-						else 
+						else {
 							tokens.add(dameTokenIdentificador(lex));
 							iniciaScanner();
+						}
 					}
 					break;
 				case e4:
@@ -206,7 +207,7 @@ public class ALexico {
 					}
 					//Guardamos un 0
 					else {
-						tokens.add(new Token(tiposToken.natural, lex));
+						tokens.add(new Token(tToken.natural, lex));
 						iniciaScanner();
 					}
 					break;
@@ -224,7 +225,7 @@ public class ALexico {
 						break;
 					}
 					else {
-						tokens.add(new Token(tiposToken.natural, lex));
+						tokens.add(new Token(tToken.natural, lex));
 						iniciaScanner();
 					}
 					break;		
@@ -256,7 +257,7 @@ public class ALexico {
 						break;
 					}
 					else {
-						tokens.add(new Token(tiposToken.real, lex));
+						tokens.add(new Token(tToken.real, lex));
 						iniciaScanner();
 					}
 					break;
@@ -286,16 +287,15 @@ public class ALexico {
 						break;
 					}
 					else {
-						tokens.add(new Token(tiposToken.real, lex));
+						tokens.add(new Token(tToken.real, lex));
 						iniciaScanner();
 					}
 					break;
 				case e13:
 					if (buff[0] == '\'') {
-						lex = lex + buff[0];
 						tokens.add(dameTokenCadCaracteres(lex));
-						lex = "";
 						transita(est.e0);
+						lex = "";
 						break;
 					}
 					else
@@ -306,12 +306,12 @@ public class ALexico {
 					break;
 				case e15:
 					if (buff[0] == '=') {
-						tok = new Token(tiposToken.asignacion);
+						tok = new Token(tToken.asignacion);
 						transita (est.e27);
 						break;
 					}
 					else {
-						tokens.add(new Token(tiposToken.dosPuntos));
+						tokens.add(new Token(tToken.dosPuntos));
 						iniciaScanner();
 					}
 					break;
@@ -324,13 +324,13 @@ public class ALexico {
 						break;
 					}
 					else {
-						tokens.add(new Token(tiposToken.igual));
+						tokens.add(new Token(tToken.igual));
 						iniciaScanner();
 					}
 					break;
 				case e18:
 					if (buff[0] == '=') {
-						tok = new Token(tiposToken.distinto);
+						tok = new Token(tToken.distinto);
 						transita (est.e27);
 						break;
 					}
@@ -345,17 +345,17 @@ public class ALexico {
 					break;
 				case e21:
 					if (buff[0] == '=') {
-						tok = new Token(tiposToken.menorIgual);
+						tok = new Token(tToken.menorIgual);
 						transita (est.e27);
 						break;
 					}
 					if (buff[0] == '<') {
-						tok = new Token(tiposToken.despIzq);
+						tok = new Token(tToken.despIzq);
 						transita (est.e27);
 						break;
 					}
 					else {
-						tokens.add(new Token(tiposToken.menor));
+						tokens.add(new Token(tToken.menor));
 						iniciaScanner();
 					}
 					break;
@@ -367,17 +367,17 @@ public class ALexico {
 					break;
 				case e24:
 					if (buff[0] == '=') {
-						tok = new Token(tiposToken.mayorIgual);
+						tok = new Token(tToken.mayorIgual);
 						transita (est.e27);
 						break;
 					}
 					if (buff[0] == '>') {
-						tok = new Token(tiposToken.despDer);
+						tok = new Token(tToken.despDer);
 						transita (est.e27);
 						break;
 					}
 					else {
-						tokens.add(new Token(tiposToken.mayor));
+						tokens.add(new Token(tToken.mayor));
 						iniciaScanner();
 					}
 					break;
@@ -399,12 +399,14 @@ public class ALexico {
 	
 	public void transita(est estSig) {
 		try {
-			lex = lex + buff[0];
+			//No añadimos las comillas simples en los character
+			if (buff[0] != '\'')
+				lex = lex + buff[0];
 			if (buff[0] == '\n')
 				contPrograma++;
 			if (bfr.read(buff) == -1) {
 				quedanCar = false;
-				tokens.add(new Token(tiposToken.finDeFichero));
+				tokens.add(new Token(tToken.finDeFichero));
 			}	
 			estado = estSig;
 		}
@@ -509,32 +511,32 @@ public class ALexico {
 	public Token dameToken(char car) {
 		switch (car) {
 		case '&': 
-			return new Token(tiposToken.separador);	
+			return new Token(tToken.separador);	
 		case ';':
-			return new Token(tiposToken.puntoyComa);
+			return new Token(tToken.puntoyComa);
 		case '+':
-			return new Token(tiposToken.suma);
+			return new Token(tToken.suma);
 		case '-':
 			//Distinguimos el caso del - unario
 			if (!tokens.isEmpty()) 
-				if (tokens.lastElement().getLexema().equals("natural") || 
-						tokens.lastElement().getLexema().equals("integer") ||
-						tokens.lastElement().getLexema().equals("real") ||
-						tokens.lastElement().getLexema().equals("parCierre") ||
-						tokens.lastElement().getTipoToken() == tiposToken.identificador)
-					return new Token(tiposToken.resta);
+				if (tokens.lastElement().getTipoToken() == tToken.natural || 
+						tokens.lastElement().getTipoToken() == tToken.entero ||
+						tokens.lastElement().getTipoToken() == tToken.real ||
+						tokens.lastElement().getTipoToken() == tToken.parCierre ||
+						tokens.lastElement().getTipoToken() == tToken.identificador)
+					return new Token(tToken.resta);
 			else
-				return new Token(tiposToken.negArit);
+				return new Token(tToken.negArit);
 		case '*':
-			return new Token(tiposToken.multiplicacion);
+			return new Token(tToken.multiplicacion);
 		case '/':
-			return new Token(tiposToken.division);
+			return new Token(tToken.division);
 		case '%':
-			return new Token(tiposToken.resto);
+			return new Token(tToken.resto);
 		case '(':
-			return new Token(tiposToken.parApertura);
+			return new Token(tToken.parApertura);
 		case ')':
-			return new Token(tiposToken.parCierre);
+			return new Token(tToken.parCierre);
 		}
 		return new Token();
 	}
@@ -542,59 +544,59 @@ public class ALexico {
 	public Token dameTokenPalReservada(String palReservada) {
 		//Ninguna de las palabras reservadas debe llevar lexemas
 		if (palReservada.equals("boolean")) {
-			return new Token(tiposToken.tipoVarBooleano);
+			return new Token(tToken.tipoVarBooleano);
 		}
 		if (palReservada.equals("character")) {
-			return new Token(tiposToken.tipoVarCadCaracteres);
+			return new Token(tToken.tipoVarCadCaracteres);
 		}
 		if (palReservada.equals("natural")) {
-			return new Token(tiposToken.tipoVarNatural);
+			return new Token(tToken.tipoVarNatural);
 		}
 		if (palReservada.equals("integer")) {
-			return new Token(tiposToken.tipoVarEntero);
+			return new Token(tToken.tipoVarEntero);
 		}
 		if (palReservada.equals("true")) {
-			return new Token(tiposToken.booleanoCierto);
+			return new Token(tToken.booleanoCierto);
 		}
 		if (palReservada.equals("false")) {
-			return new Token(tiposToken.booleanoFalso);
+			return new Token(tToken.booleanoFalso);
 		}
 		if (palReservada.equals("or")) {
-			return new Token(tiposToken.oLogica);
+			return new Token(tToken.oLogica);
 		}
 		if (palReservada.equals("and")) {
-			return new Token(tiposToken.yLogica);
+			return new Token(tToken.yLogica);
 		}
 		if (palReservada.equals("not")) {
-			return new Token(tiposToken.negLogica);
+			return new Token(tToken.negLogica);
 		}
 		if (palReservada.equals("in")) {
-			return new Token(tiposToken.entradaTeclado);
+			return new Token(tToken.entradaTeclado);
 		}
 		if (palReservada.equals("out")) {
-			return new Token(tiposToken.salidaPantalla);
+			return new Token(tToken.salidaPantalla);
 		}
 		if (palReservada.equals("char")) {
-			return new Token(tiposToken.castChar);
+			return new Token(tToken.castChar);
 		}
 		if (palReservada.equals("nat")) {
-			return new Token(tiposToken.castNat);
+			return new Token(tToken.castNat);
 		}
 		if (palReservada.equals("int")) {
-			return new Token(tiposToken.castInt);
+			return new Token(tToken.castInt);
 		}
 		if (palReservada.equals("float")) {
-			return new Token(tiposToken.castFloat);
+			return new Token(tToken.castFloat);
 		}
 		return new Token();
 	}
 	
 	public Token dameTokenIdentificador(String lexema) {
-		return new Token(tiposToken.identificador, lexema);
+		return new Token(tToken.identificador, lexema);
 	}
 	
 	public Token dameTokenCadCaracteres(String lexema) {
-		return new Token(tiposToken.cadCaracteres, lexema);
+		return new Token(tToken.cadCaracteres, lexema);
 	}
 	
 //	public void extraerPalabras(String archivo){
@@ -631,6 +633,39 @@ public class ALexico {
 		System.out.println("Lineas: " + parser.contPrograma);
 		
 		for (int i = 0; i < parser.tokens.size(); i++)
-			System.out.println(parser.tokens.get(i).getTipoToken().toString());
+			if (parser.tokens.get(i).getTipoToken() == tToken.puntoyComa ||
+					parser.tokens.get(i).getTipoToken() == tToken.separador) {
+				if (parser.tokens.get(i).getTipoToken() == tToken.separador)
+					System.out.println();
+				System.out.print(parser.tokens.get(i).getTipoToken().toString());
+				System.out.println();
+			}
+			else {
+				if (parser.tokens.get(i).getLexema() == null)
+					System.out.print("{" + parser.tokens.get(i).getTipoToken().toString() + "} ");
+				else
+					System.out.print("{" + parser.tokens.get(i).getTipoToken().toString() + ", " +
+						parser.tokens.get(i).getLexema() + "} ");
+			}
+
+		
+//Forma para pasar String a numéricos
+//		String sX = "004566.34515e-005";
+//		double x = 004566.34515e-005;
+//		
+//Pasamos String a Double		
+//		double resul = sX.valueOf();
+//		double numSX = Double.valueOf(sX).doubleValue();
+//
+//Pasamos String a Integer		
+//		String str="12";
+//		int numero=Integer.valueOf(str).intValue();
+//
+//		System.out.println();
+//		System.out.println(x * 2);
+//		System.out.println(numSX * 2);
+//		System.out.println(sX);
+//		System.out.println(x);
+//		System.out.println(numSX);
 	}
 }
