@@ -94,327 +94,375 @@ public class ALexico {
 				tokens.add(new Token(tToken.finDeFichero));
 			}
 			else
-			switch (estado) {
-				case e0:
-					if (esBlanFLinTab(buff[0])) {
-						transita(est.e0);
-						lex = "";
+				switch (estado) {
+					case e0:
+						if (esBlanFLinTab(buff[0])) {
+							transita(est.e0);
+							lex = "";
+							break;
+						}
+						if (esLetra(buff[0])) {
+							transita(est.e3);
+							break;
+						}
+						if (buff[0] == '0') {
+							transita(est.e4);
+							break;
+						}
+						if (esDigitoNo0(buff[0])) {
+							transita(est.e5);
+							break;
+						}
+						if (buff[0] == ':') {
+							transita(est.e15);
+							break;
+						}
+						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '-' ||
+								buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || 
+								buff[0] == ')' || buff.toString().equals("-")) {
+							tok = dameToken(buff[0]);
+							transita(est.e27);
+							break;
+						}
+						if (buff[0] == '<') {
+							transita(est.e21);
+							break;
+						}
+						if (buff[0] == '>') {
+							transita(est.e24);
+							break;
+						}
+						if (buff[0] == '=') {
+							transita(est.e17);
+							break;
+						}
+						if (buff[0] == '#') {
+							transita(est.e1);
+							break;
+						}
+						if (buff[0] == '\'') {
+							transita(est.e13);
+							break;
+						}
+						else
+							error(null);
+						break;	
+					case e1:
+						if (esFLin(buff[0])) {
+							transita(est.e0);
+							lex = "";
+							break;
+						}
+						else
+							transita(est.e1);
 						break;
-					}
-					if (esLetra(buff[0])) {
-						transita(est.e3);
+					case e2:
+						//Sobra (en el autómata estaba pensado para guardar algo relativo al comentario)
 						break;
-					}
-					if (buff[0] == '0') {
-						transita(est.e4);
-						break;
-					}
-					if (esDigitoNo0(buff[0])) {
-						transita(est.e5);
-						break;
-					}
-					if (buff[0] == ':') {
-						transita(est.e15);
-						break;
-					}
-					if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '-' ||
-							buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || 
-							buff[0] == ')' || buff.toString().equals("-")) {
-						tok = dameToken(buff[0]);
-						transita(est.e27);
-						break;
-					}
-					if (buff[0] == '<') {
-						transita(est.e21);
-						break;
-					}
-					if (buff[0] == '>') {
-						transita(est.e24);
-						break;
-					}
-					if (buff[0] == '=') {
-						transita(est.e17);
-						break;
-					}
-					if (buff[0] == '#') {
-						transita(est.e1);
-						break;
-					}
-					if (buff[0] == '\'') {
-						transita(est.e13);
-						break;
-					}
-					else
-						error(est.e0, "");
-					break;	
-				case e1:
-					if (esFLin(buff[0])) {
-						transita(est.e0);
-						lex = "";
-						break;
-					}
-					else
-						transita(est.e1);
-					break;
-				case e2:
-					//Sobra (en el autómata estaba pensado para guardar algo relativo al comentario)
-					break;
-				case e3:
-					if (esLetra(buff[0]) || esDigito(buff[0])) {
-						transita(est.e3);
-					}
-					else {
-						if (palReservadas.contains(lex)) {
-							//Resolvemos problemas entre identificadores y las operaciones de cast,
-							//Distinguimos aquí también el caso del float como operador y como tipo
-							if (esOpCast(lex)) {
-								if (buff[0] == ')' && 
-										tokens.lastElement().getTipoToken() == tToken.parApertura &&
-										!esBlanFLinTab(carAntConsumido[0])) {
-									tokens.remove(tokens.size() - 1);
-									tokens.add(dameTokenPalReservada(lex));
-									transita(est.e0);
-									lex = "";
-									break;
+					case e3:
+						if (esLetra(buff[0]) || esDigito(buff[0])) {
+							transita(est.e3);
+						}
+						else {
+							if (palReservadas.contains(lex)) {
+								//Resolvemos problemas entre identificadores y las operaciones de cast,
+								//Distinguimos aquí también el caso del float como operador y como tipo
+								if (esOpCast(lex)) {
+									if (buff[0] == ')' && 
+											tokens.lastElement().getTipoToken() == tToken.parApertura &&
+											!esBlanFLinTab(carAntConsumido[0])) {
+										tokens.remove(tokens.size() - 1);
+										tokens.add(dameTokenPalReservada(lex));
+										transita(est.e0);
+										lex = "";
+										break;
+									}
+									if (lex.equals("float")) {
+										tokens.add(new Token(tToken.tipoVarReal));
+										iniciaScanner();
+										break;
+									}
+									else {
+										error("Operador de cast mal formado.");
+										break;
+									}
 								}
-								if (lex.equals("float")) {
-									tokens.add(new Token(tToken.tipoVarReal));
-									iniciaScanner();
-									break;
-								}
+	//Resolvemos problemas entre identificadores y operaciones de entrada salida
+	//							if (lex == "in") {
+	//							}
 								else {
-									error(est.e3, ". Operador de cast mal formado.");
-									break;
+									tokens.add(dameTokenPalReservada(lex));
+									iniciaScanner();
 								}
 							}
-//Resolvemos problemas entre identificadores y operaciones de entrada salida
-//							if (lex == "in") {
-//							}
 							else {
-								tokens.add(dameTokenPalReservada(lex));
+								tokens.add(dameTokenIdentificador(lex));
 								iniciaScanner();
 							}
 						}
-						else {
-							tokens.add(dameTokenIdentificador(lex));
-							iniciaScanner();
-						}
-					}
-					break;
-				case e4:
-					if (buff[0] == '.') {
-						transita(est.e8);
 						break;
-					}
-					//Admitiremos números como 0005556 o hasta algo como 00000
-					if (esDigito(buff[0])) {
-						transita(est.e5);
-						break;
-					}
-					if (esE(buff[0])) {
-						transita(est.e10);
-						break;
-					}
-					//Guardamos un 0
-					else {
-						tokens.add(new Token(tToken.natural, lex));
-						iniciaScanner();
-					}
-					break;
-				case e5:
-					if (esDigito(buff[0])) {
-						transita(est.e5);
-						break;
-					}
-					if (buff[0] == '.') {
-						transita(est.e8);
-						break;
-					}
-					if (esE(buff[0])) {
-						transita(est.e10);
-						break;
-					}
-					else {
-						tokens.add(new Token(tToken.natural, lex));
-						iniciaScanner();
-					}
-					break;		
-				case e6:
-					//Sobra (en el autómata estaba preparado para los enteros)
-					break;
-				case e7:
-					//Sobra (en el autómata estaba preparado para los enteros)
-					break;
-				case e8:
-					if (esDigito(buff[0])) {
-						transita(est.e9);
-						break;
-					}
-					if (esE(buff[0])) {
-						transita(est.e10);
-						break;
-					}
-					else
-						error(est.e8, ". Después de '.' sólo debe haber dígitos, ó 'e' ó 'E'.");
-					break;
-				case e9:
-					if (esDigito(buff[0])) {
-						transita(est.e9);
-						break;
-					}
-					if (esE(buff[0])) {
-						transita(est.e10);
-						break;
-					}
-					else {
-						realAux = Double.valueOf(lex).doubleValue();
-						if (realAux == 0) {
-							tokens.add(new Token(tToken.natural, "0"));
-							iniciaScanner();
+					case e4:
+						if (buff[0] == '.') {
+							transita(est.e8);
 							break;
 						}
-						if (Math.floor(realAux) == realAux) {
+						if (buff[0] == '0') {
+							transita(est.e4);
+							break;
+						}
+						//Admitiremos números como 0005556 o hasta algo como 00000
+						if (esDigitoNo0(buff[0])) {
+							transita(est.e5);
+							break;
+						}
+						if (esE(buff[0])) {
+							transita(est.e10);
+							break;
+						}
+						//Guardamos un 0
+						else {
+							realAux = Double.valueOf(lex).doubleValue();
 							tokens.add(new Token(tToken.natural, "" + (int)realAux + ""));
 							iniciaScanner();
+						}
+						break;
+					case e5:
+						if (esDigito(buff[0])) {
+							transita(est.e5);
 							break;
 						}
-						tokens.add(new Token(tToken.real, lex));
+						if (buff[0] == '.') {
+							transita(est.e8);
+							break;
+						}
+						if (esE(buff[0])) {
+							transita(est.e10);
+							break;
+						}
+						else {
+							realAux = Double.valueOf(lex).doubleValue();
+							if (realAux <= Integer.MAX_VALUE) {
+								tokens.add(new Token(tToken.natural, "" + (int)realAux + ""));
+								iniciaScanner();
+								break;
+							}
+							if (realAux <= Double.MAX_VALUE) {
+								tokens.add(new Token(tToken.real, "" + realAux + ""));
+								iniciaScanner();
+								break;
+							}
+							error("Número demasiado grande.");
+						}
+						break;		
+					case e6:
+						//Sobra (en el autómata estaba preparado para los enteros)
+						break;
+					case e7:
+						//Sobra (en el autómata estaba preparado para los enteros)
+						break;
+					case e8:
+						if (esDigito(buff[0])) {
+							transita(est.e9);
+							break;
+						}
+						if (esE(buff[0])) {
+							transita(est.e10);
+							break;
+						}
+						else
+							error("Después de '.' sólo debe haber dígitos, ó 'e' ó 'E'.");
+						break;
+					case e9:
+						if (esDigito(buff[0])) {
+							transita(est.e9);
+							break;
+						}
+						if (esE(buff[0])) {
+							transita(est.e10);
+							break;
+						}
+						else {
+							realAux = Double.valueOf(lex).doubleValue();
+							if (realAux <= Double.MAX_VALUE) {
+								if (realAux == 0) {
+									tokens.add(new Token(tToken.natural, "0"));
+									iniciaScanner();
+									break;
+								}
+								if (Math.floor(realAux) == realAux) {
+									if (Math.floor(realAux) > Integer.MAX_VALUE) {
+										tokens.add(new Token(tToken.real, "" + realAux + ""));
+										iniciaScanner();
+										break;
+									}
+									else {	
+										tokens.add(new Token(tToken.natural, "" + (int)realAux + ""));
+										iniciaScanner();
+										break;
+									}
+								}
+								tokens.add(new Token(tToken.real, "" + realAux + ""));
+								iniciaScanner();
+							}
+							else
+									error("Número demasiado grande.");
+						}
+						break;
+					case e10:
+						if (esDigito(buff[0])) {
+							transita(est.e12);
+							break;
+						}
+						if (buff[0] == '-') {
+							transita(est.e11);
+							break;
+						}
+						else
+							error("Después de 'e' ó 'E' sólo debe haber dígitos ó '-'.");
+						break;
+					case e11:
+						if (esDigito(buff[0])) {
+							transita(est.e12);
+							break;
+						}
+						else
+							error("Después de un - en el exponente sólo debe haber dígitos.");	
+						break;
+					case e12:
+						if (esDigito(buff[0])) {
+							transita(est.e12);
+							break;
+						}
+						else {
+							realAux = Double.valueOf(lex).doubleValue();
+							if (realAux <= Double.MAX_VALUE) {
+								if (realAux == 0) {
+									tokens.add(new Token(tToken.natural, "0"));
+									iniciaScanner();
+									break;
+								}
+								if (Math.floor(realAux) == realAux) {
+									if (Math.floor(realAux) > Integer.MAX_VALUE) {
+										tokens.add(new Token(tToken.real, "" + realAux + ""));
+										iniciaScanner();
+										break;
+									}
+									else {
+										tokens.add(new Token(tToken.natural, "" + (int)realAux + ""));
+										iniciaScanner();
+										break;
+									}	
+								}
+								tokens.add(new Token(tToken.real, "" + realAux + ""));
+								iniciaScanner();
+							}
+							else
+								error("Número demasiado grande.");
+						}
+						break;
+					case e13:
+						if (buff[0] == '\'') {
+							tokens.add(dameTokenCadCaracteres(lex));
+							transita(est.e0);
+							lex = "";
+							break;
+						}
+						else
+							transita(est.e13);
+						break;
+					case e14:
+						//Sobra (en el autómata se usaba cuando se reconocían las siguientes ")
+						break;
+					case e15:
+						if (buff[0] == '=') {
+							tok = new Token(tToken.asignacion);
+							transita (est.e27);
+							break;
+						}
+						else {
+							tokens.add(new Token(tToken.dosPuntos));
+							iniciaScanner();
+						}
+						break;
+					case e16:
+						//Sobra (en el automata se encarga del reconocimiento del '=' para la asignación)
+						break;
+					case e17:
+						if (buff[0] == '/') {
+							transita (est.e18);
+							break;
+						}
+						else {
+							tokens.add(new Token(tToken.igual));
+							iniciaScanner();
+						}
+						break;
+					case e18:
+						if (buff[0] == '=') {
+							tok = new Token(tToken.distinto);
+							transita (est.e27);
+							break;
+						}
+						else
+							error("Operador de desigualdad mal formado.");
+						break;
+					case e19:
+						
+						break;
+					case e20:
+						
+						break;
+					case e21:
+						if (buff[0] == '=') {
+							tok = new Token(tToken.menorIgual);
+							transita (est.e27);
+							break;
+						}
+						if (buff[0] == '<') {
+							tok = new Token(tToken.despIzq);
+							transita (est.e27);
+							break;
+						}
+						else {
+							tokens.add(new Token(tToken.menor));
+							iniciaScanner();
+						}
+						break;
+					case e22:
+						
+						break;
+					case e23:
+						
+						break;
+					case e24:
+						if (buff[0] == '=') {
+							tok = new Token(tToken.mayorIgual);
+							transita (est.e27);
+							break;
+						}
+						if (buff[0] == '>') {
+							tok = new Token(tToken.despDer);
+							transita (est.e27);
+							break;
+						}
+						else {
+							tokens.add(new Token(tToken.mayor));
+							iniciaScanner();
+						}
+						break;
+					case e25:
+		
+						break;
+					case e26:
+		
+						break;
+					case e27:
+						tokens.add(tok);
 						iniciaScanner();
-					}
-					break;
-				case e10:
-					if (esDigito(buff[0])) {
-						transita(est.e12);
 						break;
-					}
-					if (buff[0] == '-') {
-						transita(est.e11);
-						break;
-					}
-					else
-						error(est.e10, ". Después de 'e' ó 'E' sólo debe haber dígitos ó '-'.");
-					break;
-				case e11:
-					if (esDigito(buff[0])) {
-						transita(est.e12);
-						break;
-					}
-					else
-						error(est.e11, ". Después de un - en el exponente sólo debe haber dígitos.");	
-					break;
-				case e12:
-					if (esDigito(buff[0])) {
-						transita(est.e12);
-						break;
-					}
-					else {
-						tokens.add(new Token(tToken.real, lex));
-						iniciaScanner();
-					}
-					break;
-				case e13:
-					if (buff[0] == '\'') {
-						tokens.add(dameTokenCadCaracteres(lex));
-						transita(est.e0);
-						lex = "";
-						break;
-					}
-					else
-						transita(est.e13);
-					break;
-				case e14:
-					//Sobra (en el autómata se usaba cuando se reconocían las siguientes ")
-					break;
-				case e15:
-					if (buff[0] == '=') {
-						tok = new Token(tToken.asignacion);
-						transita (est.e27);
-						break;
-					}
-					else {
-						tokens.add(new Token(tToken.dosPuntos));
-						iniciaScanner();
-					}
-					break;
-				case e16:
-					//Sobra (en el automata se encarga del reconocimiento del '=' para la asignación)
-					break;
-				case e17:
-					if (buff[0] == '/') {
-						transita (est.e18);
-						break;
-					}
-					else {
-						tokens.add(new Token(tToken.igual));
-						iniciaScanner();
-					}
-					break;
-				case e18:
-					if (buff[0] == '=') {
-						tok = new Token(tToken.distinto);
-						transita (est.e27);
-						break;
-					}
-					else
-						error(est.e18, ". Operador de desigualdad mal formado.");
-					break;
-				case e19:
-					
-					break;
-				case e20:
-					
-					break;
-				case e21:
-					if (buff[0] == '=') {
-						tok = new Token(tToken.menorIgual);
-						transita (est.e27);
-						break;
-					}
-					if (buff[0] == '<') {
-						tok = new Token(tToken.despIzq);
-						transita (est.e27);
-						break;
-					}
-					else {
-						tokens.add(new Token(tToken.menor));
-						iniciaScanner();
-					}
-					break;
-				case e22:
-					
-					break;
-				case e23:
-					
-					break;
-				case e24:
-					if (buff[0] == '=') {
-						tok = new Token(tToken.mayorIgual);
-						transita (est.e27);
-						break;
-					}
-					if (buff[0] == '>') {
-						tok = new Token(tToken.despDer);
-						transita (est.e27);
-						break;
-					}
-					else {
-						tokens.add(new Token(tToken.mayor));
-						iniciaScanner();
-					}
-					break;
-				case e25:
-	
-					break;
-				case e26:
-	
-					break;
-				case e27:
-					tokens.add(tok);
-					iniciaScanner();
-					break;
-				default:
-					errorLex = true;
-			}
+					default:
+						errorLex = true;
+				}
 		}
 	}
 	
@@ -492,40 +540,12 @@ public class ALexico {
 			return false;
 	}
 	
-	public void error(est estSig, String comentario) {
-		switch (estSig) {
-		case e0:
-			System.out.println("Caracter inesperado en la linea " + 
-					contPrograma + " : " + buff[0]);
-			break;	
-		case e1:
-			
-			break;
-		
-		case e2:
-			
-			break;
-		
-		case e3:
-			System.out.println("Caracter inesperado en la linea " + 
-					contPrograma + " : " + buff[0] + comentario);
-			break;
-		case e4:
-			
-			break;
-		
-		case e5:
-			
-			break;
-		
-		case e6:
-			
-			break;
-		
-		case e7:
-			
-			break;
-		}
+	public void error(String comentario) {
+		if (comentario == null)
+			System.out.println("Caracter inesperado en la linea " + contPrograma + " : '" + buff[0] + "'\n");
+		else
+			System.out.println("Caracter en buffer: '" + buff[0] + "'. Linea: " + contPrograma + '\n' +
+					"Error: " + comentario);
 		errorLex = true;
 	}
 	
@@ -668,7 +688,9 @@ public class ALexico {
 					System.out.print("{" + parser.tokens.get(i).getTipoToken().toString() + ", " +
 						parser.tokens.get(i).getLexema() + "} ");
 			}
-
+		
+//		System.out.println(Integer.MAX_VALUE);
+//		double x = 0025e056;
 		
 //Forma para pasar String a numéricos
 //		String sX = "004566.34515e-005";
