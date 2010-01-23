@@ -1,3 +1,6 @@
+x := -0025e-004456 - - -0043.0004455E-00657;
+
+
 # Programa de ejemplo
 cantidad: float;
 euros: integer;
@@ -9,4 +12,5 @@ centimos := cantidad - euros;
 out(euros);
 out('.');
 out(centimos);
-out((char)10)  # Código ASCII del salto de línea
+out((char)10);  # Código ASCII del salto de línea
+out('Léxico casi terminado')

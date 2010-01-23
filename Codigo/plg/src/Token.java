@@ -1,4 +1,4 @@
-enum tiposToken {
+enum tToken {
 	tipoVarBooleano, tipoVarCadCaracteres, tipoVarNatural, tipoVarEntero,tipoVarReal,
 	
 	booleano, cadCaracteres, natural, entero, real,
@@ -30,20 +30,20 @@ enum tiposToken {
 public class Token {
 
 	private String lexema;
-	private tiposToken tipoToken;
+	private tToken tipoToken;
 	
 	public Token() {
-		setLexema(new String(""));
-		setTipoToken(tiposToken.tokenError);
+		setLexema(null);
+		setTipoToken(tToken.tokenError);
 	}
 	
-	public Token(tiposToken _tipoToken) {
+	public Token(tToken _tipoToken) {
 		// TODO Auto-generated constructor stub
-		setLexema(new String(""));
+		setLexema(null);
 		setTipoToken(_tipoToken);
 	}
 	
-	public Token(tiposToken _tipoToken, String _lexema) {
+	public Token(tToken _tipoToken, String _lexema) {
 		// TODO Auto-generated constructor stub
 		setLexema(new String(_lexema));
 		setTipoToken(_tipoToken);
@@ -65,11 +65,11 @@ public class Token {
 		return lexema;
 	}
 
-	public void setTipoToken(tiposToken tipoToken) {
+	public void setTipoToken(tToken tipoToken) {
 		this.tipoToken = tipoToken;
 	}
 
-	public tiposToken getTipoToken() {
+	public tToken getTipoToken() {
 		return tipoToken;
 	}
 
