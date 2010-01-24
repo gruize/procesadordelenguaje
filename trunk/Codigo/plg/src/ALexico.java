@@ -17,6 +17,7 @@ public class ALexico {
 	private Vector<String> palReservadas;
 	private char carAntConsumido[];
 	private boolean finFichero;
+//	private est estAnterior;
 //	private boolean esCast;
 	
 	public ALexico() {
@@ -30,7 +31,9 @@ public class ALexico {
 		palReservadas = new Vector<String>();
 		carAntConsumido = new char[1];
 		finFichero = false;
-		
+		estado=est.e0;
+//		estAnterior=est.e0;
+
 //		esCast = false;
 	}
 	
@@ -300,8 +303,8 @@ public class ALexico {
 						else {
 							realAux = Double.valueOf(lex).doubleValue();
 							if (realAux <= Double.MAX_VALUE) {
-								if (realAux == 0) {
-									tokens.add(new Token(tToken.natural, "0"));
+								/*if (realAux == 0) {
+									tokens.add(new Token(tToken.real, "" + realAux + ""));
 									iniciaScanner();
 									break;
 								}
@@ -316,9 +319,10 @@ public class ALexico {
 										iniciaScanner();
 										break;
 									}
-								}
+								}*/
 								tokens.add(new Token(tToken.real, "" + realAux + ""));
 								iniciaScanner();
+								break;
 							}
 							else
 									error("Número demasiado grande.");
@@ -352,12 +356,12 @@ public class ALexico {
 						else {
 							realAux = Double.valueOf(lex).doubleValue();
 							if (realAux <= Double.MAX_VALUE) {
-								if (realAux == 0) {
+								/*if (realAux == 0 && estAntNat(estAnterior)) {
 									tokens.add(new Token(tToken.natural, "0"));
 									iniciaScanner();
 									break;
 								}
-								if (Math.floor(realAux) == realAux) {
+								if (Math.floor(realAux) == realAux && estAntNat(estAnterior)) {
 									if (Math.floor(realAux) > Integer.MAX_VALUE) {
 										tokens.add(new Token(tToken.real, "" + realAux + ""));
 										iniciaScanner();
@@ -368,9 +372,10 @@ public class ALexico {
 										iniciaScanner();
 										break;
 									}	
-								}
+								}*/
 								tokens.add(new Token(tToken.real, "" + realAux + ""));
 								iniciaScanner();
+								break;
 							}
 							else
 								error("Número demasiado grande.");
@@ -493,7 +498,8 @@ public class ALexico {
 			if (bfr.read(buff) == -1) {
 				finFichero = true;
 				buff[0] = ' ';
-			}	
+			}
+//			estAnterior = estado;
 			estado = estSig;
 		}
 		catch(Exception ex){
@@ -556,6 +562,14 @@ public class ALexico {
 		else
 			return false;
 	}
+	
+	public boolean estAntNat(est _estado) {
+		if (_estado == est.e4 || _estado == est.e5)
+			return true;
+		else
+			return false;
+	}
+	 
 	
 	public void error(String comentario) {
 		if (comentario == null)
@@ -725,6 +739,10 @@ public class ALexico {
 					System.out.print("{" + parser.tokens.get(i).getTipoToken().toString() + ", " +
 						parser.tokens.get(i).getLexema() + "} ");
 			}
+
+//		int a = 1e1;
+//		double x = 50 + 00.00;
+//		int a = 000043 - 04555.00;
 		
 //		System.out.println(Integer.MAX_VALUE);
 //		double x = 0025e056;
