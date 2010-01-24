@@ -1,3 +1,4 @@
+package analizadorLexico;
 import java.util.*;
 import java.io.*;
 
@@ -9,7 +10,7 @@ public class ALexico {
 	private char buff[];
 	private String lex;
 	private est estado;
-	private Vector<Token> tokens;
+	private Vector<Token> tokensOut;
 	private BufferedReader bfr;
 	private int contPrograma;
 	private boolean errorLex;
@@ -24,11 +25,12 @@ public class ALexico {
 		// TODO Auto-generated constructor stub
 		buff = new char[1];
 		lex = new String();
-		tokens = new Vector<Token>();
+		tokensOut = new Vector<Token>();
 		contPrograma = 1;
 		errorLex = false;
 		quedanCar = true;
 		palReservadas = new Vector<String>();
+		iniciaVecPalReservadas();
 		carAntConsumido = new char[1];
 		finFichero = false;
 		estado=est.e0;
@@ -95,7 +97,7 @@ public class ALexico {
 		while (quedanCar && !errorLex) {
 			if (finFichero && estado == est.e0)	{
 				quedanCar = false;
-				tokens.add(new Token(tToken.finDeFichero));
+				tokensOut.add(new Token(tToken.finDeFichero));
 			}
 			else {
 				switch (estado) {
@@ -183,17 +185,17 @@ public class ALexico {
 								//Distinguimos aquí también el caso del float como operador y como tipo
 								if (esOpCast(lex)) {
 									if (buff[0] == ')' && 
-											tokens.lastElement().getTipoToken() == tToken.parApertura &&
+											tokensOut.lastElement().getTipoToken() == tToken.parApertura &&
 											carAntConsumido[0] == '(') {
-										tokens.remove(tokens.size() - 1);
-										tokens.add(dameTokenPalReservada(lex));
+										tokensOut.remove(tokensOut.size() - 1);
+										tokensOut.add(dameTokenPalReservada(lex));
 										transita(est.e0);
 										lex = "";
 										break;
 									}
 									if (lex.equals("float") &&
-											tokens.lastElement().getTipoToken() == tToken.dosPuntos) {
-										tokens.add(new Token(tToken.tipoVarReal));
+											tokensOut.lastElement().getTipoToken() == tToken.dosPuntos) {
+										tokensOut.add(new Token(tToken.tipoVarReal));
 										iniciaScanner();
 										break;
 									}
@@ -202,7 +204,7 @@ public class ALexico {
 											error("Operador de 'cast float' mal formado, o declaración incorrecta de tipo 'float'.");
 										else
 											error("Operador de 'cast' mal formado.");
-										tokens.add(new Token());
+										tokensOut.add(new Token());
 										break;
 									}
 								}
@@ -210,12 +212,12 @@ public class ALexico {
 	//							if (lex == "in") {
 	//							}
 								else {
-									tokens.add(dameTokenPalReservada(lex));
+									tokensOut.add(dameTokenPalReservada(lex));
 									iniciaScanner();
 								}
 							}
 							else {
-								tokens.add(dameTokenIdentificador(lex));
+								tokensOut.add(dameTokenIdentificador(lex));
 								iniciaScanner();
 							}
 						}
@@ -241,7 +243,7 @@ public class ALexico {
 						//Guardamos un 0
 						else {
 							realAux = Double.valueOf(lex).doubleValue();
-							tokens.add(new Token(tToken.natural, "" + (int)realAux + ""));
+							tokensOut.add(new Token(tToken.natural, "" + (int)realAux + ""));
 							iniciaScanner();
 						}
 						break;
@@ -261,12 +263,12 @@ public class ALexico {
 						else {
 							realAux = Double.valueOf(lex).doubleValue();
 							if (realAux <= Integer.MAX_VALUE) {
-								tokens.add(new Token(tToken.natural, "" + (int)realAux + ""));
+								tokensOut.add(new Token(tToken.natural, "" + (int)realAux + ""));
 								iniciaScanner();
 								break;
 							}
 							if (realAux <= Double.MAX_VALUE) {
-								tokens.add(new Token(tToken.real, "" + realAux + ""));
+								tokensOut.add(new Token(tToken.real, "" + realAux + ""));
 								iniciaScanner();
 								break;
 							}
@@ -304,23 +306,23 @@ public class ALexico {
 							realAux = Double.valueOf(lex).doubleValue();
 							if (realAux <= Double.MAX_VALUE) {
 								/*if (realAux == 0) {
-									tokens.add(new Token(tToken.real, "" + realAux + ""));
+									tokensOut.add(new Token(tToken.real, "" + realAux + ""));
 									iniciaScanner();
 									break;
 								}
 								if (Math.floor(realAux) == realAux) {
 									if (Math.floor(realAux) > Integer.MAX_VALUE) {
-										tokens.add(new Token(tToken.real, "" + realAux + ""));
+										tokensOut.add(new Token(tToken.real, "" + realAux + ""));
 										iniciaScanner();
 										break;
 									}
 									else {	
-										tokens.add(new Token(tToken.natural, "" + (int)realAux + ""));
+										tokensOut.add(new Token(tToken.natural, "" + (int)realAux + ""));
 										iniciaScanner();
 										break;
 									}
 								}*/
-								tokens.add(new Token(tToken.real, "" + realAux + ""));
+								tokensOut.add(new Token(tToken.real, "" + realAux + ""));
 								iniciaScanner();
 								break;
 							}
@@ -357,23 +359,23 @@ public class ALexico {
 							realAux = Double.valueOf(lex).doubleValue();
 							if (realAux <= Double.MAX_VALUE) {
 								/*if (realAux == 0 && estAntNat(estAnterior)) {
-									tokens.add(new Token(tToken.natural, "0"));
+									tokensOut.add(new Token(tToken.natural, "0"));
 									iniciaScanner();
 									break;
 								}
 								if (Math.floor(realAux) == realAux && estAntNat(estAnterior)) {
 									if (Math.floor(realAux) > Integer.MAX_VALUE) {
-										tokens.add(new Token(tToken.real, "" + realAux + ""));
+										tokensOut.add(new Token(tToken.real, "" + realAux + ""));
 										iniciaScanner();
 										break;
 									}
 									else {
-										tokens.add(new Token(tToken.natural, "" + (int)realAux + ""));
+										tokensOut.add(new Token(tToken.natural, "" + (int)realAux + ""));
 										iniciaScanner();
 										break;
 									}	
 								}*/
-								tokens.add(new Token(tToken.real, "" + realAux + ""));
+								tokensOut.add(new Token(tToken.real, "" + realAux + ""));
 								iniciaScanner();
 								break;
 							}
@@ -383,7 +385,7 @@ public class ALexico {
 						break;
 					case e13:
 						if (buff[0] == '\'') {
-							tokens.add(dameTokenCadCaracteres(lex));
+							tokensOut.add(dameTokenCadCaracteres(lex));
 							transita(est.e0);
 							lex = "";
 							break;
@@ -401,7 +403,7 @@ public class ALexico {
 							break;
 						}
 						else {
-							tokens.add(new Token(tToken.dosPuntos));
+							tokensOut.add(new Token(tToken.dosPuntos));
 							iniciaScanner();
 						}
 						break;
@@ -414,7 +416,7 @@ public class ALexico {
 							break;
 						}
 						else {
-							tokens.add(new Token(tToken.igual));
+							tokensOut.add(new Token(tToken.igual));
 							iniciaScanner();
 						}
 						break;
@@ -445,7 +447,7 @@ public class ALexico {
 							break;
 						}
 						else {
-							tokens.add(new Token(tToken.menor));
+							tokensOut.add(new Token(tToken.menor));
 							iniciaScanner();
 						}
 						break;
@@ -467,7 +469,7 @@ public class ALexico {
 							break;
 						}
 						else {
-							tokens.add(new Token(tToken.mayor));
+							tokensOut.add(new Token(tToken.mayor));
 							iniciaScanner();
 						}
 						break;
@@ -478,7 +480,7 @@ public class ALexico {
 		
 						break;
 					case e27:
-						tokens.add(tok);
+						tokensOut.add(tok);
 						iniciaScanner();
 						break;
 					default:
@@ -590,12 +592,12 @@ public class ALexico {
 			return new Token(tToken.suma);
 		case '-':
 			//Distinguimos el caso del - unario
-			if (!tokens.isEmpty()) 
-				if (tokens.lastElement().getTipoToken() == tToken.natural || 
-						tokens.lastElement().getTipoToken() == tToken.entero ||
-						tokens.lastElement().getTipoToken() == tToken.real ||
-						tokens.lastElement().getTipoToken() == tToken.parCierre ||
-						tokens.lastElement().getTipoToken() == tToken.identificador)
+			if (!tokensOut.isEmpty()) 
+				if (tokensOut.lastElement().getTipoToken() == tToken.natural || 
+						tokensOut.lastElement().getTipoToken() == tToken.entero ||
+						tokensOut.lastElement().getTipoToken() == tToken.real ||
+						tokensOut.lastElement().getTipoToken() == tToken.parCierre ||
+						tokensOut.lastElement().getTipoToken() == tToken.identificador)
 					return new Token(tToken.resta);
 			else
 				return new Token(tToken.negArit);
@@ -616,7 +618,7 @@ public class ALexico {
 	public Token dameTokenPalReservada(String palReservada) {
 		//Ninguna de las palabras reservadas debe llevar lexemas
 		if (palReservada.equals("boolean")) {
-			if (tokens.lastElement().getTipoToken() == tToken.dosPuntos)
+			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos)
 				return new Token(tToken.tipoVarBooleano);
 			else {
 				error("Declaración incorrecta de tipo 'boolean'.");
@@ -624,7 +626,7 @@ public class ALexico {
 			}
 		}
 		if (palReservada.equals("character")) {
-			if (tokens.lastElement().getTipoToken() == tToken.dosPuntos)
+			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos)
 				return new Token(tToken.tipoVarCadCaracteres);
 			else {
 				error("Declaración incorrecta de tipo 'character'.");
@@ -632,7 +634,7 @@ public class ALexico {
 			}
 		}
 		if (palReservada.equals("natural")) {
-			if (tokens.lastElement().getTipoToken() == tToken.dosPuntos)
+			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos)
 				return new Token(tToken.tipoVarNatural);
 			else {
 				error("Declaración incorrecta de tipo 'natural'.");
@@ -640,7 +642,7 @@ public class ALexico {
 			}
 		}
 		if (palReservada.equals("integer")) {
-			if (tokens.lastElement().getTipoToken() == tToken.dosPuntos)
+			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos)
 				return new Token(tToken.tipoVarEntero);
 			else {
 				error("Declaración incorrecta de tipo 'integer'.");
@@ -697,8 +699,8 @@ public class ALexico {
 //			String linea=bfr.readLine();
 //			while(linea!=null){
 //				StringTokenizer cadena=new StringTokenizer(linea);
-//				while(cadena.hasMoreTokens()){
-//					tokens.add(cadena.nextToken());
+//				while(cadena.hasMoretokensOut()){
+//					tokensOut.add(cadena.nextToken());
 //				}
 //				linea=bfr.readLine();
 //			}
@@ -714,35 +716,33 @@ public class ALexico {
 		// TODO Auto-generated method stub
 		String nombreFichero = "programa.txt";
 		
-		ALexico parser = new ALexico();
+		ALexico scanner = new ALexico();
 		
-		parser.iniciaVecPalReservadas();
+		scanner.inicio(nombreFichero);
 		
-		parser.inicio(nombreFichero);
+		scanner.scanner();
 		
-		parser.scanner();
+		System.out.println("Lineas: " + scanner.contPrograma);
 		
-		System.out.println("Lineas: " + parser.contPrograma);
-		
-		for (int i = 0; i < parser.tokens.size(); i++)
-			if (parser.tokens.get(i).getTipoToken() == tToken.puntoyComa ||
-					parser.tokens.get(i).getTipoToken() == tToken.separador) {
-				if (parser.tokens.get(i).getTipoToken() == tToken.separador)
+		for (int i = 0; i < scanner.tokensOut.size(); i++)
+			if (scanner.tokensOut.get(i).getTipoToken() == tToken.puntoyComa ||
+					scanner.tokensOut.get(i).getTipoToken() == tToken.separador) {
+				if (scanner.tokensOut.get(i).getTipoToken() == tToken.separador)
 					System.out.println();
-				System.out.print(parser.tokens.get(i).getTipoToken().toString());
+				System.out.print(scanner.tokensOut.get(i).getTipoToken().toString());
 				System.out.println();
 			}
 			else {
-				if (parser.tokens.get(i).getLexema() == null)
-					System.out.print("{" + parser.tokens.get(i).getTipoToken().toString() + "} ");
+				if (scanner.tokensOut.get(i).getLexema() == null)
+					System.out.print("{" + scanner.tokensOut.get(i).getTipoToken().toString() + "} ");
 				else
-					System.out.print("{" + parser.tokens.get(i).getTipoToken().toString() + ", " +
-						parser.tokens.get(i).getLexema() + "} ");
+					System.out.print("{" + scanner.tokensOut.get(i).getTipoToken().toString() + ", " +
+						scanner.tokensOut.get(i).getLexema() + "} ");
 			}
 
 //		int a = 1e1;
 //		double x = 50 + 00.00;
-//		int a = 000043 - 04555.00;
+//		int a = 000043 - 04555.00
 		
 //		System.out.println(Integer.MAX_VALUE);
 //		double x = 0025e056;
@@ -765,5 +765,23 @@ public class ALexico {
 //		System.out.println(sX);
 //		System.out.println(x);
 //		System.out.println(numSX);
+		
+		String _id = "id original";
+		String _tipo = "tipo original";
+		boolean _error = true;
+		int _dir = 1;
+		
+		scanner.dec(_id, _tipo, _error, _dir);
+		
+		System.out.println();
+		System.out.println(_id +" "+ _tipo +" "+ _error +" "+ _dir);
+	}
+
+	//Prueba de la i/o en Java
+	public void dec(String id, String tipo, boolean error, int dir) {
+		id = " id cambiado";
+		tipo = "tipo cambiado";
+		error = false;
+		dir = 2;
 	}
 }
