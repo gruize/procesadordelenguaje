@@ -1,3 +1,12 @@
+c00c : character;
+b00b : boolean;
+i00i : integer;
+f00f : float;
+n00n : natural;
+
+(:float  ) ;
+
+
 #Booleanos
 x00x : boolean;
 x00x := not y00y;
@@ -61,4 +70,12 @@ x00x := x11x11 < 002e06;
 000000000000000000000000000;
 000.000000;
 00007875765765.00076876000;
-00007676868
+00007676868;
+
+
+(char) 34;
+(nat) 455;
+(int) 566666;
+x : float
+&
+(float) 23423423
