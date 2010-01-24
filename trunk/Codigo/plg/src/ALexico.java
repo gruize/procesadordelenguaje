@@ -63,6 +63,7 @@ public class ALexico {
 		try {
 			bfr=new BufferedReader(new FileReader(nomFichero));
 			bfr.read(buff);
+			carAntConsumido[0] = ' ';
 			contPrograma = 1;
 		}
 		catch(Exception ex){
@@ -93,10 +94,11 @@ public class ALexico {
 				quedanCar = false;
 				tokens.add(new Token(tToken.finDeFichero));
 			}
-			else
+			else {
 				switch (estado) {
 					case e0:
 						if (esBlanFLinTab(buff[0])) {
+							carAntConsumido[0] = buff[0];
 							transita(est.e0);
 							lex = "";
 							break;
@@ -106,41 +108,50 @@ public class ALexico {
 							break;
 						}
 						if (buff[0] == '0') {
+							carAntConsumido[0] = buff[0];
 							transita(est.e4);
 							break;
 						}
 						if (esDigitoNo0(buff[0])) {
+							carAntConsumido[0] = buff[0];
 							transita(est.e5);
 							break;
 						}
 						if (buff[0] == ':') {
+							carAntConsumido[0] = buff[0];
 							transita(est.e15);
 							break;
 						}
 						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '-' ||
 								buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || 
 								buff[0] == ')' || buff.toString().equals("-")) {
+							carAntConsumido[0] = buff[0];
 							tok = dameToken(buff[0]);
 							transita(est.e27);
 							break;
 						}
 						if (buff[0] == '<') {
+							carAntConsumido[0] = buff[0];
 							transita(est.e21);
 							break;
 						}
 						if (buff[0] == '>') {
+							carAntConsumido[0] = buff[0];
 							transita(est.e24);
 							break;
 						}
 						if (buff[0] == '=') {
+							carAntConsumido[0] = buff[0];
 							transita(est.e17);
 							break;
 						}
 						if (buff[0] == '#') {
+							carAntConsumido[0] = buff[0];
 							transita(est.e1);
 							break;
 						}
 						if (buff[0] == '\'') {
+							carAntConsumido[0] = buff[0];
 							transita(est.e13);
 							break;
 						}
@@ -170,20 +181,25 @@ public class ALexico {
 								if (esOpCast(lex)) {
 									if (buff[0] == ')' && 
 											tokens.lastElement().getTipoToken() == tToken.parApertura &&
-											!esBlanFLinTab(carAntConsumido[0])) {
+											carAntConsumido[0] == '(') {
 										tokens.remove(tokens.size() - 1);
 										tokens.add(dameTokenPalReservada(lex));
 										transita(est.e0);
 										lex = "";
 										break;
 									}
-									if (lex.equals("float")) {
+									if (lex.equals("float") &&
+											tokens.lastElement().getTipoToken() == tToken.dosPuntos) {
 										tokens.add(new Token(tToken.tipoVarReal));
 										iniciaScanner();
 										break;
 									}
 									else {
-										error("Operador de cast mal formado.");
+										if (lex.equals("float"))
+											error("Operador de 'cast float' mal formado, o declaración incorrecta de tipo 'float'.");
+										else
+											error("Operador de 'cast' mal formado.");
+										tokens.add(new Token());
 										break;
 									}
 								}
@@ -463,6 +479,7 @@ public class ALexico {
 					default:
 						errorLex = true;
 				}
+			}
 		}
 	}
 	
@@ -585,16 +602,36 @@ public class ALexico {
 	public Token dameTokenPalReservada(String palReservada) {
 		//Ninguna de las palabras reservadas debe llevar lexemas
 		if (palReservada.equals("boolean")) {
-			return new Token(tToken.tipoVarBooleano);
+			if (tokens.lastElement().getTipoToken() == tToken.dosPuntos)
+				return new Token(tToken.tipoVarBooleano);
+			else {
+				error("Declaración incorrecta de tipo 'boolean'.");
+				return new Token();
+			}
 		}
 		if (palReservada.equals("character")) {
-			return new Token(tToken.tipoVarCadCaracteres);
+			if (tokens.lastElement().getTipoToken() == tToken.dosPuntos)
+				return new Token(tToken.tipoVarCadCaracteres);
+			else {
+				error("Declaración incorrecta de tipo 'character'.");
+				return new Token();
+			}
 		}
 		if (palReservada.equals("natural")) {
-			return new Token(tToken.tipoVarNatural);
+			if (tokens.lastElement().getTipoToken() == tToken.dosPuntos)
+				return new Token(tToken.tipoVarNatural);
+			else {
+				error("Declaración incorrecta de tipo 'natural'.");
+				return new Token();
+			}
 		}
 		if (palReservada.equals("integer")) {
-			return new Token(tToken.tipoVarEntero);
+			if (tokens.lastElement().getTipoToken() == tToken.dosPuntos)
+				return new Token(tToken.tipoVarEntero);
+			else {
+				error("Declaración incorrecta de tipo 'integer'.");
+				return new Token();
+			}
 		}
 		if (palReservada.equals("true")) {
 			return new Token(tToken.booleanoCierto);
