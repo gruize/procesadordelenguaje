@@ -1,14 +1,16 @@
 package interprete.tipos;
 
-public class MyExecutionError implements StackObject {
+public class MyExecutionError extends StackObject {
 	public static int NO_ERROR = 0;
 	public static int STACK_ERROR = 1;
 	public static int OPERATION_ERROR = 2;
+	public static final int MEMORY_ERROR = 3;
 	
 	public static String [] STRING_MESSAGE = {
-		"no error", //0
-		"stack error", //1
-		"operation error", //2
+		"no error", 			//0
+		"stack error",			//1
+		"operation error", 		//2
+		"violation memory", 	//3
 	};
 	Integer codeError = 0;
 	String message = "";
@@ -45,6 +47,14 @@ public class MyExecutionError implements StackObject {
 			cadena = "Message: "+message;
 		}
 		return cadena;
+	}
+	@Override
+	public int size() {
+		return 0;
+	}
+	@Override
+	public byte[] toBytes() {
+		return null;
 	}
 	
 

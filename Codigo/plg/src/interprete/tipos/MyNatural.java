@@ -1,6 +1,6 @@
 package interprete.tipos;
 
-public class MyNatural implements StackObject{
+public class MyNatural extends StackObject{
 	private Integer value;
 
 	public Object getValue() {
@@ -13,6 +13,19 @@ public class MyNatural implements StackObject{
 		if (value instanceof MyChar){
 			this.value = (Integer)((MyInteger)value).getValue();
 		}
+	}
+	@Override
+	public int size() {
+		return Integer.SIZE;
+	}
+	@Override
+	public byte[] toBytes() {
+		return util.Utils.toBytes(value.intValue());
+	}
+	@Override 
+	public StackObject fromBytes(byte[] bytes, int pos){
+		value = util.Utils.toInt(bytes, pos);
+		return this;
 	}
 
 }
