@@ -1,4 +1,10 @@
+package interprete;
 /**Falta el main*/
+
+
+
+import interprete.instrucciones.InstruccionMaquinaP;
+import interprete.tipos.MyFloat;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -14,9 +20,9 @@ public class Interprete {
 	OperacionesMaquinaP operacion;
 	Object argumento;
 	int contador;
-	Vector<InstruccionesMaquinaP> codigo;
+	Vector<InstruccionMaquinaP> codigo;
 	
-	public Interprete(Vector<InstruccionesMaquinaP> codigo) {
+	public Interprete(Vector<InstruccionMaquinaP> codigo) {
 		this.codigo = codigo;
 		this.mem = new Memoria();
 	}
@@ -61,11 +67,11 @@ public class Interprete {
 		this.contador = contador;
 	}
 
-	public Vector<InstruccionesMaquinaP> getCodigo() {
+	public Vector<InstruccionMaquinaP> getCodigo() {
 		return codigo;
 	}
 
-	public void setCodigo(Vector<InstruccionesMaquinaP> codigo) {
+	public void setCodigo(Vector<InstruccionMaquinaP> codigo) {
 		this.codigo = codigo;
 	}
 	
@@ -115,19 +121,19 @@ public class Interprete {
 		if( (String.valueOf((String)sub_cima).indexOf(".") > 0) ||  (String.valueOf((String)sub_cima).indexOf("E") > 0) ||  (String.valueOf((String)sub_cima).indexOf("e") > 0))
 			//Comprobacion de tipos. Cima es el segundo operador y es un real -> Ambos reales
 			if( (String.valueOf((String)cima).indexOf(".") > 0) ||  (String.valueOf((String)cima).indexOf("E") > 0) ||  (String.valueOf((String)cima).indexOf("e") > 0))
-				this.pila.push((Float.valueOf((String)sub_cima) > Float.valueOf((String)cima)));
+				this.pila.push((MyFloat.valueOf((String)sub_cima) > MyFloat.valueOf((String)cima)));
 			else{
 				//Comprobacion de tipos. Cima es el segundo operador y es un entero --> Real con entero
 				if( (String.valueOf((String)cima).indexOf("+") > 0) || (String.valueOf((String)cima).indexOf("-") > 0) ){
 					if( (String.valueOf((String)cima).indexOf("+") > 0) ){						
-						this.pila.push((Float.valueOf((String)sub_cima) > (Float.valueOf(String.valueOf((String)cima).substring(String.valueOf((String) sub_cima).indexOf("+"))))));
+						this.pila.push((MyFloat.valueOf((String)sub_cima) > (MyFloat.valueOf(String.valueOf((String)cima).substring(String.valueOf((String) sub_cima).indexOf("+"))))));
 					}	
 					else
-						this.pila.push((Float.valueOf((String)sub_cima) > Float.valueOf((String)cima)));
+						this.pila.push((MyFloat.valueOf((String)sub_cima) > MyFloat.valueOf((String)cima)));
 				}else{
 					//Comprobacion de tipos. Cima es el segundo operador y es un natural --> Real con natural
 					if( Integer.valueOf((String)cima) >= 0 ){					
-						this.pila.push((Float.valueOf((String)sub_cima) > Float.valueOf((String)cima)));
+						this.pila.push((MyFloat.valueOf((String)sub_cima) > MyFloat.valueOf((String)cima)));
 					}else{
 						//Comprobacion de tipos. Error de caracter
 						//TODO: Por hacer la gestion del error						
@@ -381,14 +387,45 @@ public class Interprete {
 	 * @param args
 	 */
 	public static void main(String[] args) {	
-		Vector<InstruccionesMaquinaP> codigo = new Vector<InstruccionesMaquinaP>();
-		codigo.add(new InstruccionesMaquinaP(OperacionesMaquinaP.APILA,true));
-		codigo.add(new InstruccionesMaquinaP(OperacionesMaquinaP.APILA,true));
-		codigo.add(new InstruccionesMaquinaP(OperacionesMaquinaP.MAYOR));
-		codigo.add(new InstruccionesMaquinaP(OperacionesMaquinaP.ESCRIBIR));
+		Vector<InstruccionMaquinaP> codigo = new Vector<InstruccionMaquinaP>();
+		codigo.add(new InstruccionMaquinaP(OperacionesMaquinaP.APILA,true));
+		codigo.add(new InstruccionMaquinaP(OperacionesMaquinaP.APILA,true));
+		codigo.add(new InstruccionMaquinaP(OperacionesMaquinaP.MAYOR));
+		codigo.add(new InstruccionMaquinaP(OperacionesMaquinaP.ESCRIBIR));
 		
 		Interprete interprete = new Interprete(codigo);
 		interprete.ejecuta();
 	}
+//	public boolean operable(OperacionesMaquinaP instruccion){
+//		switch (instruccion){
+//		case MENOR :
+//		case MAYOR,
+//		case MENORIGUAL,
+//		case MAYORIGUAL,
+//		case DISTINTO,
+//		case SUMA,
+//		case RESTA,
+//		case MULTIPLICACION,
+//		case DIVISION,
+//		case MODULO,
+//		case YLOGICO,
+//		case OLOGICO,
+//		case NOLOGICO,
+//		case SIGNO,
+//		case DESPLAZAMIENTOIZQUIERDA,
+//		case DESPLAZAMIENTODERECHA,
+//		case CASTNAT,
+//		case CASTINT,
+//		case CASTCHAR,
+//		case CASTFLOAT,
+//		case APILA,
+//		case APILA_DIR,
+//		case DESAPILA,
+//		case DESAPILA_DIR,
+//		case LEER,
+//		case ESCRIBIR
+//		case }
+//		return true;
+//	}
 
 }

@@ -11,9 +11,9 @@ public class TS {
 		tabla = new Hashtable<String, ObjTS>();
 	}
 	
-	public void añadeId(String id, String tipo, int dir) {
-		//No comprobamos la existencia del id porque eso se hará en el código
-		//del sintáctico
+	public void anadeId(String id, String tipo, int dir) {
+		//No comprobamos la existencia del id porque eso se harï¿½ en el cï¿½digo
+		//del sintï¿½ctico
 		tabla.put(id, new ObjTS(tipo, dir));
 	}
 	
