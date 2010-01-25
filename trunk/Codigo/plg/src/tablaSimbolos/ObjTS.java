@@ -16,6 +16,22 @@ public class ObjTS {
 		dirM = new Integer(0);
 	}
 	
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public Integer getDirM() {
+		return dirM;
+	}
+
+	public void setDirM(Integer dirM) {
+		this.dirM = dirM;
+	}
+
 	public ObjTS(String _tipo, int _dirM) {
 		// TODO Auto-generated constructor stub
 		tipo = new String(_tipo);

@@ -37,16 +37,18 @@ public class ASintactico {
 	public Token consume(){
 		Token tokDevolver = tokensIn.get(contTokens);
 		contTokens++;
+		tokActual = tokensIn.get(contTokens);
 		return tokDevolver;
 	}
 	
 	public void consume(tToken tokenEsperado){
-		tokActual = tokensIn.get(contTokens);
-		if (tokActual.getTipoToken() == tokenEsperado) {
+		Token tokConsumido = tokensIn.get(contTokens);
+		if (tokConsumido.getTipoToken() == tokenEsperado) {
 //Todavía no se si poner esto alante o atras del if. Como viene en la memoria
 //creo que será alante
 //			tokActual = tokensIn.get(contTokens);
 			contTokens++;
+			tokActual = tokensIn.get(contTokens);
 		}
 		else {
 			System.out.println("Error: Programa incorrecto.");
@@ -60,6 +62,36 @@ public class ASintactico {
 	//y que inicialice el tokenActual, con el primer elemento del array
 	//teniendo que cuenta que hay que incrementar el contador de tokens
 	//después de asignar el token actual
+	public void parse() {
+		//Variables para recorrer la tabla de símbolos
+		String id = new String();
+		Enumeration<String> e;
+//		tokActual = tokensIn.firstElement();
+//		contTokens++;
+		
+		programa();
+		
+		System.out.println("***********************************************************************");
+		System.out.println("*                        ANÁLISIS SINTÁCTICO                          *");
+		System.out.println("***********************************************************************");
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println("Tabla de Símbolos");
+		System.out.println("-----------------");
+		System.out.println();
+		//Mostramos la información de la tabla de símbolos		
+		e = ts.getTabla().keys();
+		while (e.hasMoreElements()) {
+			id = e.nextElement();
+			if (ts.getTabla().get(id).getTipo().equals("tipoVarCadCaracteres"))
+				System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo() + "\tDirección: " +
+						ts.getTabla().get(id).getDirM());
+			else
+				System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo() + "\t\tDirección: " +
+						ts.getTabla().get(id).getDirM());
+		}
+	}
 
 	/*public void programaFin() { //PROGRAMA_Fin ::= PROGRAMA finDeFichero
 		programa();
@@ -107,7 +139,7 @@ public class ASintactico {
 		ParString parOut = new ParString();
 		parOut.setStr1(consume().getLexema());
 		consume(tToken.dosPuntos);
-		parOut.setStr2(consume().getLexema());
+		parOut.setStr2(consume().getTipoToken().toString());
 		return parOut;
 	}
 	
@@ -141,6 +173,14 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		String nombreFichero = "programa3.txt";
+		
+		ALexico scanner = new ALexico();
+		ASintactico parser = new ASintactico();
+		
+		if (scanner.scanFichero(nombreFichero)) {
+			parser.tokensIn = scanner.dameTokens();
+			parser.parse();
+		}
 	}
 }

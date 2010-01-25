@@ -14,6 +14,7 @@ public class ALexico {
 	private BufferedReader bfr;
 	private int contPrograma;
 	private boolean errorLex;
+	private String descripError;
 	private boolean quedanCar;
 	private Vector<String> palReservadas;
 	private char carAntConsumido[];
@@ -28,6 +29,7 @@ public class ALexico {
 		tokensOut = new Vector<Token>();
 		contPrograma = 1;
 		errorLex = false;
+		descripError = new String();
 		quedanCar = true;
 		palReservadas = new Vector<String>();
 		iniciaVecPalReservadas();
@@ -37,6 +39,10 @@ public class ALexico {
 //		estAnterior=est.e0;
 
 //		esCast = false;
+	}
+	
+	public Vector<Token> dameTokens(){
+		return tokensOut;
 	}
 	
 	public void iniciaVecPalReservadas() {
@@ -87,7 +93,7 @@ public class ALexico {
 		}
 	}
 	
-	public void scanner() {
+	public void scan() {
 		Token tok = new Token();
 		double realAux = 0;
 		
@@ -203,7 +209,7 @@ public class ALexico {
 										if (lex.equals("float"))
 											error("Operador de 'cast float' mal formado, o declaración incorrecta de tipo 'float'.");
 										else
-											error("Operador de 'cast' mal formado.");
+											error("Operador de 'cast " + lex + "' mal formado.");
 										tokensOut.add(new Token());
 										break;
 									}
@@ -575,10 +581,10 @@ public class ALexico {
 	
 	public void error(String comentario) {
 		if (comentario == null)
-			System.out.println("Caracter inesperado en la linea " + contPrograma + " : '" + buff[0] + "'\n");
+			descripError = "Caracter inesperado en la linea " + contPrograma + " : '" + buff[0] + "'\n";
 		else
-			System.out.println("Caracter en buffer: '" + buff[0] + "'. Linea: " + contPrograma + '\n' +
-					"Error: " + comentario);
+			descripError = "Caracter en buffer: '" + buff[0] + "'. Linea: " + contPrograma + '\n' +
+					"Error: " + comentario;
 		errorLex = true;
 	}
 	
@@ -709,6 +715,54 @@ public class ALexico {
 //		}
 //	}
 	
+	public boolean scanFichero(String nombreFichero) {
+		//Inicializamos y preparamos el fichero para su lectura. De hecho se lee el
+		//primer caracter del fichero de entrada
+		inicio(nombreFichero);
+		//Realizamos el escaneo del fichero
+		scan();
+		//Mostramos por pantalla los resultados
+		System.out.println("***********************************************************************");
+		System.out.println("*                           ANÁLISIS LÉXICO                           *");
+		System.out.println("***********************************************************************");
+		System.out.println();
+		System.out.println("Fichero de entrada: " + nombreFichero);
+		System.out.println();
+		System.out.println("Resultado");
+		System.out.println("---------");
+		System.out.println();
+		if (!errorLex)
+			System.out.println("El análisis ha sido satisfactorio." + "\n" +
+					"Fueron leidas " + contPrograma + " líneas.");
+		else
+			System.out.println("Ocurrierron fallos durante el análisis:" + "\n" +
+					descripError);
+		System.out.println();
+		System.out.println("Detalle de los tokens reconocidos");
+		System.out.println("---------------------------------");
+		System.out.println();
+		for (int i = 0; i < tokensOut.size(); i++)
+			if (tokensOut.get(i).getTipoToken() == tToken.puntoyComa ||
+					tokensOut.get(i).getTipoToken() == tToken.separador) {
+				if (tokensOut.get(i).getTipoToken() == tToken.separador)
+					System.out.println();
+				System.out.print(tokensOut.get(i).getTipoToken().toString());
+				System.out.println();
+			}
+			else {
+				if (tokensOut.get(i).getLexema() == null)
+					System.out.print("{" + tokensOut.get(i).getTipoToken().toString() + "} ");
+				else
+					System.out.print("{" + tokensOut.get(i).getTipoToken().toString() + ", " +
+						tokensOut.get(i).getLexema() + "} ");
+			}
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
+		return !errorLex;
+	}
+	
 	/**
 	 * @param args
 	 */
@@ -718,9 +772,10 @@ public class ALexico {
 		
 		ALexico scanner = new ALexico();
 		
-		scanner.inicio(nombreFichero);
+		scanner.scanFichero(nombreFichero);
+		/*scanner.inicio(nombreFichero);
 		
-		scanner.scanner();
+		scanner.scan();
 		
 		System.out.println("Lineas: " + scanner.contPrograma);
 		
@@ -738,7 +793,7 @@ public class ALexico {
 				else
 					System.out.print("{" + scanner.tokensOut.get(i).getTipoToken().toString() + ", " +
 						scanner.tokensOut.get(i).getLexema() + "} ");
-			}
+			}*/
 
 //		int a = 1e1;
 //		double x = 50 + 00.00;
@@ -765,7 +820,7 @@ public class ALexico {
 //		System.out.println(sX);
 //		System.out.println(x);
 //		System.out.println(numSX);
-		
+/*		
 		String _id = "id original";
 		String _tipo = "tipo original";
 		boolean _error = true;
@@ -774,14 +829,14 @@ public class ALexico {
 		scanner.dec(_id, _tipo, _error, _dir);
 		
 		System.out.println();
-		System.out.println(_id +" "+ _tipo +" "+ _error +" "+ _dir);
+		System.out.println(_id +" "+ _tipo +" "+ _error +" "+ _dir);*/
 	}
 
-	//Prueba de la i/o en Java
+	/*//Prueba de la i/o en Java
 	public void dec(String id, String tipo, boolean error, int dir) {
 		id = " id cambiado";
 		tipo = "tipo cambiado";
 		error = false;
 		dir = 2;
-	}
+	}*/
 }
