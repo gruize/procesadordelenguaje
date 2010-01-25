@@ -27,4 +27,9 @@ public class MyChar extends StackObject{
 		value = (char)i.intValue();
 		return this;
 	}
+	@Override
+	public byte type() {
+		return MY_CHAR;
+	}
+
 }

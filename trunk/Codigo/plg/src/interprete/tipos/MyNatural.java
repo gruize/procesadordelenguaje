@@ -27,5 +27,10 @@ public class MyNatural extends StackObject{
 		value = util.Utils.toInt(bytes, pos);
 		return this;
 	}
+	@Override
+	public byte type() {
+		return MY_NATURAL;
+	}
+
 
 }
