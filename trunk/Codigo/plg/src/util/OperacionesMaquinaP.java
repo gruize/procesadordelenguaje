@@ -1,12 +1,12 @@
 package util;
 
 public enum OperacionesMaquinaP {
-	MENOR,
+	MENOR, // Se pueden comparar todos los numeros en general y ademas caracteres entre ellos
 	MAYOR,
 	MENORIGUAL,
 	MAYORIGUAL,
-	DISTINTO,
-	SUMA,
+	DISTINTO, // Se pueden mirar si dos boolean son iguales
+	SUMA, // se pueden operar entre numeros el resultado es siempre el tipo de menos nivel de la operacion
 	RESTA,
 	MULTIPLICACION,
 	DIVISION,
