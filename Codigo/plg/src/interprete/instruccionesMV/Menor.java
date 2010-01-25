@@ -139,6 +139,9 @@ public class Menor extends InstruccionMaquinaP{
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.MENOR){
+			return null;
+		}
 		return this;
 	}
 

@@ -146,6 +146,9 @@ public class Division extends InstruccionMaquinaP{
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.DIVISION){
+			return null;
+		}
 		return this;
 	}
 }

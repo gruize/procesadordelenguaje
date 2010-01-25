@@ -71,6 +71,10 @@ public class CastChar extends InstruccionMaquinaP{
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.CASTCHAR){
+			return null;
+		}
 		return this;
 	}
+
 }

@@ -91,6 +91,9 @@ public class Modulo extends InstruccionMaquinaP {
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.MODULO){
+			return null;
+		}
 		return this;
 	}
 }

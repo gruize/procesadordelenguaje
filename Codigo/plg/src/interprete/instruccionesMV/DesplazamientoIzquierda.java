@@ -91,6 +91,9 @@ public class DesplazamientoIzquierda extends InstruccionMaquinaP {
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.DESPLAZAMIENTOIZQUIERDA){
+			return null;
+		}
 		return this;
-	}
+	}	
 }

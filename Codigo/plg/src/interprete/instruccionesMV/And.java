@@ -61,6 +61,9 @@ public class And extends InstruccionMaquinaP {
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.YLOGICO){
+			return null;
+		}
 		return this;
 	}
 }
