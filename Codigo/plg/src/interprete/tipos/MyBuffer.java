@@ -25,5 +25,10 @@ public class MyBuffer extends StackObject{
 	public StackObject fromBytes(byte[] bytes, int pos){
 		return this;
 	}
+	@Override
+	public byte type() {
+		return MY_BUFFER;
+	}
+
 
 }

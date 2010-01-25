@@ -28,6 +28,11 @@ public class MyFloat extends StackObject{
 		value = util.Utils.toFloat(bytes, pos);
 		return this;
 	}
+	@Override
+	public byte type() {
+		return MY_FLOAT;
+	}
+
 
 
 	

@@ -40,5 +40,9 @@ public class MyBoolean extends StackObject{
 		}
 		return null;
 	}
+	@Override
+	public byte type() {
+		return MY_BOOLEAN;
+	}
 	
 }

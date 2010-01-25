@@ -56,6 +56,11 @@ public class MyExecutionError extends StackObject {
 	public byte[] toBytes() {
 		return null;
 	}
+	@Override
+	public byte type() {
+		return MY_EXECUTIONERROR;
+	}
+
 	
 
 }
