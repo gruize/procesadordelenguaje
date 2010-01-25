@@ -4,3 +4,4 @@ centimos: float;
 cadena: character;
 numero: natural
 &
+in(cantidad);
