@@ -1,0 +1,47 @@
+x:= a - b;
+
+x := -x - -y;
+
+x := x + y;
+&
+x := x + y;
+x := x * y;
+x := (x) – y;
+
+cantidad: float;
+euros: integer;
+centimos: float
+&
+in(cantidad);
+euros := (int)cantidad;
+centimos := cantidad – euros;
+out(euros);
+out('.');
+out(centimos);
+out((char)10)  # Código ASCII del salto de línea
+
+
+
+# Programa de ejemplo
+
+y: natural;
+x: float;
+
+
+cantidad: float;
+euros: integer;
+centimos: float
+&
+in(cantidad);
+euros := (int)cantidad;
+centimos := cantidad – euros;
+out(euros);
+out('.');
+out(centimos);
+out((char)10)  # Código ASCII del salto de línea
+
+
+ 	
+k K 0 7 :
+
+---------------------

@@ -23,4 +23,12 @@ public class TS {
 		else
 			return false;
 	}
+
+	public Hashtable<String, ObjTS> getTabla() {
+		return tabla;
+	}
+
+	public void setTabla(Hashtable<String, ObjTS> tabla) {
+		this.tabla = tabla;
+	}
 }

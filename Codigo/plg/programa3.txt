@@ -1,0 +1,6 @@
+cantidad: float;
+euros: integer;
+centimos: float;
+cadena: character;
+numero: natural
+&
