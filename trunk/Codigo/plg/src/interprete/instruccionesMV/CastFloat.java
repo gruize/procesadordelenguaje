@@ -67,6 +67,9 @@ public class CastFloat extends InstruccionMaquinaP{
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.CASTFLOAT){
+			return null;
+		}
 		return this;
 	}
 	

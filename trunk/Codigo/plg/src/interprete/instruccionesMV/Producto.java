@@ -140,11 +140,14 @@ public class Producto extends InstruccionMaquinaP{
 	@Override
 	public byte[] toBytes() {
 		byte[] bytes = new byte[size()];
-		bytes[0] = InstruccionMaquinaP.MULTIPLICACION;
+		bytes[0] = InstruccionMaquinaP.PRODUCTO;
 		return bytes;
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.PRODUCTO){
+			return null;
+		}
 		return this;
 	}
 }

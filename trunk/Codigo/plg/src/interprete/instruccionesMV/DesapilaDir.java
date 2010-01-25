@@ -9,12 +9,19 @@ import java.util.Stack;
 import util.Memoria;
 
 public class DesapilaDir extends InstruccionMaquinaP{
-	private int dir;
+	private Integer dir;
+	public DesapilaDir(){
+		dir = null;
+	}
 	public DesapilaDir(int dir){
 		this.dir = dir;
 	}
 	public boolean exec(Stack<StackObject> p, Memoria m) {
 		// TODO Auto-generated method stub
+		if (dir == null){
+			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Null direction"));
+			return false;
+		}
 		StackObject o1 = m.getPosicion(dir);
 		StackObject o2 = p.pop();
 //		if (o2.getClass().getCanonicalName().equals(o1.getClass().getCanonicalName()))
@@ -25,6 +32,8 @@ public class DesapilaDir extends InstruccionMaquinaP{
 	}
 	@Override
 	public int size(){
+		if (dir == null)
+			return 1;
 		MyNatural n = new MyNatural();
 		return 1+n.size();
 		
@@ -32,12 +41,23 @@ public class DesapilaDir extends InstruccionMaquinaP{
 	@Override
 	public byte[] toBytes() {
 		byte[] bytes = new byte[size()];
-		MyNatural n = new MyNatural();
-		n.setValue(dir);
 		int pos = 0;
 		bytes[pos++] = InstruccionMaquinaP.DESAPILA_DIR;
+		if (dir == null)
+			return bytes;
+		MyNatural n = new MyNatural();
+		n.setValue(dir);
+		
 		System.arraycopy(n.toBytes(), 0,bytes, pos, n.size());
-		return null;
+		return bytes;
+	}
+	@Override
+	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.DESAPILA_DIR){
+			return null;
+		}
+		dir = (Integer)new MyNatural().fromBytes(bytes, pos).getValue();
+		return this;
 	}
 
 }

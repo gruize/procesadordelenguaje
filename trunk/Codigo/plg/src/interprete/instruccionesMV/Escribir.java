@@ -32,6 +32,9 @@ public class Escribir extends InstruccionMaquinaP {
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.ESCRIBIR){
+			return null;
+		}
 		return this;
 	}
 

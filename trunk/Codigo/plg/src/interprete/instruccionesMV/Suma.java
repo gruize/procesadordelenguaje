@@ -146,6 +146,8 @@ public class Suma extends InstruccionMaquinaP{
 	}
 	@Override
 	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.SUMA){
+			return null;
+		}
 		return this;
-	}
-}
+	}}
