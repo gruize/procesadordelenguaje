@@ -7,12 +7,12 @@ public class ASintactico {
 	
 //	private ALexico scanner;
 	private TS ts;
-	//Elemento de preanï¿½lisis
+	//Elemento de preanálisis
 	private Token tokActual;
 	private Vector<Token> tokensIn;
 	private int contTokens;
-	//En principio harï¿½ un Vector de instrucciones de mï¿½quina a pila como salida
-	//del analizador sintï¿½ctico. Se puede cambiar a salida a fichero
+	//En principio haré un Vector de instrucciones de máquina a pila como salida
+	//del analizador sintáctico. Se puede cambiar a salida a fichero
 	private Vector<String> instMPOut;
 	private boolean errorProg;
 	
@@ -36,25 +36,88 @@ public class ASintactico {
 	}*/
 	
 	public Token consume(){
-		Token tokDevolver = tokensIn.get(contTokens);
-		contTokens++;
-		tokActual = tokensIn.get(contTokens);
-		return tokDevolver;
+//		if (esTokenId(tokActual) || esTokenTipo(tokActual)) {
+			Token tokDevolver = tokensIn.get(contTokens);
+			contTokens++;
+			tokActual = tokensIn.get(contTokens);
+			return tokDevolver;
+//		}
+//		else {
+//			System.out.println("Error: Se esperaba un identificador o un tipo. ");
+////					" o un tipo'" + '\n' +)
+////					tokenEsperado.toString() + "'.");
+////¿Esto sería una buena forma de abortar la ejecución?
+//			errorProg = true;
+//			emite("stop");
+//			return new Token();
+//		}
+	}
+	
+	public Token consumeId(){
+		if (esTokenId(tokActual)) {
+			Token tokDevolver = tokensIn.get(contTokens);
+			contTokens++;
+			tokActual = tokensIn.get(contTokens);
+			return tokDevolver;
+		}
+		else {
+			System.out.println("Error: Se esperaba un token de tipo 'identificador'.\n" +
+					"Token en preanálisis: " + tokActual.getTipoToken() + "\n");
+////¿Esto sería una buena forma de abortar la ejecución?
+			errorProg = true;
+			emite("stop");
+			return new Token(tToken.tokenError, "Se esperaba un token de tipo 'identificador'.");
+		}
+	}
+	
+	public Token consumeTipo(){
+		if (esTokenTipo(tokActual)) {
+			Token tokDevolver = tokensIn.get(contTokens);
+			contTokens++;
+			tokActual = tokensIn.get(contTokens);
+			return tokDevolver;
+		}
+		else {
+			System.out.println("Error: Se esperaba un token de tipo 'tipoDeVariable'.\n" +
+					"Token en preanálisis: " + tokActual.getTipoToken() + "\n");
+////¿Esto sería una buena forma de abortar la ejecución?
+			errorProg = true;
+			emite("stop");
+			return new Token(tToken.tokenError, "Se esperaba un token de tipo 'tipoDeVariable'.");
+		}
+	}
+	
+	public boolean esTokenTipo(Token t) {
+		if (t.getTipoToken() == tToken.tipoVarBooleano ||
+				t.getTipoToken() == tToken.tipoVarCadCaracteres ||
+				t.getTipoToken() == tToken.tipoVarNatural ||
+				t.getTipoToken() == tToken.tipoVarEntero ||
+				t.getTipoToken() == tToken.tipoVarReal)
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean esTokenId(Token t) {
+		if (t.getTipoToken() == tToken.identificador)
+			return true;
+		else
+			return false;
 	}
 	
 	public void consume(tToken tokenEsperado){
 		Token tokConsumido = tokensIn.get(contTokens);
 		if (tokConsumido.getTipoToken() == tokenEsperado) {
-//Todavï¿½a no se si poner esto alante o atras del if. Como viene en la memoria
-//creo que serï¿½ alante
+//Todavía no se si poner esto alante o atras del if. Como viene en la memoria
+//creo que será alante
 //			tokActual = tokensIn.get(contTokens);
 			contTokens++;
 			tokActual = tokensIn.get(contTokens);
 		}
 		else {
 			System.out.println("Error: Se esperaba token de tipo '" + 
-					tokenEsperado.toString() + "'.");
-//ï¿½Esto serï¿½a una buena forma de abortar la ejecuciï¿½n?
+					tokenEsperado.toString() + "'." + "\n");
+//¿Esto sería una buena forma de abortar la ejecución?
 			errorProg = true;
 			emite("stop");
 		}
@@ -64,19 +127,19 @@ public class ASintactico {
 		instMPOut.clear();
 	}
 	
-	//Hay que hacer un mï¿½todo que obtenga el array de tokens de entrada
+	//Hay que hacer un método que obtenga el array de tokens de entrada
 	//y que inicialice el tokenActual, con el primer elemento del array
 	//teniendo que cuenta que hay que incrementar el contador de tokens
-	//despuï¿½s de asignar el token actual
+	//después de asignar el token actual
 	public void parse() {
-		//Variables para recorrer la tabla de sï¿½mbolos
+		//Variables para recorrer la tabla de símbolos
 		String id = new String();
 		Enumeration<String> e;
 //		tokActual = tokensIn.firstElement();
 //		contTokens++;
 		
 		System.out.println("***********************************************************************");
-		System.out.println("*                        ANï¿½LISIS SINTï¿½CTICO                          *");
+		System.out.println("*                        ANÁLISIS SINTÁCTICO                          *");
 		System.out.println("***********************************************************************");
 		System.out.println();
 		
@@ -84,24 +147,33 @@ public class ASintactico {
 		
 		System.out.println();
 		System.out.println();
-		System.out.println("Tabla de Sï¿½mbolos");
-		System.out.println("-----------------");
-		System.out.println();
-		//Mostramos la informaciï¿½n de la tabla de sï¿½mbolos		
-		e = ts.getTabla().keys();
-		while (e.hasMoreElements()) {
-			id = e.nextElement();
-			if (ts.getTabla().get(id).getTipo().equals("tipoVarCadCaracteres"))
-				System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo() + "\tDirecciï¿½n: " +
-						ts.getTabla().get(id).getDirM());
-			else
-				System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo() + "\t\tDirecciï¿½n: " +
-						ts.getTabla().get(id).getDirM());
-		}
+		
 		if (errorProg) {
+			System.out.println("Análisis fallido.");
+		}
+		else {
+			System.out.println("Tabla de Símbolos");
+			System.out.println("-----------------");
+			System.out.println();
+			//Mostramos la información de la tabla de símbolos		
+			e = ts.getTabla().keys();
+			while (e.hasMoreElements()) {
+				id = e.nextElement();
+				if (ts.getTabla().get(id).getTipo().equals("tipoVarCadCaracteres"))
+					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo() + "\tDirección: " +
+							ts.getTabla().get(id).getDirM());
+				else
+					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo() + "\t\tDirección: " +
+							ts.getTabla().get(id).getDirM());
+			}
 			System.out.println();
 			System.out.println();
-			System.out.println("Error en el anï¿½lisis.");
+			System.out.println("El análisis ha sido satisfactorio.");
+			System.out.println();
+			System.out.println("Instrucciones para la máquina a pila generadas");
+			System.out.println("----------------------------------------------");
+			for (int i = 0; i < instMPOut.size(); i++)
+				System.out.println(instMPOut.get(i));
 		}
 	}
 
@@ -118,12 +190,15 @@ public class ASintactico {
 		errorDec = decs();
 		consume(tToken.separador);
 		errorSent = sents();
+		//La linea de abajo habría que cambiarla por esta:
+		//errorProg = errorDec || errorSent;
 		errorProg = errorProg || errorDec || errorSent;
+		
 		emite("stop");
 	}
 	
 	public boolean decs(){
-		//Declaraciï¿½n de las variables necesarias
+		//Declaración de las variables necesarias
 		ParBooleanInt errorDec1_dir = new ParBooleanInt();
 		ParString id_tipo = new ParString();
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -151,7 +226,7 @@ public class ASintactico {
 		else
 			errorDec1_dir1 = rdecs2();
 		if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getStr1()))
-			return new ParBooleanInt(true, 0);
+			return new ParBooleanInt(true, -1);
 		else {
 			ts.anadeId(id_tipo.getStr1(), id_tipo.getStr2(), errorDec1_dir1.getIntVal());
 			return new ParBooleanInt(false, errorDec1_dir1.getIntVal() + 1);
@@ -160,20 +235,23 @@ public class ASintactico {
 	
 	//Devolvemos el par: (error = false, dir = 0)
 	public ParBooleanInt rdecs2() {
-		//La tabla se crea en el constructor, sino la crearï¿½amos aquï¿½
-		return new ParBooleanInt(false, 0);
+		//La tabla se crea en el constructor, sino la crearíamos aquí
+		if (errorProg)
+			return new ParBooleanInt(true, -1);
+		else
+			return new ParBooleanInt(false, 0);
 	}
 	
 	public ParString dec() {
 		ParString parOut = new ParString();
-		parOut.setStr1(consume().getLexema());
+		parOut.setStr1(consumeId().getLexema());
 		consume(tToken.dosPuntos);
-		parOut.setStr2(consume().getTipoToken().toString());
+		parOut.setStr2(consumeTipo().getTipoToken().toString());
 		return parOut;
 	}
 	
 	public boolean sents() {
-		//Declaraciï¿½n de las variables necesarias
+		//Declaración de las variables necesarias
 		boolean errorSent1, errorSent2 = false;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		errorSent1 = sent();
@@ -185,7 +263,7 @@ public class ASintactico {
 	}
 	
 	public boolean rsents1() {
-		//Declaraciï¿½n de las variables necesarias
+		//Declaración de las variables necesarias
 		boolean errorSent1, errorSent2 = false;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.puntoyComa);
@@ -198,52 +276,74 @@ public class ASintactico {
 	}
 	
 	public boolean rsents2() {
-		//Declaraciï¿½n de las variables necesarias
+		//Declaración de las variables necesarias
 		
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		return false;
+		if (errorProg)
+			return true;
+		else
+			return false;
 	}
 	
 	public boolean sent() {
-		//Declaraciï¿½n de las variables necesarias
-		boolean errorSent1 = false;
+		//Declaración de las variables necesarias
+		
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.entradaTeclado) {
-			errorSent1 = sread();
+			return sread();
 		}
 		if (tokActual.getTipoToken() == tToken.salidaPantalla) {
-			errorSent1 = swrite();
+			return swrite();
 		}
 		if (tokActual.getTipoToken() == tToken.asignacion) {
-			errorSent1 = sasign();
+			return sasign();
 		}
-		consume(tToken.puntoyComa);
-		return errorSent1;
+		//Añadimos control de errores
+		else {
+			errorProg = true;
+			System.out.println("Error: Se esperaba una de las siguientes instrucciones:\n" +
+					"	- Asignación			=>  ':='\n" +
+					"	- Entrada por teclado		=>  'in()'\n" +
+					"	- Salida por pantalla 'out()'	=>  'out()'\n\n" +
+					"Token en preanálisis: " + tokActual.getTipoToken() + "\n");
+			return true;
+		}
+//		consume(tToken.puntoyComa);
 	}
 	
 	public boolean swrite() {
-		//Declaraciï¿½n de las variables necesarias
+		//Declaración de las variables necesarias
 		tipoSint tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.salidaPantalla);
-		tipo = exp();
-		if (tipo == tipoSint.tError)
+		//Ahora en el token actual tenemos el parentesis de apertura
+		//si el análisis va bien, y luego el identificador correspondiente
+		if (tokActual.getTipoToken() == tToken.parApertura) {
+			tipo = exp();
+			if (tipo == tipoSint.tError)
+				vaciaCod();
+			else
+				emite("escribir");
+			consume(tToken.parCierre);
+			return (tipo == tipoSint.tError);
+		}
+		else {
+			errorProg = true;
 			vaciaCod();
-		else
-			emite("escribir");
-		consume(tToken.parCierre);
-		return (tipo == tipoSint.tError);
+			System.out.println("Error: Se esperaba paréntesis de apertura después de operación de entrada" + "\n" +
+					"por teclado.\n");
+			return true;
+		}
 	}
 	
 	public boolean sread() {
-		//Declaraciï¿½n de las variables necesarias
+		//Declaración de las variables necesarias
 		boolean errorSent = false;
 		String lexIden = new String();
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		
 		consume(tToken.entradaTeclado);
 		//Ahora en el token actual tenemos el parentesis de apertura
-		//si el anï¿½lisis va bien, y luego el identificador correspondiente
+		//si el análisis va bien, y luego el identificador correspondiente
 		if (tokActual.getTipoToken() == tToken.parApertura) {
 			consume(tToken.parApertura);
 			if (tokActual.getTipoToken() == tToken.identificador &&
@@ -255,35 +355,26 @@ public class ASintactico {
 			}
 			else {
 				errorSent = true;
+				errorProg = true;
 				vaciaCod();
-				System.out.println("Error: El parï¿½metro de la operaciï¿½n 'in' debe ser un identificador, o" + "\n" +
-						"el identificador no existe en la tabla de sï¿½mbolos.");
+				System.out.println("Error: El parámetro de la operación 'in' debe ser un identificador, o" + "\n" +
+						"el identificador no existe en la tabla de símbolos.\n");
 			}	
 		}
 		else {
 			errorSent = true;
+			errorProg = true;
 			vaciaCod();
-			System.out.println("Error: Se esperaba parï¿½ntesis de apertura despuï¿½s de operaciï¿½n de entrada" + "\n" +
-					"por teclado.");
+			System.out.println("Error: Se esperaba paréntesis de apertura después de operación de entrada" + "\n" +
+					"por teclado.\n");
 		}
-//		consume(ï¿½inï¿½) // in
-//		iden(out lexema)
-//		errorSent = not existeID(ts, lexema)
-//		si errorSent
-//		entonces
-//			vaciaCod()
-//		si no
-//			emit(leer)
-//			emit(desapila_dir(damePropiedadesTS(tsh, lexema).dirProp));
-//		fin si
-//		consume (ï¿½)ï¿½) // (
 		consume(tToken.parCierre);
 		return errorSent;
 	}
 	
 	public boolean sasign() {
 //		iden(out lexema)
-//		consume (ï¿½:=ï¿½)
+//		consume (‘:=’)
 //		EXP(out tipo)
 //		errorSent = (tipo = tError) or existeID(ts,lexema)) or 
 //			(not esCompatibleAsig?(dameTipoTS(ts, lexema)))
@@ -309,7 +400,7 @@ public class ASintactico {
 //		entonces 
 //			tipo = tError
 //		si no
-//			si token pertenece {; )} // fin de instrucciï¿½n
+//			si token pertenece {; )} // fin de instrucción
 //			entonces
 //				REXP_2();
 //				tipo = tipoH
@@ -339,6 +430,7 @@ public class ASintactico {
 		
 		if (scanner.scanFichero(nombreFichero)) {
 			parser.tokensIn = scanner.dameTokens();
+			parser.tokActual = parser.tokensIn.get(parser.contTokens);
 			parser.parse();
 		}
 	}
