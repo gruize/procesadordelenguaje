@@ -1,4 +1,4 @@
-package interprete.instrucciones;
+package interprete.instruccionesMV;
 
 import interprete.tipos.MyBuffer;
 import interprete.tipos.StackObject;
@@ -9,7 +9,7 @@ import java.util.Stack;
 
 import util.Memoria;
 
-public class Leer implements InstruccionMaquinaP{
+public class Leer extends InstruccionMaquinaP{
 
 
 	public boolean exec(Stack<StackObject> p, Memoria m) {
@@ -26,6 +26,20 @@ public class Leer implements InstruccionMaquinaP{
 			e.printStackTrace();
 		}
 		return true;
+	}
+	@Override
+	public int size(){
+		return 1;
+	}
+	@Override
+	public byte[] toBytes() {
+		byte[] bytes = new byte[size()];
+		bytes[0] = InstruccionMaquinaP.LEER;
+		return bytes;
+	}
+	@Override
+	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		return this;
 	}
 
 }

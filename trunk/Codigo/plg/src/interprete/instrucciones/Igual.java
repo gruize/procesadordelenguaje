@@ -1,4 +1,4 @@
-package interprete.instrucciones;
+package interprete.instruccionesMV;
 
 import interprete.tipos.MyBoolean;
 import interprete.tipos.MyBuffer;
@@ -13,7 +13,7 @@ import java.util.Stack;
 
 import util.Memoria;
 
-public class Igual implements InstruccionMaquinaP{
+public class Igual extends InstruccionMaquinaP{
 
 	public boolean exec(Stack<StackObject> p, Memoria m) {
 		if (p.size() < 2){
@@ -131,6 +131,20 @@ public class Igual implements InstruccionMaquinaP{
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
 		return false;
+	}
+	@Override
+	public int size(){
+		return 1;
+	}
+	@Override
+	public byte[] toBytes() {
+		byte[] bytes = new byte[1];
+		bytes[0] = InstruccionMaquinaP.IGUAL;
+		return bytes;
+	}
+	@Override
+	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		return this;
 	}
 
 }
