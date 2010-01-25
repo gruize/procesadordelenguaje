@@ -1,21 +1,23 @@
 package util;
 
+import interprete.tipos.StackObject;
+
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
 public class Memoria {
-	private Hashtable<Integer,Object> memoria;
+	private Hashtable<Integer,StackObject> memoria;
 	
 	public Memoria(){
-		memoria=new Hashtable<Integer,Object>();
+		memoria=new Hashtable<Integer,StackObject>();
 	}
 	
-	public void setPosicion(int pos,Object obj){
+	public void setPosicion(Integer pos,StackObject obj){
 		memoria.put(pos,obj);
 	}
 	
-	public Object getPosicion(int pos){
+	public StackObject getPosicion(Integer pos){
 		return memoria.get(pos);
 	}
 	
@@ -28,20 +30,7 @@ public class Memoria {
 	 * almacenado en la memoria.
 	 */
 	
-	public Integer getCima(){
-		Set<Integer> set = memoria.keySet();
-	    Iterator<Integer> itr = set.iterator();
-	    Integer inte;
-	    Integer max =0;
-	    while (itr.hasNext()) {
-	    	inte = itr.next();
-	    	if (inte > max )
-	    		max = inte;
-	    }
-	    return max;
-	}
-	
-	public int posicionMax(){
-		return 1000;
+	public Integer size(){
+		return memoria.size();
 	}
 }

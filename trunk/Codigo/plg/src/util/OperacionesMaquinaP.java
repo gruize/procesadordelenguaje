@@ -10,21 +10,21 @@ public enum OperacionesMaquinaP {
 	RESTA,
 	MULTIPLICACION,
 	DIVISION,
-	MODULO,
-	YLOGICO,
-	OLOGICO,
-	NOLOGICO,
-	SIGNO,
-	DESPLAZAMIENTOIZQUIERDA,
-	DESPLAZAMIENTODERECHA,
-	CASTNAT,
-	CASTINT,
-	CASTCHAR,
-	CASTFLOAT,
-	APILA,
-	APILA_DIR,
-	DESAPILA,
-	DESAPILA_DIR,
+	MODULO, // solo se puede hacer entre naturales y enteros. El resultado es siempre un natural
+	YLOGICO, // solo se puede hacer entre booleanos
+	OLOGICO, // "
+	NOLOGICO, // "
+	SIGNO, // se puede hacer entre enteros y floats
+	DESPLAZAMIENTOIZQUIERDA, // Solo se puede hacer entre enteros y naturales
+	DESPLAZAMIENTODERECHA,// Solo se puede hacer entre enteros y naturales
+	CASTNAT, // se puede hacen entre naturales, enteros, reales y caracteres
+	CASTINT,// se puede hacen entre naturales, enteros, reales y caracteres
+	CASTCHAR,// se puede hacen entre naturales, enteros, reales y caracteres
+	CASTFLOAT,// se puede hacen entre naturales, enteros, reales y caracteres
+	APILA, // Tiene un parametro que es un tipo de elemento
+	APILA_DIR, // Tiene un parametro que es la direccion
+	DESAPILA, // no Tiene parametro
+	DESAPILA_DIR, // Tiene un parametro que es una direccion
 	LEER,
 	ESCRIBIR
 }
