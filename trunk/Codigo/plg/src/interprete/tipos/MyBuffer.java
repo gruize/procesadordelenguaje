@@ -1,6 +1,6 @@
 package interprete.tipos;
 
-public class MyBuffer implements StackObject{
+public class MyBuffer extends StackObject{
 	private String value;
 
 	public Object getValue() {
@@ -13,6 +13,17 @@ public class MyBuffer implements StackObject{
 		if (value instanceof MyChar){
 			this.value = (String)((MyBuffer)value).getValue();
 		}
+	}
+	public int size() {
+		return 0;
+	}
+	@Override
+	public byte[] toBytes() {
+		return null;
+	}
+	@Override 
+	public StackObject fromBytes(byte[] bytes, int pos){
+		return this;
 	}
 
 }
