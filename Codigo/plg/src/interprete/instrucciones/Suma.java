@@ -1,4 +1,4 @@
-package interprete.instrucciones;
+package interprete.instruccionesMV;
 
 import interprete.tipos.MyBoolean;
 import interprete.tipos.MyBuffer;
@@ -13,7 +13,7 @@ import java.util.Stack;
 
 import util.Memoria;
 
-public class Suma implements InstruccionMaquinaP{
+public class Suma extends InstruccionMaquinaP{
 
 	public boolean exec(Stack<StackObject> p, Memoria m) {
 		if (p.size() < 2){
@@ -76,11 +76,11 @@ public class Suma implements InstruccionMaquinaP{
 		 */
 		if (o1 instanceof MyInteger){
 			if (o2 instanceof MyFloat){
-				MyInteger i = new MyInteger();
+				MyFloat f = new MyFloat();
 				Integer i1 = (Integer)o1.getValue();
 				Float f2 = (Float)o2.getValue();
-				i.setValue(i1+f2);
-				p.push(i);
+				f.setValue(i1+f2);
+				p.push(f);
 
 				return true;
 			}
@@ -107,19 +107,19 @@ public class Suma implements InstruccionMaquinaP{
 		 */
 		if (o1 instanceof MyNatural){
 			if (o2 instanceof MyFloat){
-				MyInteger n = new MyInteger();
+				MyFloat f = new MyFloat();
 				Integer n1 = (Integer)o1.getValue();
 				Float f2 = (Float)o2.getValue();
-				n.setValue(n1+f2);
-				p.push(n);
+				f.setValue(n1+f2);
+				p.push(f);
 				return true;
 			}
 			if (o2 instanceof MyInteger){
-				MyInteger n = new MyInteger();
+				MyInteger i = new MyInteger();
 				Integer n1 = (Integer)o1.getValue();
-				Integer n2 = (Integer)o2.getValue();
-				n.setValue(n1+n2);
-				p.push(n);
+				Integer i2 = (Integer)o2.getValue();
+				i.setValue(n1+i2);
+				p.push(i);
 				return true;
 			}
 			if (o2 instanceof MyNatural){
@@ -133,5 +133,19 @@ public class Suma implements InstruccionMaquinaP{
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
 		return false;	
+	}
+	@Override
+	public int size(){
+		return 1;
+	}
+	@Override
+	public byte[] toBytes() {
+		byte[] bytes = new byte[size()];
+		bytes[0] = InstruccionMaquinaP.SUMA;
+		return bytes;
+	}
+	@Override
+	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		return this;
 	}
 }

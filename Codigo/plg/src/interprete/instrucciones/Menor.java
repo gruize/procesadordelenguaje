@@ -1,4 +1,4 @@
-package interprete.instrucciones;
+package interprete.instruccionesMV;
 
 import interprete.tipos.MyBoolean;
 import interprete.tipos.MyBuffer;
@@ -13,7 +13,7 @@ import java.util.Stack;
 
 import util.Memoria;
 
-public class Menor implements InstruccionMaquinaP{
+public class Menor extends InstruccionMaquinaP{
 
 
 
@@ -126,6 +126,20 @@ public class Menor implements InstruccionMaquinaP{
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
 		return false;
+	}
+	@Override
+	public int size(){
+		return 1;
+	}
+	@Override
+	public byte[] toBytes() {
+		byte[] bytes = new byte[size()];
+		bytes[0] = InstruccionMaquinaP.MENOR;
+		return bytes;
+	}
+	@Override
+	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		return this;
 	}
 
 }

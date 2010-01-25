@@ -1,4 +1,4 @@
-package interprete.instrucciones;
+package interprete.instruccionesMV;
 
 import interprete.tipos.MyBoolean;
 import interprete.tipos.MyBuffer;
@@ -13,7 +13,7 @@ import java.util.Stack;
 
 import util.Memoria;
 
-public class Mayor implements InstruccionMaquinaP {
+public class Mayor extends InstruccionMaquinaP {
 
 
 	public boolean exec(Stack<StackObject> p, Memoria m) {
@@ -124,6 +124,20 @@ public class Mayor implements InstruccionMaquinaP {
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
 		return false;
+	}
+	@Override
+	public int size(){
+		return 1;
+	}
+	@Override
+	public byte[] toBytes() {
+		byte[] bytes = new byte[size()];
+		bytes[0] = InstruccionMaquinaP.MAYOR;
+		return bytes;
+	}
+	@Override
+	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+		return this;
 	}
 
 }
