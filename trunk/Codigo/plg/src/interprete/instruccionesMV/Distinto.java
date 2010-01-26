@@ -13,7 +13,7 @@ import java.util.Stack;
 
 import util.Memoria;
 
-public class Igual extends InstruccionMaquinaP{
+public class Distinto extends InstruccionMaquinaP{
 
 	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		counter++;
@@ -35,7 +35,7 @@ public class Igual extends InstruccionMaquinaP{
 			if (o2 instanceof MyBoolean){
 				Boolean b1 = (Boolean)o1.getValue();
 				Boolean b2 = (Boolean)o2.getValue();
-				e.setValue(b1.compareTo(b2));
+				e.setValue(!b1.equals(b2) );
 				p.push(e);
 				return true;
 			}
@@ -45,7 +45,7 @@ public class Igual extends InstruccionMaquinaP{
 				
 				Character c1 = (Character)o1.getValue();
 				Character c2 = (Character)o2.getValue();
-				e.setValue(c1.compareTo(c2) == 0);
+				e.setValue(c1.compareTo(c2) != 0);
 				p.push(e);
 				return true;
 			}
@@ -56,14 +56,14 @@ public class Igual extends InstruccionMaquinaP{
 			if (o2 instanceof MyFloat){
 				Float v1 = (Float)o1.getValue();
 				Float v2 = (Float)o2.getValue();
-				e.setValue(v1.compareTo(v2) == 0);
+				e.setValue(v1.compareTo(v2) != 0);
 				p.push(e);
 				return true;
 			}
 			if (o2 instanceof MyInteger){
 				Float v1 = (Float)o1.getValue();
 				Integer v2 = (Integer)o2.getValue();
-				e.setValue(v1.compareTo(new Float(v2)) == 0);
+				e.setValue(v1.compareTo(new Float(v2)) != 0);
 				p.push(e);
 
 				return true;
@@ -71,7 +71,7 @@ public class Igual extends InstruccionMaquinaP{
 			if (o2 instanceof MyNatural){
 				Float v1 = (Float)o1.getValue();
 				Integer v2 = (Integer)o2.getValue();
-				e.setValue(v1.compareTo(new Float(v2)) == 0);
+				e.setValue(v1.compareTo(new Float(v2)) != 0);
 				p.push(e);
 				return true;
 			}
@@ -84,7 +84,7 @@ public class Igual extends InstruccionMaquinaP{
 			if (o2 instanceof MyFloat){
 				Integer v1 = (Integer)o1.getValue();
 				Float v2 = (Float)o2.getValue();
-				e.setValue(v1.compareTo(v2.intValue()) == 0);
+				e.setValue(v1.compareTo(v2.intValue()) != 0);
 				p.push(e);
 
 				return true;
@@ -92,14 +92,14 @@ public class Igual extends InstruccionMaquinaP{
 			if (o2 instanceof MyInteger){
 				Integer v1 = (Integer)o1.getValue();
 				Integer v2 = (Integer)o2.getValue();
-				e.setValue(v1.compareTo((v2)) == 0);
+				e.setValue(v1.compareTo((v2)) != 0);
 				p.push(e);
 				return true;
 			}
 			if (o2 instanceof MyNatural){
 				Integer v1 = (Integer)o1.getValue();
 				Integer v2 = (Integer)o2.getValue();
-				e.setValue(v1.compareTo((v2)) == 0);
+				e.setValue(v1.compareTo((v2)) != 0);
 				p.push(e);
 				return true;
 			}
@@ -140,17 +140,17 @@ public class Igual extends InstruccionMaquinaP{
 	@Override
 	public byte[] toBytes() {
 		byte[] bytes = new byte[1];
-		bytes[0] = InstruccionMaquinaP.IGUAL;
+		bytes[0] = InstruccionMaquinaP.DISTINTO;
 		return bytes;
 	}
-	public static Igual fromBytes(byte[] bytes, int pos){
-		if (bytes[pos++]!= InstruccionMaquinaP.IGUAL){
+	public static Distinto fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.DISTINTO){
 			return null;
 		}
-		return new Igual();
+		return new Distinto();
 	}
 	public String toString(){
-		return "Code="+InstruccionMaquinaP.IGUAL+". igual";
+		return "Code="+InstruccionMaquinaP.DISTINTO+". distinto";
 	}
 
 }
