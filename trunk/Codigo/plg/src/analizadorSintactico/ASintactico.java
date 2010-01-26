@@ -836,9 +836,7 @@ public class ASintactico {
 				if (esTipoNum(tipoEXPIzq) && esTipoNum(tipoEXPDer))
 					return dameTipoDom(tipoEXPIzq, tipoEXPDer);
 			}
-		
 		}
-		
 		if (esOp2(op)) {
 			switch (op) {
 			case yLogica:
@@ -850,7 +848,11 @@ public class ASintactico {
 				if (esTipoNum(tipoEXPIzq) && esTipoNum(tipoEXPDer))
 					return dameTipoDom(tipoEXPIzq, tipoEXPDer);
 			}
+		}
 		
+		if (esOp3(op)) {
+			if (tipoEXPIzq == tSintetiz.tNat && tipoEXPDer == tSintetiz.tNat )
+				return tSintetiz.tNat;
 		}
 		
 		return tSintetiz.tError;
@@ -944,6 +946,13 @@ public class ASintactico {
 			return false;
 	}
 	
+	public boolean esOp3(tOp op) {
+		if (op == tOp.despIzq || op == tOp.despDer)
+			return true;
+		else
+			return false;
+	}
+	
 	public boolean esOp41(tToken tokOp) {
 		if (tokOp == tToken.negArit || tokOp == tToken.negLogica || tokOp == tToken.castChar ||
 				tokOp == tToken.castFloat || tokOp == tToken.castInt || tokOp == tToken.castNat)
@@ -953,27 +962,101 @@ public class ASintactico {
 	}
 	
 	public tOp op0() {
-		
-		return tOp.igual;
+		switch (tokActual.getTipoToken()) {
+		case menor:
+			consume(tToken.menor);
+			return tOp.menor;
+		case menorIgual:
+			consume(tToken.menorIgual);
+			return tOp.menorIgual;
+		case mayor:
+			consume(tToken.mayor);
+			return tOp.mayor;
+		case mayorIgual:
+			consume(tToken.mayorIgual);
+			return tOp.mayorIgual;
+		case igual:
+			consume(tToken.igual);
+			return tOp.igual;
+		case distinto:
+			consume(tToken.distinto);
+			return tOp.distinto;	
+		default:
+			return tOp.error;
+		}
 	}
 	
 	public tOp op1() {
-		
-		return tOp.igual;
+		switch (tokActual.getTipoToken()) {
+		case suma:
+			consume(tToken.suma);
+			return tOp.suma;
+		case resta:
+			consume(tToken.resta);
+			return tOp.resta;
+		case oLogica:
+			consume(tToken.oLogica);
+			return tOp.oLogica;
+		default:
+			return tOp.error;
+		}
 	}
 	
 	public tOp op2() {
-		
-		return tOp.igual;
+		switch (tokActual.getTipoToken()) {
+		case multiplicacion:
+			consume(tToken.multiplicacion);
+			return tOp.multiplicacion;
+		case division:
+			consume(tToken.division);
+			return tOp.division;
+		case resto:
+			consume(tToken.resto);
+			return tOp.resto;
+		case yLogica:
+			consume(tToken.yLogica);
+			return tOp.yLogica;
+		default:
+			return tOp.error;
+		}
 	}
+	
 	public tOp op3() {
-		
-		return tOp.igual;
+		switch (tokActual.getTipoToken()) {
+		case despIzq:
+			consume(tToken.despIzq);
+			return tOp.despIzq;
+		case despDer:
+			consume(tToken.despDer);
+			return tOp.despDer;
+		default:
+			return tOp.error;
+		}
 	}
 	
 	public tOp op41() {
-		
-		return tOp.igual;
+		switch (tokActual.getTipoToken()) {
+		case negArit:
+			consume(tToken.negArit);
+			return tOp.negArit;
+		case negLogica:
+			consume(tToken.negLogica);
+			return tOp.negLogica;
+		case castChar:
+			consume(tToken.castChar);
+			return tOp.castChar;
+		case castNat:
+			consume(tToken.castNat);
+			return tOp.castNat;
+		case castInt:
+			consume(tToken.castInt);
+			return tOp.castInt;
+		case castFloat:
+			consume(tToken.castFloat);
+			return tOp.castFloat;
+		default:
+			return tOp.error;
+		}
 	}
 	
 //	public void rexp2() {
