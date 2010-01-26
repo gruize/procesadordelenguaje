@@ -149,6 +149,10 @@ public class Igual extends InstruccionMaquinaP{
 		}
 		return new Igual();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.IGUAL+". igual";
+	}
+
 }
 
 

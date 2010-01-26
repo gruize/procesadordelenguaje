@@ -37,5 +37,9 @@ public class Desapila extends InstruccionMaquinaP{
 		}
 		return new Desapila();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.DESAPILA+". desapila";
+	}
+
 
 }

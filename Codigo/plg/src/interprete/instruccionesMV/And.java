@@ -66,5 +66,8 @@ public class And extends InstruccionMaquinaP {
 		}
 		return new And();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.YLOGICO+".And";
+	}
 }
 

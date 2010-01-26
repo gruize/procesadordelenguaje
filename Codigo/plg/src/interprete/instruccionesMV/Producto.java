@@ -136,5 +136,9 @@ public class Producto extends InstruccionMaquinaP{
 		}
 		return new Producto();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.PRODUCTO+". producto";
+	}
+
 }
 

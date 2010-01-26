@@ -39,5 +39,8 @@ public class MyChar extends StackObject{
 		value = sBuffer.charAt(0);
 		return true;
 	}
+	public String toString(){
+		return "MyChar:"+value;
+	}
 
 }

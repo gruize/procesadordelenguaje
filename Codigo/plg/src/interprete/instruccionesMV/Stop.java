@@ -31,5 +31,9 @@ public class Stop extends InstruccionMaquinaP{
 		}
 		return new Stop();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.STOP+". stop";
+	}
+
 
 }

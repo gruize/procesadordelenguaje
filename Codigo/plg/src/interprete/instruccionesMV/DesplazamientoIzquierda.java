@@ -51,4 +51,8 @@ public class DesplazamientoIzquierda extends InstruccionMaquinaP {
 		}
 		return new DesplazamientoIzquierda();
 	}	
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.DESPLAZAMIENTOIZQUIERDA+". desplazamiento izquierdas";
+	}
+
 }

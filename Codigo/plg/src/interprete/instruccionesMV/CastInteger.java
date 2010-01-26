@@ -75,5 +75,9 @@ public class CastInteger extends InstruccionMaquinaP{
 		}
 		return new CastInteger();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.CASTINT+". (int)";
+	}
+
 }
 

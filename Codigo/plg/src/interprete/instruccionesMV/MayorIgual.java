@@ -142,6 +142,10 @@ public class MayorIgual extends InstruccionMaquinaP{
 		}
 		return new MayorIgual();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.MAYORIGUAL+". mayor o igual";
+	}
+
 
 }
 

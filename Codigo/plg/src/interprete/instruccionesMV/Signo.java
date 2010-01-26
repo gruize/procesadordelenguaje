@@ -67,5 +67,9 @@ public class Signo extends InstruccionMaquinaP{
 		}
 		return new Signo();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.SIGNO+". cambio de signo";
+	}
+
 }
 

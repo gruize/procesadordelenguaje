@@ -84,6 +84,11 @@ public class Apila extends InstruccionMaquinaP{
 		}
 		
 	}
+	@Override
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.APILA+". Apila";
+	}
+
 
 	
 }

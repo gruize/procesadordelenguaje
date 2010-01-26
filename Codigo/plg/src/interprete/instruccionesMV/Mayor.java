@@ -142,5 +142,9 @@ public class Mayor extends InstruccionMaquinaP {
 		}
 		return new Mayor();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.MAYOR+". mayor";
+	}
+
 
 }

@@ -73,5 +73,9 @@ public class CastFloat extends InstruccionMaquinaP{
 		}
 		return new CastFloat();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.CASTFLOAT+". (float)";
+	}
+
 	
 }

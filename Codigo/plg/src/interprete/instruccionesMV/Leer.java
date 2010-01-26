@@ -45,5 +45,9 @@ public class Leer extends InstruccionMaquinaP{
 		}
 		return new Leer();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.LEER+". leer";
+	}
+
 
 }

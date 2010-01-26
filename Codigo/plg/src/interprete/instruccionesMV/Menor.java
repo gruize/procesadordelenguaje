@@ -145,5 +145,9 @@ public class Menor extends InstruccionMaquinaP{
 		}
 		return new Menor();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.MENOR+". menor";
+	}
+
 
 }

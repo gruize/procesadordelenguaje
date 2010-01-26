@@ -77,5 +77,9 @@ public class CastChar extends InstruccionMaquinaP{
 		}
 		return new CastChar();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.CASTCHAR+". (Char)";
+	}
+
 
 }

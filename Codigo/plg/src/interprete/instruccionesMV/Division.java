@@ -139,4 +139,8 @@ public class Division extends InstruccionMaquinaP{
 		}
 		return new Division();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.DIVISION+". division";
+	}
+
 }

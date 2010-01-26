@@ -61,4 +61,9 @@ public class Not extends InstruccionMaquinaP {
 			return null;
 		}
 		return new Not();
-	}}
+	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.NOLOGICO+". not";
+	}
+
+}
