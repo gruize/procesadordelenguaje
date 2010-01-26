@@ -503,7 +503,7 @@ public class ASintactico {
 		if (tipo == tSintetiz.tError) {
 			errorProg = true;
 			vaciaCod();
-			System.out.println("Error de tipos en operación de igualdad.\n");
+			System.out.println("Error de tipos en operación de igualdad: '"+ op.toString() +"'.\n");
 			return tSintetiz.tError;
 		}
 		else {
@@ -538,7 +538,7 @@ public class ASintactico {
 	
 	public tSintetiz rexp11(tSintetiz tipoH) {
 		//Declaración de las variables necesarias
-		tSintetiz tipo, tipo1, tipo2, tipoH1;
+		tSintetiz tipo1, tipo2, tipoH1;
 		tOp op;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//Necesitamos obtener el operador concreto
@@ -551,60 +551,271 @@ public class ASintactico {
 		}
 		else {
 			tipo2 = rexp11(tipoH1);
-			tipo = tipo2;
-			if (tipo == tSintetiz.tError) {
+//			tipo = tipo2;
+			if (tipo2 == tSintetiz.tError) {
 				errorProg = true;
 				vaciaCod();
-				System.out.println("Error de tipos en operación de adición o 'o lógica'.\n");
+				System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
 				return tSintetiz.tError;
 			}
 			else {
 				emite(op.toString());
-				return tipo;
+				return tipo2;
 			}
 		}
 	}
 	
 	public tSintetiz exp2() {
 		//Declaración de las variables necesarias
-		tSintetiz tipo1, tipo2, tipoH = tSintetiz.tError;
+		tSintetiz tipo1, tipo2, tipoH;
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		//LLamada a epx2()
-//		tipo1 = exp3();
-//		tipoH = tipo1;
-//		if (tokActual.getTipoToken() == tToken.puntoyComa) {// Hemos llegado al fin de la instrucción
-////			rexp12();
-//			return tipo1;
-//		}
-//		else {
-//			tipo2 = rexp11(tipoH);
-//			if (tipo1 == tSintetiz.tError || tipo2 == tSintetiz.tError) {
-//				errorProg = true;
-//				vaciaCod();
-//				System.out.println("Error en expresión. Categoría sintáctica afectada: (REXP1_1).\n");
-//				return tSintetiz.tError;
-//			}
-//			else
-//				return tipo2;
-//		}
-		
-		return tSintetiz.tError;
-//		EXP3 (out tipo1)
-//		si token pertenece {; )} // fin de instrucción
-//		entoces
-//			REXP2_2()
-//			tipo = tipo1
-//		si no
-//			REXP2_1(in tipoH, out tipo2)
-//			si tipo1 = tError or tipo2 = tError
-//			entonces
-//				tipo = tError
-//				vaciaCod()
-//			si no
-//				tipo = tipo2
-//			fin si
-//		fin si
-
+		//LLamada a epx3()
+		tipo1 = exp3();
+		tipoH = tipo1;
+		if (tokActual.getTipoToken() == tToken.puntoyComa) {// Hemos llegado al fin de la instrucción
+//			rexp22();
+			return tipo1;
+		}
+		else {
+			tipo2 = rexp21(tipoH);
+			if (tipo1 == tSintetiz.tError || tipo2 == tSintetiz.tError) {
+				errorProg = true;
+				vaciaCod();
+				System.out.println("Error en expresión. Categoría sintáctica afectada: (REXP2_1).\n");
+				return tSintetiz.tError;
+			}
+			else
+				return tipo2;
+		}
+	}
+	
+	public tSintetiz rexp21(tSintetiz tipoH) {
+		//Declaración de las variables necesarias
+		tSintetiz tipo1, tipo2, tipoH1;
+		tOp op;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//Necesitamos obtener el operador concreto
+		op = op2();
+		tipo1 = exp3();
+		tipoH1 = dameTipo(tipoH,tipo1,op);
+		if (tokActual.getTipoToken() == tToken.puntoyComa) {// Hemos llegado al fin de la instrucción
+//			rexp22();
+			return tipoH1;
+		}
+		else {
+			tipo2 = rexp21(tipoH1);
+//			tipo = tipo2;
+			if (tipo2 == tSintetiz.tError) {
+				errorProg = true;
+				vaciaCod();
+				System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
+				return tSintetiz.tError;
+			}
+			else {
+				emite(op.toString());
+				return tipo2;
+			}
+		}
+	}
+	
+	public tSintetiz exp3() {
+		//Declaración de las variables necesarias
+		tSintetiz tipo1, tipo2, tipoH;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		if (tokActual.getTipoToken() == tToken.opVAbs)
+			tipo1 = exp42();
+		if (esOp41(tokActual.getTipoToken()))
+			tipo1 = exp43();
+		else
+			tipo1 = exp41();
+		tipoH = tipo1;
+		if (tipoH == tSintetiz.tError) {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error en expresión. Categoría sintáctica afectada: (EXP4_1), (EXP4_2) o (EXP4_3).\n");
+			return tSintetiz.tError;
+		}
+		else {
+			//Aquí es donde venía esta signación => 'tipoH = tipo1;' Se opta por poner arriba
+			if (tokActual.getTipoToken() == tToken.puntoyComa) {// Hemos llegado al fin de la instrucción
+//				rexp32();
+				return tipo1;
+			}
+			else {
+				tipo2 = rexp31(tipoH);
+				if (tipo2 == tSintetiz.tError) {
+					errorProg = true;
+					vaciaCod();
+					System.out.println("Error en expresión. Categoría sintáctica afectada: (REXP3_1).\n");
+					return tSintetiz.tError;
+				}
+				else
+					//No sería 'return tipo2;' ??
+					//return tipo2;
+					return tSintetiz.tNat;
+			}
+		}
+	}
+	
+	public tSintetiz rexp31(tSintetiz tipoH) {
+		//Declaración de las variables necesarias
+		tSintetiz tipo, tipo1;
+		tOp op;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		op = op3();
+		tipo1 = exp3();
+		tipo = dameTipo(tipo1,tipoH,op);
+		if (tipo == tSintetiz.tError) {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
+			return tSintetiz.tError;
+		}
+		else {
+			emite(op.toString());
+			return tipo;
+		}
+	}
+	
+	public tSintetiz exp41() {
+		//Declaración de las variables necesarias
+		tSintetiz tipo, tipo1;
+		tOp op;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		op = op41();
+		tipo1 = term();
+		tipo = dameTipo(tipo1,op);
+		if (tipo == tSintetiz.tError) {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
+			return tSintetiz.tError;
+		}
+		else {
+			emite(op.toString());
+			return tipo;
+		}
+	}
+	
+	public tSintetiz exp42() {
+		//Declaración de las variables necesarias
+		tSintetiz tipo, tipo1;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		consume(tToken.opVAbs);
+		tipo1 = term();
+		tipo = dameTipo(tipo1,tOp.opVAbs);
+		if (tipo == tSintetiz.tError) {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error en la operación: '"+ tOp.opVAbs.toString() +"'.\n");
+			return tSintetiz.tError;
+		}
+		else {
+			emite(tToken.opVAbs.toString());
+			consume(tToken.opVAbs);
+			return tipo;
+		}
+	}
+	
+	public tSintetiz exp43() {
+		//Declaración de las variables necesarias
+		tSintetiz tipo1;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		tipo1 = term();
+		return tipo1;
+	}
+	
+	public tSintetiz term() {
+		//Declaración de las variables necesarias
+		tSintetiz tipo1;
+		tipo1 = tSintetiz.tError;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		if (tokActual.getTipoToken() == tToken.booleanoCierto)
+			tipo1 = term1True();
+		if (tokActual.getTipoToken() == tToken.booleanoFalso)
+			tipo1 = term1False();
+		if (tokActual.getTipoToken() == tToken.cadCaracteres)
+			tipo1 = term2();
+		if (tokActual.getTipoToken() == tToken.natural)
+			tipo1 = term3();
+		if (tokActual.getTipoToken() == tToken.entero)
+			tipo1 = term4();
+		if (tokActual.getTipoToken() == tToken.real)
+			tipo1 = term5();
+		if (tokActual.getTipoToken() == tToken.identificador)
+			tipo1 = term6();
+		if (tokActual.getTipoToken() == tToken.parApertura)
+			tipo1 = term7();
+		return tipo1;
+	}
+	
+	public tSintetiz term1True() {
+		emite("apila(" + true + ")");
+		consume(tToken.booleanoCierto);
+		return tSintetiz.tBool;
+	}
+	
+	public tSintetiz term1False() {
+		emite("apila(" + false + ")");
+		consume(tToken.booleanoFalso);
+		return tSintetiz.tBool;
+	}
+	
+	public tSintetiz term2() {
+		emite("apila(" + tokActual.getLexema() + ")");
+		consume(tToken.cadCaracteres);
+		return tSintetiz.tChar;
+	}
+	
+	public tSintetiz term3() {
+		emite("apila(" + tokActual.getLexema() + ")");
+		consume(tToken.natural);
+		return tSintetiz.tNat;
+	}
+	
+	public tSintetiz term4() {
+		emite("apila(" + tokActual.getLexema() + ")");
+		consume(tToken.entero);
+		return tSintetiz.tInt;
+	}
+	
+	public tSintetiz term5() {
+		emite("apila(" + tokActual.getLexema() + ")");
+		consume(tToken.real);
+		return tSintetiz.tFloat;
+	}
+	
+	public tSintetiz term6() {
+		//Declaración de las variables necesarias
+		String lexIden = new String();
+		tSintetiz tipo;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		if (tokActual.getTipoToken() == tToken.identificador &&
+				ts.existeId(tokActual.getLexema())) {
+			lexIden = tokActual.getLexema();
+			//Ya tenemos todo lo necesario acerca del token, pues lo consumimos
+			consume(tToken.identificador);
+			//OBTENEMOS EL TIPO DEL IDENTIFICADOR DE LA TS//
+			tipo = ts.getTabla().get(lexIden).getTipo();
+			emite("apila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+			return tipo;
+		}
+		else {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error: Se esperaba identificador, o si lo es no fue declarado previamente." + "\n");
+			return tSintetiz.tError;
+		}
+	}
+	
+	public tSintetiz term7() {
+		//Declaración de las variables necesarias
+		tSintetiz tipo1;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		consume(tToken.parApertura);
+		tipo1 = exp();
+		consume(tToken.parCierre);
+		return tipo1;
 	}
 	
 	public tSintetiz dameTipo(tSintetiz tipoEXPIzq, tSintetiz tipoEXPDer, tOp op) {
@@ -625,6 +836,21 @@ public class ASintactico {
 				if (esTipoNum(tipoEXPIzq) && esTipoNum(tipoEXPDer))
 					return dameTipoDom(tipoEXPIzq, tipoEXPDer);
 			}
+		
+		}
+		
+		if (esOp2(op)) {
+			switch (op) {
+			case yLogica:
+				if (tipoEXPIzq == tSintetiz.tBool && tipoEXPIzq == tipoEXPDer)
+					return tSintetiz.tBool;
+				else
+					return tSintetiz.tError;
+			default:
+				if (esTipoNum(tipoEXPIzq) && esTipoNum(tipoEXPDer))
+					return dameTipoDom(tipoEXPIzq, tipoEXPDer);
+			}
+		
 		}
 		
 		return tSintetiz.tError;
@@ -646,6 +872,45 @@ public class ASintactico {
 //		default:
 //			return tSintetiz.tError;
 //		}
+	}
+	
+	public tSintetiz dameTipo(tSintetiz tipoEXP, tOp op4) {
+		switch (op4) {
+		case negArit:
+			if (esTipoNum(tipoEXP))
+				return tipoEXP;
+			else
+				return tSintetiz.tError;
+		case negLogica:
+			if (tipoEXP == tSintetiz.tBool)
+				return tipoEXP;
+			else
+				return tSintetiz.tError;
+		case opVAbs:
+			if (esTipoNum(tipoEXP) && !(tipoEXP == tSintetiz.tInt))
+				return tipoEXP;
+			if (tipoEXP == tSintetiz.tInt)
+				return tSintetiz.tNat;
+			return tSintetiz.tError;
+		case castChar:
+			if (tipoEXP == tSintetiz.tNat || tipoEXP == tSintetiz.tChar)
+				return tSintetiz.tChar;
+			return tSintetiz.tError;
+		case castNat:
+			if (tipoEXP == tSintetiz.tNat || tipoEXP == tSintetiz.tChar)
+				return tSintetiz.tNat;
+			return tSintetiz.tError;
+		case castInt:
+			if (esTipoNum(tipoEXP) || tipoEXP == tSintetiz.tChar)
+				return tSintetiz.tInt;
+			return tSintetiz.tError;
+		case castFloat:
+			if (esTipoNum(tipoEXP) || tipoEXP == tSintetiz.tChar)
+				return tSintetiz.tFloat;
+			return tSintetiz.tError;
+		default:
+			return tSintetiz.tError;
+		}
 	}
 	
 	public tSintetiz dameTipoDom(tSintetiz tipo1, tSintetiz tipo2) {
@@ -671,12 +936,42 @@ public class ASintactico {
 			return false;
 	}
 	
+	public boolean esOp2(tOp op) {
+		if (op == tOp.multiplicacion || op == tOp.division || op == tOp.resto ||
+				op == tOp.yLogica)
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean esOp41(tToken tokOp) {
+		if (tokOp == tToken.negArit || tokOp == tToken.negLogica || tokOp == tToken.castChar ||
+				tokOp == tToken.castFloat || tokOp == tToken.castInt || tokOp == tToken.castNat)
+			return true;
+		else
+			return false;
+	}
+	
 	public tOp op0() {
 		
 		return tOp.igual;
 	}
 	
 	public tOp op1() {
+		
+		return tOp.igual;
+	}
+	
+	public tOp op2() {
+		
+		return tOp.igual;
+	}
+	public tOp op3() {
+		
+		return tOp.igual;
+	}
+	
+	public tOp op41() {
 		
 		return tOp.igual;
 	}
