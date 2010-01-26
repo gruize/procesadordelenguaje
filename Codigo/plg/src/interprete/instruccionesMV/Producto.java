@@ -27,19 +27,6 @@ public class Producto extends InstruccionMaquinaP{
 		}
 		
 		/*
-		 * Char is comparable with char
-		 */
-
-		if (o1 instanceof MyChar)
-			if (o2 instanceof MyChar){
-				MyChar c = new MyChar();
-				Character c1 = (Character)o1.getValue();
-				Character c2 = (Character)o2.getValue();
-				c.setValue(c1*c2);
-				p.push(c);
-				return true;
-			}
-		/*
 		 * My Float is comparable with MyInteger MyFloat and MyNatural
 		 */
 		if (o1 instanceof MyFloat){

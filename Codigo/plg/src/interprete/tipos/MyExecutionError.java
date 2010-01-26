@@ -60,6 +60,10 @@ public class MyExecutionError extends StackObject {
 	public byte type() {
 		return MY_EXECUTIONERROR;
 	}
+	@Override
+	public boolean fromBuffer(MyBuffer buffer) {
+		return false;
+	}
 
 	
 

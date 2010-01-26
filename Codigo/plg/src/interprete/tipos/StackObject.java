@@ -17,5 +17,6 @@ public abstract class StackObject {
 		return null;
 	}
 	public abstract byte type();
+	public abstract boolean fromBuffer(MyBuffer buffer);
 
 }

@@ -29,6 +29,10 @@ public class MyBuffer extends StackObject{
 	public byte type() {
 		return MY_BUFFER;
 	}
+	@Override
+	public boolean fromBuffer(MyBuffer buffer) {
+		return false;
+	}
 
 
 }

@@ -105,6 +105,8 @@ public abstract class InstruccionMaquinaP {
 	public static final byte DESAPILA_DIR= 0X23; 
 	public static final byte LEER=0X24;
 	public static final byte ESCRIBIR =0X25;
+	public static final byte VALOR_ABSOLUTO = 0X26;
+	public static final byte STOP = 0X27;
 	public abstract boolean exec(Stack<StackObject> p, Memoria m);
 	public abstract byte[] toBytes();
 	public InstruccionMaquinaP fromBytes(byte[] bytes,int pos){
