@@ -18,18 +18,16 @@ public class DesapilaDir extends InstruccionMaquinaP{
 	}
 	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		counter++;
-		// TODO Auto-generated method stub
+		if (p.isEmpty()){
+			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
+			return false;
+		}
 		if (dir == null){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Null direction"));
 			return false;
 		}
-		StackObject o1 = m.getPosicion(dir);
-		StackObject o2 = p.pop();
-//		if (o2.getClass().getCanonicalName().equals(o1.getClass().getCanonicalName()))
-		if (o2.getClass().equals(o1.getClass())){
-			m.setPosicion(dir, o2);
-		}
-		return false;
+		m.setPosicion(dir, p.pop());
+		return true;
 	}
 	@Override
 	public int size(){
