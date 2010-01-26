@@ -1,12 +1,5 @@
 package analizadorSintactico;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.Vector;
-
-import analizadorLexico.Token;
-import analizadorLexico.tToken;
 import interprete.instruccionesMV.And;
 import interprete.instruccionesMV.Apila;
 import interprete.instruccionesMV.ApilaDir;
@@ -39,10 +32,20 @@ import interprete.tipos.MyBoolean;
 import interprete.tipos.MyBuffer;
 import interprete.tipos.StackObject;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.util.Vector;
+
+import analizadorLexico.Token;
+import analizadorLexico.tToken;
+
 public class Emit extends InstruccionesMaquinaPConstantes{
 	Vector <InstruccionMaquinaP> codigo;
 	public Emit(){
 		codigo = new Vector<InstruccionMaquinaP>();
+	}
+	public boolean emit(byte code){
+		return emit(code,null);
 	}
 	public boolean emit(byte code, Token token){
 		InstruccionMaquinaP i = factory(code, token);
