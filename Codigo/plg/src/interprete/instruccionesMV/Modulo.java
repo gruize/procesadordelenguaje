@@ -89,12 +89,11 @@ public class Modulo extends InstruccionMaquinaP {
 		bytes[0] = InstruccionMaquinaP.MODULO;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Modulo fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.MODULO){
 			return null;
 		}
-		return this;
+		return new Modulo();
 	}
 }
 

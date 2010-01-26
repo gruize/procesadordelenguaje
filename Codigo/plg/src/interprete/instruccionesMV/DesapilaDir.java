@@ -51,13 +51,14 @@ public class DesapilaDir extends InstruccionMaquinaP{
 		System.arraycopy(n.toBytes(), 0,bytes, pos, n.size());
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+
+	public static DesapilaDir fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.DESAPILA_DIR){
 			return null;
 		}
-		dir = (Integer)new MyNatural().fromBytes(bytes, pos).getValue();
-		return this;
+		DesapilaDir i = new DesapilaDir();
+		i.dir = (Integer)new MyNatural().fromBytes(bytes, pos).getValue();
+		return i; 
 	}
 
 }

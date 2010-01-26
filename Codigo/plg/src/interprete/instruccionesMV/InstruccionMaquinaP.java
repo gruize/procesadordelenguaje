@@ -109,7 +109,7 @@ public abstract class InstruccionMaquinaP {
 	public static final byte STOP = 0X27;
 	public abstract boolean exec(Stack<StackObject> p, Memoria m);
 	public abstract byte[] toBytes();
-	public InstruccionMaquinaP fromBytes(byte[] bytes,int pos){
+	public static InstruccionMaquinaP fromBytes(byte[] bytes,int pos){
 		if (bytes.length <= pos)
 			return null;
 		switch (bytes[pos]) {

@@ -48,33 +48,34 @@ public class Apila extends InstruccionMaquinaP{
 		System.arraycopy(element.toBytes(), 0,bytes, pos, element.size());
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	
+	public static Apila fromBytes(byte[] bytes, int pos){
+		Apila i = new Apila();
 		if (bytes[pos++]!= InstruccionMaquinaP.APILA){
 			return null;
 		}
 		switch (bytes[pos++]) {
 		case StackObject.MY_BOOLEAN:
-			element = new MyBoolean().fromBytes(bytes, pos);
-			return this;
+			i.element = new MyBoolean().fromBytes(bytes, pos);
+			return i;
 		case StackObject.MY_BUFFER:
 			// My buffer can't be apiled from this funcion
 			return null;
 		case StackObject.MY_CHAR:
-			element = new MyChar().fromBytes(bytes, pos);
-			return this;
+			i.element = new MyChar().fromBytes(bytes, pos);
+			return i;
 		case StackObject.MY_EXECUTIONERROR:
 			// My Execution error can't be apiled from this funcion
 			return null;
 		case StackObject.MY_FLOAT:
-			element = new MyFloat().fromBytes(bytes, pos);
-			return this;
+			i.element = new MyFloat().fromBytes(bytes, pos);
+			return i;
 		case StackObject.MY_INTEGER:
-			element = new MyInteger().fromBytes(bytes, pos);
-			return this;
+			i.element = new MyInteger().fromBytes(bytes, pos);
+			return i;
 		case StackObject.MY_NATURAL:
-			element = new MyNatural().fromBytes(bytes, pos);
-			return this;
+			i.element = new MyNatural().fromBytes(bytes, pos);
+			return i;
 			
 
 		default:

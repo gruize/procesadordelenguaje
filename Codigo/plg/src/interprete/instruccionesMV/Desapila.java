@@ -24,12 +24,12 @@ public class Desapila extends InstruccionMaquinaP{
 		bytes[pos++] = InstruccionMaquinaP.DESAPILA;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	
+	public static Desapila fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.DESAPILA){
 			return null;
 		}
-		return this;
+		return new Desapila();
 	}
 
 }

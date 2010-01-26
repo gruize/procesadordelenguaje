@@ -30,12 +30,12 @@ public class Escribir extends InstruccionMaquinaP {
 		bytes[0] = InstruccionMaquinaP.ESCRIBIR;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	
+	public static Escribir fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.ESCRIBIR){
 			return null;
 		}
-		return this;
+		return new Escribir();
 	}
 
 }

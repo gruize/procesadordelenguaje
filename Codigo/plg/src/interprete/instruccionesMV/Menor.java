@@ -137,12 +137,12 @@ public class Menor extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.MENOR;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+
+	public static Menor fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.MENOR){
 			return null;
 		}
-		return this;
+		return new Menor();
 	}
 
 }

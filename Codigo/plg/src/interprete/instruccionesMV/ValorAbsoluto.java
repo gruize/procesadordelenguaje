@@ -73,11 +73,11 @@ public class ValorAbsoluto extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.VALOR_ABSOLUTO;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	
+	public static ValorAbsoluto fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.VALOR_ABSOLUTO){
 			return null;
 		}
-		return this;
+		return new ValorAbsoluto();
 	}
 }

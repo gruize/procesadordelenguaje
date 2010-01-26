@@ -135,12 +135,11 @@ public class MenorIgual extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.MENORIGUAL;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static MenorIgual fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.MENORIGUAL){
 			return null;
 		}
-		return this;
+		return new MenorIgual();
 	}
 }
 

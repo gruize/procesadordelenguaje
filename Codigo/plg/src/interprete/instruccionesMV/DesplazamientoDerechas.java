@@ -41,11 +41,11 @@ public class DesplazamientoDerechas extends InstruccionMaquinaP {
 		bytes[0] = InstruccionMaquinaP.DESPLAZAMIENTODERECHA;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	
+	public static DesplazamientoDerechas fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.DESPLAZAMIENTODERECHA){
 			return null;
 		}
-		return this;
+		return new DesplazamientoDerechas();
 	}
 }

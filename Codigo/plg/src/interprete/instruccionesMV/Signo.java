@@ -60,12 +60,11 @@ public class Signo extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.SIGNO;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Signo fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.SIGNO){
 			return null;
 		}
-		return this;
+		return new Signo();
 	}
 }
 

@@ -55,10 +55,9 @@ public class Not extends InstruccionMaquinaP {
 		bytes[0] = InstruccionMaquinaP.NOLOGICO;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Not fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.NOLOGICO){
 			return null;
 		}
-		return this;
+		return new Not();
 	}}
