@@ -1,9 +1,11 @@
 package tablaSimbolos;
 
+import analizadorSintactico.*;
+
 public class ObjTS {
 	//Objeto que contiene los atributos de una fila de la TS
 	
-	String tipo;
+	tSintetiz tipo;
 	
 	//Esta será la dirección de memoria asociada al objeto "Memoria" dentro de la 
 	//estructura de util
@@ -12,15 +14,15 @@ public class ObjTS {
 	
 	public ObjTS() {
 		// TODO Auto-generated constructor stub
-		tipo = new String();
+		tipo = tSintetiz.tInicial;
 		dirM = new Integer(0);
 	}
 	
-	public String getTipo() {
+	public tSintetiz getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(String tipo) {
+	public void setTipo(tSintetiz tipo) {
 		this.tipo = tipo;
 	}
 
@@ -32,9 +34,9 @@ public class ObjTS {
 		this.dirM = dirM;
 	}
 
-	public ObjTS(String _tipo, int _dirM) {
+	public ObjTS(tSintetiz _tipo, int _dirM) {
 		// TODO Auto-generated constructor stub
-		tipo = new String(_tipo);
+		tipo = _tipo;
 		dirM = new Integer(_dirM);
 	}
 

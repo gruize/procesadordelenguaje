@@ -1,3 +1,5 @@
+package analizadorSintactico;
+
 import java.util.*;
 
 import analizadorLexico.*;
@@ -127,6 +129,23 @@ public class ASintactico {
 		instMPOut.clear();
 	}
 	
+	public tSintetiz dametSintetiz(tToken tipo) {
+		switch (tipo) {
+		case tipoVarBooleano:
+			return tSintetiz.tBool;
+		case tipoVarCadCaracteres:
+			return tSintetiz.tChar;
+		case tipoVarNatural:
+			return tSintetiz.tNat;
+		case tipoVarEntero:
+			return tSintetiz.tInt;
+		case tipoVarReal:
+			return tSintetiz.tFloat;
+		default:
+			return tSintetiz.tError;
+		}
+	}
+	
 	//Hay que hacer un método que obtenga el array de tokens de entrada
 	//y que inicialice el tokenActual, con el primer elemento del array
 	//teniendo que cuenta que hay que incrementar el contador de tokens
@@ -160,10 +179,10 @@ public class ASintactico {
 			while (e.hasMoreElements()) {
 				id = e.nextElement();
 				if (ts.getTabla().get(id).getTipo().equals("tipoVarCadCaracteres"))
-					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo() + "\tDirección: " +
+					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo().toString() + "\tDirección: " +
 							ts.getTabla().get(id).getDirM());
 				else
-					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo() + "\t\tDirección: " +
+					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
 							ts.getTabla().get(id).getDirM());
 			}
 			System.out.println();
@@ -207,10 +226,10 @@ public class ASintactico {
 			errorDec1_dir = rdecs1();
 		else
 			errorDec1_dir = rdecs2();
-		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getStr1()))
+		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getIden()))
 			return true;
 		else {
-			ts.anadeId(id_tipo.getStr1(), id_tipo.getStr2(), errorDec1_dir.getIntVal());
+			ts.anadeId(id_tipo.getIden(), id_tipo.getTipo(), errorDec1_dir.getIntVal());
 			return false;
 		}
 	}
@@ -225,10 +244,10 @@ public class ASintactico {
 			errorDec1_dir1 = rdecs1();
 		else
 			errorDec1_dir1 = rdecs2();
-		if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getStr1()))
+		if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getIden()))
 			return new ParBooleanInt(true, -1);
 		else {
-			ts.anadeId(id_tipo.getStr1(), id_tipo.getStr2(), errorDec1_dir1.getIntVal());
+			ts.anadeId(id_tipo.getIden(), id_tipo.getTipo(), errorDec1_dir1.getIntVal());
 			return new ParBooleanInt(false, errorDec1_dir1.getIntVal() + 1);
 		}
 	}
@@ -244,9 +263,9 @@ public class ASintactico {
 	
 	public ParString dec() {
 		ParString parOut = new ParString();
-		parOut.setStr1(consumeId().getLexema());
+		parOut.setIden(consumeId().getLexema());
 		consume(tToken.dosPuntos);
-		parOut.setStr2(consumeTipo().getTipoToken().toString());
+		parOut.setTipo(dametSintetiz(consumeTipo().getTipoToken()));
 		return parOut;
 	}
 	
@@ -313,19 +332,27 @@ public class ASintactico {
 	
 	public boolean swrite() {
 		//Declaración de las variables necesarias
-		tipoSint tipo;
+		tSintetiz tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.salidaPantalla);
 		//Ahora en el token actual tenemos el parentesis de apertura
-		//si el análisis va bien, y luego el identificador correspondiente
+		//si el análisis va bien, y luego la expresión correspondiente
 		if (tokActual.getTipoToken() == tToken.parApertura) {
+			//Consumimos el parentesis de apertura y vamos con la expresión
+			consume(tToken.parApertura);
 			tipo = exp();
-			if (tipo == tipoSint.tError)
+			///////////////////////////////////////////////////////////////
+			if (tipo == tSintetiz.tError) {
+				errorProg = true;
 				vaciaCod();
-			else
+				System.out.println("Error en la expresión de la instrucción de salida por pantalla." + "\n");
+				return true;
+			}
+			else {
 				emite("escribir");
-			consume(tToken.parCierre);
-			return (tipo == tipoSint.tError);
+				consume(tToken.parCierre);
+				return false;
+			}
 		}
 		else {
 			errorProg = true;
@@ -338,7 +365,6 @@ public class ASintactico {
 	
 	public boolean sread() {
 		//Declaración de las variables necesarias
-		boolean errorSent = false;
 		String lexIden = new String();
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.entradaTeclado);
@@ -352,71 +378,180 @@ public class ASintactico {
 				emite("leer");
 				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
 				consume(tToken.identificador);
+				consume(tToken.parCierre);
+				return false;
 			}
 			else {
-				errorSent = true;
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error: El parámetro de la operación 'in' debe ser un identificador, o" + "\n" +
 						"el identificador no existe en la tabla de símbolos.\n");
-			}	
+				return true;
+			}
 		}
 		else {
-			errorSent = true;
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error: Se esperaba paréntesis de apertura después de operación de entrada" + "\n" +
 					"por teclado.\n");
+			return true;
 		}
-		consume(tToken.parCierre);
-		return errorSent;
 	}
 	
 	public boolean sasign() {
-//		iden(out lexema)
-//		consume (‘:=’)
-//		EXP(out tipo)
-//		errorSent = (tipo = tError) or existeID(ts,lexema)) or 
-//			(not esCompatibleAsig?(dameTipoTS(ts, lexema)))
-//		si errorSent
+		//Declaración de las variables necesarias
+		tSintetiz tipo;
+		String lexIden = new String();
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		if (tokActual.getTipoToken() == tToken.identificador &&
+				ts.existeId(tokActual.getLexema())) {
+			lexIden = tokActual.getLexema();
+			consume(tToken.identificador);
+			//Una vez parseado el identificador vamos con el simbolo de la asignación
+			consume(tToken.asignacion);
+			//LLamada a epx()
+			tipo = exp();
+			/////////////////////////////////////////////////////////////////////////
+			if (tipo == tSintetiz.tError || esCompatibleAsig(ts.getTabla().get(lexIden).getTipo(), tipo)) {
+				errorProg = true;
+				vaciaCod();
+				System.out.println("Error en la asignación: La expresión es errónea, o los tipos de la" + "\n" +
+						"asignación son incompatibles." + "\n");
+				return true;
+			}
+			else {
+				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+				return false;
+			}
+		}
+		else {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error: Se esperaba identificador, o si lo es no fue declarado previamente." + "\n");
+			return true;
+		}
+	}
+	
+	public boolean esCompatibleAsig(tSintetiz tipoId, tSintetiz tipoExp) {
+		if (tipoId == tipoExp)
+			return true;
+		if (tipoId == tSintetiz.tFloat && esTipoNum(tipoExp))
+			return true;
+		if (tipoId == tSintetiz.tInt && tipoExp == tSintetiz.tNat)
+			return true;
+		return false;
+	}
+	
+	public boolean esTipoNum(tSintetiz tipo) {
+		if (tipo == tSintetiz.tNat || tipo == tSintetiz.tInt ||
+				tipo == tSintetiz.tFloat)
+			return true;
+		else
+			return false;
+	}
+	
+	public tSintetiz exp() {
+		//Declaración de las variables necesarias
+		tSintetiz tipo1, tipo2, tipoH;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//LLamada a epx1()
+		tipo1 = exp1();
+		tipoH = tipo1;
+		if (tipo1 == tSintetiz.tError) {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error en expresión. Categoría sintáctica afectada: (EXP1).\n");
+			return tSintetiz.tError;
+		}
+		else {
+			if (tokActual.getTipoToken() == tToken.puntoyComa) {// Hemos llegado al fin de la instrucción
+//				rexp2();
+				return tipoH;
+			}
+			else {
+				tipo2 = rexp1(tipoH);
+				if (tipo2 == tSintetiz.tError) {
+					errorProg = true;
+					vaciaCod();
+					System.out.println("Error en expresión. Categoría sintáctica afectada: (REXP_1).\n");
+					return tSintetiz.tError;
+				}
+				else
+					//No sería 'return tipo2;' ??
+					return tSintetiz.tBool;
+			}
+		}
+	}
+	
+	public tSintetiz rexp1(tSintetiz tipoH) {
+		//Declaración de las variables necesarias
+		tSintetiz tipo, tipo1;
+		tOp op;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//Necesitamos obtener el operador concreto
+		op = op0();
+		tipo1 = exp1();
+		tipo = dameTipo(tipoH,tipo1,op);
+		if (tipo == tSintetiz.tError) {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error de tipos en operación de igualdad.\n");
+			return tSintetiz.tError;
+		}
+		else {
+			emite(op.toString());
+			return tipo;
+		}
+	
+//		OP0(out op)
+//		EXP1(out tipo1)
+//		tipo = dameTipo(tipoH,tipo,op)
+//		si tipo = tError
 //		entonces
 //			vaciaCod()
 //		si no
-//			emit(desapila_dir(damePropiedadesTS(tsh, lexema).dirProp));
-//		fin si
-		return true;
-	}
-	
-	public tipoSint exp() {
-		
-		
-		
-		return tipoSint.tBool;
-		
-//		EXP1(out tipo1)
-//		tipoH =tipo1;
-//		// XXX codH = EXP1.cod}
-//		si tipo1 = tError
-//		entonces 
-//			tipo = tError
-//		si no
-//			si token pertenece {; )} // fin de instrucción
-//			entonces
-//				REXP_2();
-//				tipo = tipoH
-//			si no
-//				REXP_1(in tipoH, out tipo2);
-//				si tipo2 = tError;
-//				entonces
-//					tipo = tError;
-//					vaciaCod();
-//				si no
-//					tipo = tBool;
-//				fin si
-//			fin si
+//			emit(op)
 //		fin si
 
 	}
+	
+	public tSintetiz dameTipo(tSintetiz tipoEXPIzq, tSintetiz tipoEXPDer, tOp op) {
+		
+		return tSintetiz.tError;
+	}
+	
+	public tOp op0() {
+		
+		return tOp.igual;
+	}
+	
+	public tSintetiz exp1() {
+		
+		return tSintetiz.tBool;
+		
+		
+		
+//		EXP2  (out tipo1)
+//		si token pertenece {; )} // fin de instrucción
+//		entoces
+//			REXP1_2()
+//			tipo = tipo1
+//		si no
+//			REXP1_1(in tipoH, out tipo2)
+//			si tipo1 = tError or tipo2 = tError
+//			entonces
+//				tipo = tError
+//				vaciaCod()
+//			si no
+//				tipo = tipo2
+//			fin si
+//		fin si
+		
+	}
+	
+//	public void rexp2() {
+//		
+//	}
 	
 	/**
 	 * @param args
