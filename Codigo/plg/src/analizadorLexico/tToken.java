@@ -11,6 +11,8 @@ public enum tToken {
 		
 		suma, resta, negArit, multiplicacion, division, resto,
 		
+		opVAbs,
+		
 		tokenError,
 		
 		parApertura, parCierre,
