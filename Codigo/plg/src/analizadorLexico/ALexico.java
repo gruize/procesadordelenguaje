@@ -617,6 +617,8 @@ public class ALexico {
 			return new Token(tToken.parApertura);
 		case ')':
 			return new Token(tToken.parCierre);
+		case '|':
+			return new Token(tToken.opVAbs);
 		}
 		return new Token();
 	}
