@@ -4,8 +4,4 @@ centimos: float;
 cadena: character;
 numero: natural
 &
-in(euros);
-in(cantidad);
-in(centimos);
-in(cadena);
-in(numero)
+numero := 5 + 6

@@ -322,7 +322,7 @@ public class ASintactico {
 		if (tokActual.getTipoToken() == tToken.salidaPantalla) {
 			return swrite();
 		}
-		if (tokActual.getTipoToken() == tToken.asignacion) {
+		if (tokActual.getTipoToken() == tToken.identificador) {
 			return sasign();
 		}
 		//Añadimos control de errores
@@ -1117,6 +1117,7 @@ public class ASintactico {
 			parser.tokensIn = scanner.dameTokens();
 			parser.tokActual = parser.tokensIn.get(parser.contTokens);
 			parser.parse();
+			parser.emit.write("programa.exe");
 		}
 	}
 }
