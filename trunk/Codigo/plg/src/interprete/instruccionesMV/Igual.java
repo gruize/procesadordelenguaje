@@ -142,12 +142,11 @@ public class Igual extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.IGUAL;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Igual fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.IGUAL){
 			return null;
 		}
-		return this;
+		return new Igual();
 	}
 }
 

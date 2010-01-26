@@ -49,13 +49,13 @@ public class ApilaDir extends InstruccionMaquinaP{
 		System.arraycopy(n.toBytes(), 0,bytes, pos, n.size());
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static ApilaDir fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.APILA_DIR){
 			return null;
 		}
-		dir = (Integer)new MyNatural().fromBytes(bytes, pos).getValue();
-		return this;
+		ApilaDir i = new ApilaDir();
+		i.dir = (Integer)new MyNatural().fromBytes(bytes, pos).getValue();
+		return i;
 	}
 
 	

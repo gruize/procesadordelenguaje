@@ -38,12 +38,11 @@ public class Leer extends InstruccionMaquinaP{
 		return bytes;
 	}
 
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Leer fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.LEER){
 			return null;
 		}
-		return this;
+		return new Leer();
 	}
 
 }

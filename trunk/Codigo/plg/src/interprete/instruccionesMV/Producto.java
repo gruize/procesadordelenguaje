@@ -2,7 +2,6 @@ package interprete.instruccionesMV;
 
 import interprete.tipos.MyBoolean;
 import interprete.tipos.MyBuffer;
-import interprete.tipos.MyChar;
 import interprete.tipos.MyExecutionError;
 import interprete.tipos.MyFloat;
 import interprete.tipos.MyInteger;
@@ -130,12 +129,11 @@ public class Producto extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.PRODUCTO;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Producto fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.PRODUCTO){
 			return null;
 		}
-		return this;
+		return new Producto();
 	}
 }
 

@@ -24,12 +24,11 @@ public class Stop extends InstruccionMaquinaP{
 		bytes[pos++] = InstruccionMaquinaP.DESAPILA;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Stop fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.DESAPILA){
 			return null;
 		}
-		return this;
+		return new Stop();
 	}
 
 }

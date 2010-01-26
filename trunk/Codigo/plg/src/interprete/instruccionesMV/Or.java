@@ -59,11 +59,10 @@ public class Or extends InstruccionMaquinaP {
 		bytes[0] = InstruccionMaquinaP.OLOGICO;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Or fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.OLOGICO){
 			return null;
 		}
-		return this;
+		return new Or();
 	}
 }

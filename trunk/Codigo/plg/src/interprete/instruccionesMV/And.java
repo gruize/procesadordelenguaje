@@ -59,12 +59,11 @@ public class And extends InstruccionMaquinaP {
 		bytes[0] = InstruccionMaquinaP.YLOGICO;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static And fromBytes(byte[] bytes,int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.YLOGICO){
 			return null;
 		}
-		return this;
+		return new And();
 	}
 }
 

@@ -131,11 +131,11 @@ public class Division extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.DIVISION;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	
+	public static Division fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.DIVISION){
 			return null;
 		}
-		return this;
+		return new Division();
 	}
 }

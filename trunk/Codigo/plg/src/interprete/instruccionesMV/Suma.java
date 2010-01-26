@@ -144,10 +144,9 @@ public class Suma extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.SUMA;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Suma fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.SUMA){
 			return null;
 		}
-		return this;
+		return new Suma();
 	}}

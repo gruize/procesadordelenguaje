@@ -69,12 +69,12 @@ public class CastChar extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.YLOGICO;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+
+	public static CastChar fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.CASTCHAR){
 			return null;
 		}
-		return this;
+		return new CastChar();
 	}
 
 }

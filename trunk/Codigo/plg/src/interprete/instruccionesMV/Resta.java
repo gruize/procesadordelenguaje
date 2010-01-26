@@ -150,11 +150,10 @@ public class Resta extends InstruccionMaquinaP{
 		bytes[0] = InstruccionMaquinaP.RESTA;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Resta fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.RESTA){
 			return null;
 		}
-		return this;
+		return new Resta();
 	}
 }

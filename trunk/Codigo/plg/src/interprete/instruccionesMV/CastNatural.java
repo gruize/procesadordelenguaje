@@ -72,11 +72,11 @@ public class CastNatural extends InstruccionMaquinaP{
 		return bytes;
 	}
 
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	
+	public static CastInteger fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.CASTNAT){
 			return null;
 		}
-		return this;
+		return new CastInteger();
 	}
 }

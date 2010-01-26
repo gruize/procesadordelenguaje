@@ -135,12 +135,11 @@ public class Mayor extends InstruccionMaquinaP {
 		bytes[0] = InstruccionMaquinaP.MAYOR;
 		return bytes;
 	}
-	@Override
-	public InstruccionMaquinaP fromBytes(byte[] bytes, int pos){
+	public static Mayor fromBytes(byte[] bytes, int pos){
 		if (bytes[pos++]!= InstruccionMaquinaP.MAYOR){
 			return null;
 		}
-		return this;
+		return new Mayor();
 	}
 
 }
