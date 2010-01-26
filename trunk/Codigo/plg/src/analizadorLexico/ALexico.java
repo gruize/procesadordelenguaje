@@ -3,7 +3,7 @@ import java.util.*;
 import java.io.*;
 
 enum est {e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, 
-	e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e34,e36};
+	e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27};
 
 public class ALexico {
 
@@ -114,11 +114,6 @@ public class ALexico {
 							lex = "";
 							break;
 						}
-						if (buff[0] == '('){
-							transita(est.e34);
-							lex = "";
-							break;
-						}
 						if (esLetra(buff[0])) {
 							transita(est.e3);
 							break;
@@ -139,8 +134,8 @@ public class ALexico {
 							break;
 						}
 						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '-' ||
-								buff[0] == '*' || buff[0] == '/' || 
-								buff[0] == ')' || buff.toString().equals("-") || buff[0] == '|') {
+								buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || buff[0] == '|' ||
+								buff[0] == ')' || buff.toString().equals("-")) {
 							carAntConsumido[0] = buff[0];
 							tok = dameToken(buff[0]);
 							transita(est.e27);
@@ -171,11 +166,6 @@ public class ALexico {
 							transita(est.e13);
 							break;
 						}
-						/*if (buff[0] == '|') {
-							carAntConsumido[0] = buff[0];
-							transita(est.e6);
-							break;
-						}*/
 						else
 							error(null);
 						break;	
@@ -410,7 +400,7 @@ public class ALexico {
 							transita(est.e13);
 						break;
 					case e14:
-						//Sobra (en el autómata se usaba cuando se reconocían las siguientes '"')
+						//Sobra (en el autómata se usaba cuando se reconocían las siguientes ")
 						break;
 					case e15:
 						if (buff[0] == '=') {
@@ -499,102 +489,6 @@ public class ALexico {
 						tokensOut.add(tok);
 						iniciaScanner();
 						break;
-					case e34:
-						if (buff[0] == '0'){
-							carAntConsumido[0] = buff[0];
-							tokensOut.add(new Token(tToken.parApertura));
-							transita (est.e4);
-							break;
-						}
-						if (esDigito(buff[0] )){
-							carAntConsumido[0] = buff[0];
-							tokensOut.add(new Token(tToken.parApertura));
-							transita (est.e5);
-							break;
-						}if (esLetra(buff[0])){
-							transita(est.e36);
-							break;
-						}
-						else{
-							tokensOut.add(new Token(tToken.parApertura));
-							iniciaScanner();
-						}
-							
-					case e36:
-						// ya es un identificador
-						if (esDigito(buff[0] )){
-							tokensOut.add(new Token(tToken.parApertura));
-							transita (est.e3);
-							break;
-						}
-						// seguimos esperando
-						if (esLetra(buff[0])){
-							transita(est.e36);
-							break;
-						}
-						if (buff[0] == ')'){
-							if (lex.equals("float")){
-								tokensOut.add(new Token(tToken.castFloat));
-								transita(est.e0);
-								break;
-							}
-							if (lex.equals("int")){
-								tokensOut.add(new Token(tToken.castFloat));
-								transita(est.e0);
-								break;
-							}
-							if (lex.equals("nat")){
-								tokensOut.add(new Token(tToken.castFloat));
-								transita(est.e0);
-								break;
-							}
-							if (lex.equals("char")){
-								tokensOut.add(new Token(tToken.castFloat));
-								transita(est.e0);
-								break;
-							}
-						}
-						tokensOut.add(new Token(tToken.parApertura));
-						if (palReservadas.contains(lex)) {
-							//Resolvemos problemas entre identificadores y las operaciones de cast,
-							//Distinguimos aquí también el caso del float como operador y como tipo
-							if (esOpCast(lex)) {
-								if (buff[0] == ')' && 
-										tokensOut.lastElement().getTipoToken() == tToken.parApertura &&
-										carAntConsumido[0] == '(') {
-									tokensOut.remove(tokensOut.size() - 1);
-									tokensOut.add(dameTokenPalReservada(lex));
-									transita(est.e0);
-									lex = "";
-									break;
-								}
-								if (lex.equals("float") &&
-										tokensOut.lastElement().getTipoToken() == tToken.dosPuntos) {
-									tokensOut.add(new Token(tToken.tipoVarReal));
-									iniciaScanner();
-									break;
-								}
-								else {
-									if (lex.equals("float"))
-										error("Operador de 'cast float' mal formado, o declaración incorrecta de tipo 'float'.");
-									else
-										error("Operador de 'cast " + lex + "' mal formado.");
-									tokensOut.add(new Token());
-									break;
-								}
-							}
-							else {
-								tokensOut.add(dameTokenPalReservada(lex));
-								iniciaScanner();
-							}
-						}
-						else {
-							tokensOut.add(dameTokenIdentificador(lex));
-							iniciaScanner();
-						}
-						break;
-
-
 					default:
 						errorLex = true;
 				}
@@ -711,8 +605,6 @@ public class ALexico {
 						tokensOut.lastElement().getTipoToken() == tToken.parCierre ||
 						tokensOut.lastElement().getTipoToken() == tToken.identificador)
 					return new Token(tToken.resta);
-				else
-					return new Token(tToken.negArit);
 			else
 				return new Token(tToken.negArit);
 		case '*':
@@ -725,8 +617,6 @@ public class ALexico {
 			return new Token(tToken.parApertura);
 		case ')':
 			return new Token(tToken.parCierre);
-		case '|':
-			return new Token(tToken.opVAbs);
 		}
 		return new Token();
 	}
@@ -878,10 +768,75 @@ public class ALexico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa3.txt";
+		String nombreFichero = "programa.txt";
 		
 		ALexico scanner = new ALexico();
 		
 		scanner.scanFichero(nombreFichero);
+		/*scanner.inicio(nombreFichero);
+		
+		scanner.scan();
+		
+		System.out.println("Lineas: " + scanner.contPrograma);
+		
+		for (int i = 0; i < scanner.tokensOut.size(); i++)
+			if (scanner.tokensOut.get(i).getTipoToken() == tToken.puntoyComa ||
+					scanner.tokensOut.get(i).getTipoToken() == tToken.separador) {
+				if (scanner.tokensOut.get(i).getTipoToken() == tToken.separador)
+					System.out.println();
+				System.out.print(scanner.tokensOut.get(i).getTipoToken().toString());
+				System.out.println();
+			}
+			else {
+				if (scanner.tokensOut.get(i).getLexema() == null)
+					System.out.print("{" + scanner.tokensOut.get(i).getTipoToken().toString() + "} ");
+				else
+					System.out.print("{" + scanner.tokensOut.get(i).getTipoToken().toString() + ", " +
+						scanner.tokensOut.get(i).getLexema() + "} ");
+			}*/
+
+//		int a = 1e1;
+//		double x = 50 + 00.00;
+//		int a = 000043 - 04555.00
+		
+//		System.out.println(Integer.MAX_VALUE);
+//		double x = 0025e056;
+		
+//Forma para pasar String a numéricos
+//		String sX = "004566.34515e-005";
+//		double x = 004566.34515e-005;
+//		
+//Pasamos String a Double		
+//		double resul = sX.valueOf();
+//		double numSX = Double.valueOf(sX).doubleValue();
+//
+//Pasamos String a Integer		
+//		String str="12";
+//		int numero=Integer.valueOf(str).intValue();
+//
+//		System.out.println();
+//		System.out.println(x * 2);
+//		System.out.println(numSX * 2);
+//		System.out.println(sX);
+//		System.out.println(x);
+//		System.out.println(numSX);
+/*		
+		String _id = "id original";
+		String _tipo = "tipo original";
+		boolean _error = true;
+		int _dir = 1;
+		
+		scanner.dec(_id, _tipo, _error, _dir);
+		
+		System.out.println();
+		System.out.println(_id +" "+ _tipo +" "+ _error +" "+ _dir);*/
 	}
+
+	/*//Prueba de la i/o en Java
+	public void dec(String id, String tipo, boolean error, int dir) {
+		id = " id cambiado";
+		tipo = "tipo cambiado";
+		error = false;
+		dir = 2;
+	}*/
 }
