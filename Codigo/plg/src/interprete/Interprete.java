@@ -26,11 +26,14 @@ public class Interprete {
 	private static final int MAX_READ_BUFFER_SIZE = 1000; 
 	private static Vector<InstruccionMaquinaP> codigo;
 	public static void main(String []args){
-		if (args.length == 1){
+		if (args.length > 1){
 			try {
 				int bufferPos = 0;
 				boolean readError = false;
 				FileInputStream fileInput = new FileInputStream(args[0]);
+				if (args.length > 2)
+					if (args[2].equals("trazar"))
+						traza = true;
 				BufferedInputStream bufferedInput = new BufferedInputStream(fileInput);
 				byte[] buffer = new byte[MAX_READ_BUFFER_SIZE];
 				int leidos;
