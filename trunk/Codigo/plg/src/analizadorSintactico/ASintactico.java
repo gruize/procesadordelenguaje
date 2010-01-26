@@ -648,9 +648,9 @@ public class ASintactico {
 		if (tokActual.getTipoToken() == tToken.opVAbs)
 			tipo1 = exp42();
 		if (esOp41(tokActual.getTipoToken()))
-			tipo1 = exp43();
-		else
 			tipo1 = exp41();
+		else
+			tipo1 = exp43();
 		tipoH = tipo1;
 		if (tipoH == tSintetiz.tError) {
 			errorProg = true;
@@ -756,26 +756,24 @@ public class ASintactico {
 	
 	public tSintetiz term() {
 		//Declaración de las variables necesarias
-		tSintetiz tipo1;
-		tipo1 = tSintetiz.tError;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.booleanoCierto)
-			tipo1 = term1True();
+			return term1True();
 		if (tokActual.getTipoToken() == tToken.booleanoFalso)
-			tipo1 = term1False();
+			return term1False();
 		if (tokActual.getTipoToken() == tToken.cadCaracteres)
-			tipo1 = term2();
+			return term2();
 		if (tokActual.getTipoToken() == tToken.natural)
-			tipo1 = term3();
+			return term3();
 		if (tokActual.getTipoToken() == tToken.entero)
-			tipo1 = term4();
+			return term4();
 		if (tokActual.getTipoToken() == tToken.real)
-			tipo1 = term5();
+			return term5();
 		if (tokActual.getTipoToken() == tToken.identificador)
-			tipo1 = term6();
+			return term6();
 		if (tokActual.getTipoToken() == tToken.parApertura)
-			tipo1 = term7();
-		return tipo1;
+			return term7();
+		return tSintetiz.tError;
 	}
 	
 	public tSintetiz term1True() {
