@@ -2,6 +2,8 @@ package tablaSimbolos;
 
 import java.util.*;
 
+import analizadorSintactico.*;
+
 public class TS {
 
 	private Hashtable<String, ObjTS> tabla;
@@ -11,7 +13,7 @@ public class TS {
 		tabla = new Hashtable<String, ObjTS>();
 	}
 	
-	public void anadeId(String id, String tipo, int dir) {
+	public void anadeId(String id, tSintetiz tipo, int dir) {
 		//No comprobamos la existencia del id porque eso se hara en el codigo
 		//del sintactico
 		tabla.put(id, new ObjTS(tipo, dir));

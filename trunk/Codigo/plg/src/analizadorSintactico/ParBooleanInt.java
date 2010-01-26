@@ -1,3 +1,4 @@
+package analizadorSintactico;
 
 public class ParBooleanInt {
 	
