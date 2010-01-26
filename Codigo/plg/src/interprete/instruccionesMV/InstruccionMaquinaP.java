@@ -107,64 +107,65 @@ public abstract class InstruccionMaquinaP {
 	public static final byte ESCRIBIR =0X25;
 	public static final byte VALOR_ABSOLUTO = 0X26;
 	public static final byte STOP = 0X27;
-	public abstract boolean exec(Stack<StackObject> p, Memoria m);
+	public static final int MAX_SIZE = 10;
+	public abstract boolean exec(Stack<StackObject> p, Memoria m, Integer counter);
 	public abstract byte[] toBytes();
 	public static InstruccionMaquinaP fromBytes(byte[] bytes,int pos){
 		if (bytes.length <= pos)
 			return null;
 		switch (bytes[pos]) {
 		case MENOR:			
-			return new Menor().fromBytes(bytes, pos); 
+			return Menor.fromBytes(bytes, pos); 
 		case MAYOR:			
-			return new Mayor().fromBytes(bytes, pos);
+			return Mayor.fromBytes(bytes, pos);
 		case MENORIGUAL:	
-			return new MenorIgual().fromBytes(bytes, pos);
+			return MenorIgual.fromBytes(bytes, pos);
 		case MAYORIGUAL:	
-			return new MayorIgual().fromBytes(bytes, pos);
+			return MayorIgual.fromBytes(bytes, pos);
 		case IGUAL:			
-			return new Igual().fromBytes(bytes, pos);
+			return Igual.fromBytes(bytes, pos);
 		case SUMA:						
-			return new Suma().fromBytes(bytes, pos);
+			return Suma.fromBytes(bytes, pos);
 		case RESTA:						
-			return new Resta().fromBytes(bytes, pos);
+			return Resta.fromBytes(bytes, pos);
 		case PRODUCTO:
-			return new Producto().fromBytes(bytes, pos);
+			return Producto.fromBytes(bytes, pos);
 		case DIVISION:
-			return new Division().fromBytes(bytes, pos);
+			return Division.fromBytes(bytes, pos);
 		case MODULO: 
-			return new Modulo().fromBytes(bytes, pos);
+			return Modulo.fromBytes(bytes, pos);
 		case YLOGICO:
-			return new And().fromBytes(bytes, pos);
+			return And.fromBytes(bytes, pos);
 		case OLOGICO:
-			return new Or().fromBytes(bytes, pos);
+			return Or.fromBytes(bytes, pos);
 		case NOLOGICO:
-			return new Not().fromBytes(bytes, pos);
+			return Not.fromBytes(bytes, pos);
 		case SIGNO:
-			return new Signo().fromBytes(bytes, pos);
+			return Signo.fromBytes(bytes, pos);
 		case DESPLAZAMIENTOIZQUIERDA:
-			return new DesplazamientoIzquierda().fromBytes(bytes, pos);
+			return DesplazamientoIzquierda.fromBytes(bytes, pos);
 		case DESPLAZAMIENTODERECHA:
-			return new DesplazamientoDerechas().fromBytes(bytes, pos);
+			return DesplazamientoDerechas.fromBytes(bytes, pos);
 		case CASTNAT:
-			return new CastNatural().fromBytes(bytes, pos);
+			return CastNatural.fromBytes(bytes, pos);
 		case CASTINT:
-			return new CastInteger().fromBytes(bytes, pos);
+			return CastInteger.fromBytes(bytes, pos);
 		case CASTCHAR:
-			return new CastChar().fromBytes(bytes, pos);
+			return CastChar.fromBytes(bytes, pos);
 		case CASTFLOAT:
-			return new CastFloat().fromBytes(bytes, pos);
+			return CastFloat.fromBytes(bytes, pos);
 		case APILA:
-			return new Apila().fromBytes(bytes, pos);
+			return Apila.fromBytes(bytes, pos);
 		case APILA_DIR:
-			return new ApilaDir().fromBytes(bytes, pos);
+			return ApilaDir.fromBytes(bytes, pos);
 		case DESAPILA:
-			return new Desapila().fromBytes(bytes, pos);
+			return Desapila.fromBytes(bytes, pos);
 		case DESAPILA_DIR:
-			return new DesapilaDir().fromBytes(bytes, pos);
+			return DesapilaDir.fromBytes(bytes, pos);
 		case LEER:
-			return new Leer().fromBytes(bytes, pos);
+			return Leer.fromBytes(bytes, pos);
 		case ESCRIBIR:
-			return new Escribir().fromBytes(bytes, pos);
+			return Escribir.fromBytes(bytes, pos);
 		default:
 			return null;
 

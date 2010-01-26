@@ -16,7 +16,8 @@ public class ApilaDir extends InstruccionMaquinaP{
 	public ApilaDir(Integer dir){
 		this.dir = dir;
 	}
-	public boolean exec(Stack<StackObject> p, Memoria m) {
+	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		counter++;
 		if (dir == null){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Null direction"));
 			return false;

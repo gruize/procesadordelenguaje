@@ -10,8 +10,8 @@ import util.Memoria;
 public class Escribir extends InstruccionMaquinaP {
 
 
-	public boolean exec(Stack<StackObject> p, Memoria m) {
-		// TODO Auto-generated method stub
+	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		counter++;
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR, "Empty stack"));
 			return false;

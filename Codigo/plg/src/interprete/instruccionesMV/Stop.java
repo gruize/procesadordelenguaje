@@ -8,7 +8,8 @@ import util.Memoria;
 
 public class Stop extends InstruccionMaquinaP{
 
-	public boolean exec(Stack<StackObject> p, Memoria m) {
+	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		counter++;
 		System.exit(0);
 		return true;
 	}

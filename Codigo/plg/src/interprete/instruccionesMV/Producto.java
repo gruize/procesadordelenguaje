@@ -13,7 +13,8 @@ import java.util.Stack;
 import util.Memoria;
 
 public class Producto extends InstruccionMaquinaP{
-	public boolean exec(Stack<StackObject> p, Memoria m) {
+	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		counter++;
 		if (p.size() < 2){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Not enough elements"));
 			return false;
