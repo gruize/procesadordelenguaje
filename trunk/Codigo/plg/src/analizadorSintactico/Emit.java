@@ -117,15 +117,15 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 				MyBuffer bf = new MyBuffer();
 				bf.setValue(token.getLexema());
 				StackObject o = null;
-				if (token.getTipoToken() == tToken.tipoVarBooleano)
+				if (token.getTipoToken() == tToken.booleano)
 					o = new MyBoolean();
-				if (token.getTipoToken() == tToken.tipoVarCadCaracteres)
+				if (token.getTipoToken() == tToken.cadCaracteres)
 					o = new MyBoolean();
-				if (token.getTipoToken() == tToken.tipoVarEntero)
+				if (token.getTipoToken() == tToken.entero)
 					o = new MyBoolean();
-				if (token.getTipoToken() == tToken.tipoVarNatural)
+				if (token.getTipoToken() == tToken.natural)
 					o = new MyBoolean();
-				if (token.getTipoToken() == tToken.tipoVarReal)
+				if (token.getTipoToken() == tToken.real)
 					o = new MyBoolean();
 				if (o.fromBuffer(bf)){
 					return new Apila(o);
