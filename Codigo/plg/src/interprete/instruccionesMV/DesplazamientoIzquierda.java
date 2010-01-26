@@ -10,11 +10,11 @@ import util.Memoria;
 
 public class DesplazamientoIzquierda extends InstruccionMaquinaP {
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
+
 		if (p.size() < 2){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Not enough elements"));
-			return false;
+			return -1;
 		}
 		StackObject o1 = p.pop();
 		StackObject o2 = p.pop();
@@ -28,11 +28,11 @@ public class DesplazamientoIzquierda extends InstruccionMaquinaP {
 				Integer n2 = (Integer)o2.getValue();
 				n.setValue(n1<<n2);
 				p.push(n);
-				return true;
+				return counter+1;
 			}
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-		return false;	
+		return -1;
 	}
 	@Override
 	public int size(){

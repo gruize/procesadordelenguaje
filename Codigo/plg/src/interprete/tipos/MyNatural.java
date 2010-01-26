@@ -16,7 +16,7 @@ public class MyNatural extends StackObject{
 	}
 	@Override
 	public int size() {
-		return Integer.SIZE;
+		return Integer.SIZE/8;
 	}
 	@Override
 	public byte[] toBytes() {

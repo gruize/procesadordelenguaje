@@ -8,10 +8,10 @@ import util.Memoria;
 
 public class Stop extends InstruccionMaquinaP{
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		
 		System.exit(0);
-		return true;
+		return counter+1;
 	}
 	@Override
 	public int size(){
@@ -22,11 +22,11 @@ public class Stop extends InstruccionMaquinaP{
 	public byte[] toBytes() {
 		byte[] bytes = new byte[size()];
 		int pos = 0;
-		bytes[pos++] = InstruccionMaquinaP.DESAPILA;
+		bytes[pos++] = InstruccionMaquinaP.STOP;
 		return bytes;
 	}
 	public static Stop fromBytes(byte[] bytes, int pos){
-		if (bytes[pos++]!= InstruccionMaquinaP.DESAPILA){
+		if (bytes[pos++]!= InstruccionMaquinaP.STOP){
 			return null;
 		}
 		return new Stop();

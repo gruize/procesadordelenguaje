@@ -15,11 +15,11 @@ import util.Memoria;
 
 public class Modulo extends InstruccionMaquinaP {
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		
 		if (p.size() < 2){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Not enough elements"));
-			return false;
+			return -1;
 		}
 		StackObject o1 = p.pop();
 		StackObject o2 = p.pop();
@@ -28,7 +28,7 @@ public class Modulo extends InstruccionMaquinaP {
 				o1 instanceof MyChar || o2 instanceof MyChar||
 				o1 instanceof MyFloat || o2 instanceof MyFloat ){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-			return false;
+			return -1;
 		}
 		
 
@@ -43,7 +43,7 @@ public class Modulo extends InstruccionMaquinaP {
 				Integer i2 = (Integer)o2.getValue();
 				n.setValue(i1%i2);
 				p.push(n);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
 				MyNatural n = new MyNatural();
@@ -53,7 +53,7 @@ public class Modulo extends InstruccionMaquinaP {
 				p.push(n);
 
 
-				return true;
+				return counter+1;
 			}
 		}
 		/*
@@ -66,7 +66,7 @@ public class Modulo extends InstruccionMaquinaP {
 				Integer i2 = (Integer)o2.getValue();
 				n.setValue(n1%i2);
 				p.push(n);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
 				MyNatural n = new MyNatural();
@@ -74,11 +74,11 @@ public class Modulo extends InstruccionMaquinaP {
 				Integer n2 = (Integer)o2.getValue();
 				n.setValue(n1%n2);
 				p.push(n);
-				return true;
+				return counter+1;
 			}
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-		return false;	
+		return -1;	
 	}
 	@Override
 	public int size(){

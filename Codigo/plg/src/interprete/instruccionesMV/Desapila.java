@@ -9,14 +9,14 @@ import util.Memoria;
 
 public class Desapila extends InstruccionMaquinaP{
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
+
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
-			return false;
+			return -1;
 		}
 		p.pop();
-		return true;
+		return counter+1;
 	}
 	@Override
 	public int size(){

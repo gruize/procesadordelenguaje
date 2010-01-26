@@ -40,7 +40,7 @@ import java.util.Vector;
 
 import analizadorLexico.Token;
 import analizadorLexico.tToken;
-
+import util.Globales;
 public class Emit extends InstruccionesMaquinaPConstantes{
 	Vector <InstruccionMaquinaP> codigo;
 	public Emit(){
@@ -59,12 +59,16 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 		return true;
 	}
 	public void write(String fileName){
-		FileOutputStream fileOutput;
+		
 		try {
-			fileOutput = new FileOutputStream (fileName);
-			BufferedOutputStream bufferedOutput = new BufferedOutputStream(fileOutput);
+//			FileOutputStream fileOutput;
+			FileOutputStream fileOutput = new FileOutputStream (fileName);
+//			BufferedOutputStream bufferedOutput = new BufferedOutputStream(fileOutput);
 			for (int i = 0; i < codigo.size();i++){
-				bufferedOutput.write(codigo.get(i).toBytes());
+				byte[] code = codigo.get(i).toBytes();
+				if (Globales.debug)
+					System.out.println(code);
+				fileOutput.write(code,0,code.length);
 			}
 			fileOutput.close();
 		} catch (Exception e) {

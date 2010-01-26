@@ -14,11 +14,10 @@ import java.util.Stack;
 import util.Memoria;
 
 public class Signo extends InstruccionMaquinaP{
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
-			return false;
+			return -1;
 		}
 		StackObject o = p.pop();
 		if (o instanceof MyBuffer || 
@@ -26,7 +25,7 @@ public class Signo extends InstruccionMaquinaP{
 				o instanceof MyNatural || 
 				o instanceof MyChar ){ 
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operand"));
-			return false;
+			return -1;
 		}
 		
 
@@ -39,17 +38,17 @@ public class Signo extends InstruccionMaquinaP{
 			Integer i1 = (Integer)o.getValue();
 			i.setValue(-i1);
 			p.push(i);
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyFloat){
 			MyFloat f = new MyFloat();
 			Float f1 = (Float)o.getValue();
 			f.setValue(-f1);
 			p.push(f);
-			return true;
+			return counter+1;
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operand"));
-		return false;	
+		return -1;	
 	}
 	@Override
 	public int size(){

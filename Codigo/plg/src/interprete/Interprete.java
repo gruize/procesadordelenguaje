@@ -20,12 +20,21 @@ import util.Memoria;
 public class Interprete {
 	private static boolean debug = true;
 	private static boolean traza = false;
+	private static boolean fast = true;
 	private static Memoria mem;
 	private static Stack<StackObject> pila;
-	private static Integer contador;
+
 	private static final int MAX_READ_BUFFER_SIZE = 1000; 
 	private static Vector<InstruccionMaquinaP> codigo;
 	public static void main(String []args){
+		Integer contador;
+		if (fast){
+			args = new String[2];
+			args[0] = "programa.bin";
+			args[1] = "true";
+				
+		}
+		codigo = new Vector<InstruccionMaquinaP>();
 		if (args.length > 1){
 			try {
 				int bufferPos = 0;
@@ -37,7 +46,7 @@ public class Interprete {
 				BufferedInputStream bufferedInput = new BufferedInputStream(fileInput);
 				byte[] buffer = new byte[MAX_READ_BUFFER_SIZE];
 				int leidos;
-				while((leidos = bufferedInput.read(buffer,bufferPos,bufferPos-MAX_READ_BUFFER_SIZE)) != -1){
+				while((leidos = bufferedInput.read(buffer,bufferPos,MAX_READ_BUFFER_SIZE-bufferPos)) != -1){
 					bufferPos = 0;
 					while((bufferPos) < leidos){
 						InstruccionMaquinaP ins = InstruccionMaquinaP.fromBytes(buffer, bufferPos);
@@ -46,13 +55,13 @@ public class Interprete {
 								System.err.println("El fichero "+args[0]+" esta corrupto");
 								System.exit(-1);
 							}
-								
+	
 							readError = true;
 							break;
 						}
 						else
 							readError = false;
-						
+						bufferPos += ins.size();
 						codigo.add(ins);
 					}
 					// parada por un primer error de lectura segundo intento metiendo mas chars al buffer
@@ -64,9 +73,12 @@ public class Interprete {
 						bufferPos = 0;
 				}
 				// leyendo el resto
-				while (bufferPos < leidos){
-					
+				if (readError){
+					System.err.println("File is not correct");
+					System.exit(-1);
 				}
+					
+
 				bufferedInput.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -84,7 +96,8 @@ public class Interprete {
 					System.exit(-1);
 				}
 				InstruccionMaquinaP i = codigo.get(contador); 
-				if (!i.exec(pila, mem, contador)){
+				contador = i.exec(pila, mem, contador);
+				if (contador != -1){
 					if (traza){
 						
 						Enumeration<StackObject> elements =pila.elements();
@@ -110,16 +123,16 @@ public class Interprete {
 						System.out.println("Instruccion ejecutada: ");
 						System.out.println(i);
 					}
+					
+				}else{
 					System.err.println("Error en tiempo de ejecucion");
 					if (!pila.isEmpty()){
-
 						StackObject err = pila.pop();
 						if (err instanceof MyExecutionError){
 							System.err.println(err);
 						}
-						
+						System.exit(-1);
 					}
-					System.exit(-1);
 				}
 			}
 		}

@@ -10,15 +10,14 @@ import util.Memoria;
 public class Escribir extends InstruccionMaquinaP {
 
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR, "Empty stack"));
-			return false;
+			return -1;
 		}
 		Object o = p.pop();
 		System.out.println(o);
-		return true;
+		return counter+1;
 	}
 	@Override
 	public int size(){

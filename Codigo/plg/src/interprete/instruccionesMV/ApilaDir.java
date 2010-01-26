@@ -16,19 +16,18 @@ public class ApilaDir extends InstruccionMaquinaP{
 	public ApilaDir(Integer dir){
 		this.dir = dir;
 	}
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (dir == null){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Null direction"));
-			return false;
+			return -1;
 		}
 
 		if (m.size() > dir || m.getPosicion(dir) == null){
 			p.push(new MyExecutionError(MyExecutionError.MEMORY_ERROR,"Violation Memory"));
-			return false;
+			return -1;
 		}
 		p.push(m.getPosicion(dir));
-		return true;
+		return counter+1;
 	}
 	@Override
 	public int size(){

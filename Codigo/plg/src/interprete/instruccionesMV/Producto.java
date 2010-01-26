@@ -13,17 +13,16 @@ import java.util.Stack;
 import util.Memoria;
 
 public class Producto extends InstruccionMaquinaP{
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (p.size() < 2){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Not enough elements"));
-			return false;
+			return -1;
 		}
 		StackObject o1 = p.pop();
 		StackObject o2 = p.pop();
 		if (o1 instanceof MyBuffer || o2 instanceof MyBuffer || o1 instanceof MyBoolean || o2 instanceof MyBoolean){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-			return false;
+			return -1;
 		}
 		
 		/*
@@ -36,7 +35,7 @@ public class Producto extends InstruccionMaquinaP{
 				Float f2 = (Float)o2.getValue();
 				f.setValue(f1*f2);
 				p.push(f);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyInteger){
 				MyFloat f = new MyFloat();
@@ -45,7 +44,7 @@ public class Producto extends InstruccionMaquinaP{
 				f.setValue(f1*i2);
 				p.push(f);
 
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
 				MyFloat f = new MyFloat();
@@ -53,7 +52,7 @@ public class Producto extends InstruccionMaquinaP{
 				Integer n2 = (Integer)o2.getValue();
 				f.setValue(f1*n2);
 				p.push(f);
-				return true;
+				return counter+1;
 			}
 		}
 
@@ -68,7 +67,7 @@ public class Producto extends InstruccionMaquinaP{
 				f.setValue(i1*f2);
 				p.push(f);
 
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyInteger){
 				MyInteger i = new MyInteger();
@@ -76,7 +75,7 @@ public class Producto extends InstruccionMaquinaP{
 				Integer i2 = (Integer)o2.getValue();
 				i.setValue(i1*i2);
 				p.push(i);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
 				MyInteger i = new MyInteger();
@@ -85,7 +84,7 @@ public class Producto extends InstruccionMaquinaP{
 				i.setValue(i1*n2);
 				p.push(i);
 
-				return true;
+				return counter+1;
 			}
 		}
 		/*
@@ -98,7 +97,7 @@ public class Producto extends InstruccionMaquinaP{
 				Float f2 = (Float)o2.getValue();
 				f.setValue(n1*f2);
 				p.push(f);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyInteger){
 				MyInteger i = new MyInteger();
@@ -106,7 +105,7 @@ public class Producto extends InstruccionMaquinaP{
 				Integer i2 = (Integer)o2.getValue();
 				i.setValue(n1*i2);
 				p.push(i);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
 				
@@ -114,11 +113,11 @@ public class Producto extends InstruccionMaquinaP{
 				Integer n2 = (Integer)o2.getValue();
 				MyNatural n= new MyNatural();
 				n.setValue(n1*n2);
-				return true;
+				return counter+1;
 			}
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-		return false;	
+		return -1;	
 	}
 	@Override
 	public int size(){

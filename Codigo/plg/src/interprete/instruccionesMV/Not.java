@@ -15,11 +15,11 @@ import util.Memoria;
 
 public class Not extends InstruccionMaquinaP {
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
-			return false;
+			return -1;
 		}
 		StackObject o = p.pop();
 		if (o instanceof MyBuffer || 
@@ -28,7 +28,7 @@ public class Not extends InstruccionMaquinaP {
 				o instanceof MyChar ||
 				o instanceof MyFloat){ 
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operand"));
-			return false;
+			return -1;
 		}
 		
 
@@ -41,10 +41,10 @@ public class Not extends InstruccionMaquinaP {
 			Boolean b1 = (Boolean)o.getValue();
 			b.setValue(!b1);
 			p.push(b);
-			return true;
+			return counter+1;
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operand"));
-		return false;	
+		return -1;	
 	}
 	@Override
 	public int size(){
