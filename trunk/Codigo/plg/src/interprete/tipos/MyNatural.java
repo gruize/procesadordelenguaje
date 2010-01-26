@@ -31,6 +31,24 @@ public class MyNatural extends StackObject{
 	public byte type() {
 		return MY_NATURAL;
 	}
+	@Override
+	public boolean fromBuffer(MyBuffer buffer) {
+		String sBuffer = (String)buffer.getValue();
+		if (sBuffer == null)
+			return false;
+		try{
+			value = Integer.valueOf(sBuffer);
+		}catch ( NumberFormatException e) {
+			value = null;
+			return false;
+		}
+		if (value < 0){
+			value = null;
+			return false;
+		}
+		return true;
+	}
+
 
 
 }

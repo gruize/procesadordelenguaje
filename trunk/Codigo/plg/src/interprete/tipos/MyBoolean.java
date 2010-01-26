@@ -40,9 +40,23 @@ public class MyBoolean extends StackObject{
 		}
 		return null;
 	}
+	
 	@Override
 	public byte type() {
 		return MY_BOOLEAN;
+	}
+	@Override
+	public boolean fromBuffer(MyBuffer buffer) {
+		String sBuffer = (String)buffer.getValue();
+		if (sBuffer.toLowerCase().equals("true")){
+			value = Boolean.TRUE;
+			return true;
+		}
+		if (sBuffer.toLowerCase().equals("false")){
+			value = Boolean.FALSE;
+			return true;
+		}
+		return false;
 	}
 	
 }

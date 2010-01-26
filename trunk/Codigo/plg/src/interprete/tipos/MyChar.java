@@ -31,5 +31,13 @@ public class MyChar extends StackObject{
 	public byte type() {
 		return MY_CHAR;
 	}
+	@Override
+	public boolean fromBuffer(MyBuffer buffer) {
+		String sBuffer = (String)buffer.getValue();
+		if (sBuffer == null)
+			return false;
+		value = sBuffer.charAt(0);
+		return true;
+	}
 
 }

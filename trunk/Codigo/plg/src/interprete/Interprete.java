@@ -8,11 +8,10 @@ import interprete.instruccionesMV.InstruccionMaquinaP;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.InputStream;
 import java.util.Stack;
 import java.util.Vector;
 
-import util.*;
+import util.Memoria;
 
 public class Interprete {
 	

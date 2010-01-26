@@ -32,6 +32,19 @@ public class MyInteger extends StackObject {
 	public byte type() {
 		return MY_INTEGER;
 	}
+	@Override
+	public boolean fromBuffer(MyBuffer buffer) {
+		String sBuffer = (String)buffer.getValue();
+		if (sBuffer == null)
+			return false;
+		try{
+			value = Integer.valueOf(sBuffer);
+		}catch ( NumberFormatException e) {
+			value = null;
+			return false;
+		}
+		return true;
 
+	}
 
 }
