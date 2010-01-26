@@ -82,7 +82,7 @@ public class ValorAbsoluto extends InstruccionMaquinaP{
 		return new ValorAbsoluto();
 	}
 	public String toString(){
-		return "Code="+InstruccionMaquinaP.VALOR_ABSOLUTO+". valor absoluto";
+		return "Code="+InstruccionMaquinaP.VALOR_ABSOLUTO+". valor absoluto ";
 	}
 
 }
