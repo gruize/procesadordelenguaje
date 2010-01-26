@@ -138,7 +138,7 @@ public class ALexico {
 							break;
 						}
 						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '-' ||
-								buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || 
+								buff[0] == '*' || buff[0] == '/' || 
 								buff[0] == ')' || buff.toString().equals("-")) {
 							carAntConsumido[0] = buff[0];
 							tok = dameToken(buff[0]);
