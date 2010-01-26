@@ -877,7 +877,7 @@ public class ALexico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa.txt";
+		String nombreFichero = "programa3.txt";
 		
 		ALexico scanner = new ALexico();
 		
