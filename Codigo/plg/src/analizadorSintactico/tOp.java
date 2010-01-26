@@ -7,6 +7,11 @@ public enum tOp {
 	suma, resta, oLogica,
 	//Operadores de OP2
 	multiplicacion, division, resto, yLogica,
+	//Operadores de OP3
+	despIzq, despDer,
 	//Operadores de OP4
-	negArit, negLogica, opVAbs, castChar, castNat, castInt, castFloat
+	negArit, negLogica, opVAbs, castChar, castNat, castInt, castFloat,
+	
+	//Error
+	error
 }
