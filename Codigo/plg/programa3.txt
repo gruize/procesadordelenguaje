@@ -4,4 +4,6 @@ centimos: float;
 cadena: character;
 numero: natural
 &
-numero := 5 + 6
+numero := 5 + 6;
+cantidad := 8.9999 + numero;
+euros := (6 + 5) * (73 - 67) * 1
