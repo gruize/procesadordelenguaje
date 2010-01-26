@@ -16,7 +16,8 @@ public class DesapilaDir extends InstruccionMaquinaP{
 	public DesapilaDir(int dir){
 		this.dir = dir;
 	}
-	public boolean exec(Stack<StackObject> p, Memoria m) {
+	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		counter++;
 		// TODO Auto-generated method stub
 		if (dir == null){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Null direction"));

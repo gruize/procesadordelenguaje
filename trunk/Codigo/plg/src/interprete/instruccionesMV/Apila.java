@@ -20,7 +20,8 @@ public class Apila extends InstruccionMaquinaP{
 	public Apila(StackObject e){
 		this.element = e;
 	}
-	public boolean exec(Stack<StackObject> p, Memoria m) {
+	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		counter++;
 		if (element == null){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Element is null"));
 			return false;

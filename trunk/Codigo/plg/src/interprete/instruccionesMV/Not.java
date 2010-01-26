@@ -15,7 +15,8 @@ import util.Memoria;
 
 public class Not extends InstruccionMaquinaP {
 
-	public boolean exec(Stack<StackObject> p, Memoria m) {
+	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
+		counter++;
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
 			return false;
