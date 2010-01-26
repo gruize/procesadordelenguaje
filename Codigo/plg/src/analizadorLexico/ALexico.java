@@ -139,7 +139,7 @@ public class ALexico {
 						}
 						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '-' ||
 								buff[0] == '*' || buff[0] == '/' || 
-								buff[0] == ')' || buff.toString().equals("-")) {
+								buff[0] == ')' || buff.toString().equals("-") || buff[0] == '|') {
 							carAntConsumido[0] = buff[0];
 							tok = dameToken(buff[0]);
 							transita(est.e27);
@@ -170,6 +170,11 @@ public class ALexico {
 							transita(est.e13);
 							break;
 						}
+						/*if (buff[0] == '|') {
+							carAntConsumido[0] = buff[0];
+							transita(est.e6);
+							break;
+						}*/
 						else
 							error(null);
 						break;	
@@ -404,7 +409,7 @@ public class ALexico {
 							transita(est.e13);
 						break;
 					case e14:
-						//Sobra (en el autómata se usaba cuando se reconocían las siguientes ")
+						//Sobra (en el autómata se usaba cuando se reconocían las siguientes '"')
 						break;
 					case e15:
 						if (buff[0] == '=') {
@@ -705,6 +710,8 @@ public class ALexico {
 						tokensOut.lastElement().getTipoToken() == tToken.parCierre ||
 						tokensOut.lastElement().getTipoToken() == tToken.identificador)
 					return new Token(tToken.resta);
+				else
+					return new Token(tToken.negArit);
 			else
 				return new Token(tToken.negArit);
 		case '*':
@@ -717,6 +724,8 @@ public class ALexico {
 			return new Token(tToken.parApertura);
 		case ')':
 			return new Token(tToken.parCierre);
+		case '|':
+			return new Token(tToken.opVAbs);
 		}
 		return new Token();
 	}
