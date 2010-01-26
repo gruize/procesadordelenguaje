@@ -20,7 +20,7 @@ public abstract class InstruccionesMaquinaPConstantes {
 	/**
 	 * Se puede comprar todo
 	 */
-	public static final byte IGUAL = 0X04;
+	public static final byte DISTINTO = 0X04;
 	/**
 	 * se pueden operar entre numeros el resultado es siempre el tipo de menos nivel de la operacion
 	 */

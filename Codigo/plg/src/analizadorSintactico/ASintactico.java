@@ -11,6 +11,7 @@ public class ASintactico {
 	private TS ts;
 	//Elemento de preanálisis
 	private Token tokActual;
+	private Emit emit;
 	private Vector<Token> tokensIn;
 	private int contTokens;
 	//En principio haré un Vector de instrucciones de máquina a pila como salida
@@ -27,11 +28,9 @@ public class ASintactico {
 		contTokens = 0;
 		instMPOut = new Vector<String>();
 		errorProg = false;
+		emit = new Emit();
 	}
 	
-	public void emite(String instMP) {
-		instMPOut.add(instMP);
-	}
 	
 	/*public Token token() {
 		return tokActual;
@@ -67,7 +66,9 @@ public class ASintactico {
 					"Token en preanálisis: " + tokActual.getTipoToken() + "\n");
 ////¿Esto sería una buena forma de abortar la ejecución?
 			errorProg = true;
-			emite("stop");
+//			emite("stop");
+			emit.emit(Emit.STOP);
+
 			return new Token(tToken.tokenError, "Se esperaba un token de tipo 'identificador'.");
 		}
 	}
@@ -84,7 +85,9 @@ public class ASintactico {
 					"Token en preanálisis: " + tokActual.getTipoToken() + "\n");
 ////¿Esto sería una buena forma de abortar la ejecución?
 			errorProg = true;
-			emite("stop");
+//			emite("stop");
+			emit.emit(Emit.STOP);
+
 			return new Token(tToken.tokenError, "Se esperaba un token de tipo 'tipoDeVariable'.");
 		}
 	}
@@ -121,7 +124,9 @@ public class ASintactico {
 					tokenEsperado.toString() + "'." + "\n");
 //¿Esto sería una buena forma de abortar la ejecución?
 			errorProg = true;
-			emite("stop");
+//			emite("stop");
+			emit.emit(Emit.STOP);
+
 		}
 	}
 	
@@ -213,7 +218,9 @@ public class ASintactico {
 		//errorProg = errorDec || errorSent;
 		errorProg = errorProg || errorDec || errorSent;
 		
-		emite("stop");
+//		emite("stop");
+		emit.emit(Emit.STOP);
+
 	}
 	
 	public boolean decs(){
@@ -230,6 +237,7 @@ public class ASintactico {
 			return true;
 		else {
 			ts.anadeId(id_tipo.getIden(), id_tipo.getTipo(), errorDec1_dir.getIntVal());
+			// faltan dos emits
 			return false;
 		}
 	}
@@ -349,7 +357,9 @@ public class ASintactico {
 				return true;
 			}
 			else {
-				emite("escribir");
+//				emite("escribir");
+				emit.emit(Emit.ESCRIBIR);
+
 				consume(tToken.parCierre);
 				return false;
 			}
@@ -375,8 +385,12 @@ public class ASintactico {
 			if (tokActual.getTipoToken() == tToken.identificador &&
 					ts.existeId(tokActual.getLexema())) {
 				lexIden = tokActual.getLexema();
-				emite("leer");
-				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+//				emite("leer");
+//				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+				emit.emit(Emit.LEER);
+				emit.emit(Emit.DESAPILA_DIR, new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
+
+
 				consume(tToken.identificador);
 				consume(tToken.parCierre);
 				return false;
@@ -420,7 +434,9 @@ public class ASintactico {
 				return true;
 			}
 			else {
-				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+//				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+				emit.emit(Emit.DESAPILA_DIR, new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
+
 				return false;
 			}
 		}
@@ -507,7 +523,10 @@ public class ASintactico {
 			return tSintetiz.tError;
 		}
 		else {
-			emite(op.toString());
+			// TODO
+//			emite(opUtils.toString());
+			emit.emit(opUtils.getOperationCode(op));
+
 			return tipo;
 		}	
 	}
@@ -559,7 +578,9 @@ public class ASintactico {
 				return tSintetiz.tError;
 			}
 			else {
-				emite(op.toString());
+//				emite(op.toString());
+				emit.emit(opUtils.getOperationCode(op));
+
 				return tipo2;
 			}
 		}
@@ -612,7 +633,9 @@ public class ASintactico {
 				return tSintetiz.tError;
 			}
 			else {
-				emite(op.toString());
+//				emite(op.toString());
+				emit.emit(opUtils.getOperationCode(op));
+
 				return tipo2;
 			}
 		}
@@ -672,7 +695,9 @@ public class ASintactico {
 			return tSintetiz.tError;
 		}
 		else {
-			emite(op.toString());
+//			emite(op.toString());
+			emit.emit(opUtils.getOperationCode(op));
+
 			return tipo;
 		}
 	}
@@ -692,7 +717,9 @@ public class ASintactico {
 			return tSintetiz.tError;
 		}
 		else {
-			emite(op.toString());
+//			emite(op.toString());
+			emit.emit(opUtils.getOperationCode(op));
+
 			return tipo;
 		}
 	}
@@ -711,7 +738,9 @@ public class ASintactico {
 			return tSintetiz.tError;
 		}
 		else {
-			emite(tToken.opVAbs.toString());
+//			emite(tToken.opVAbs.toString());
+			emit.emit(opUtils.getOperationCode(tOp.opVAbs));
+
 			consume(tToken.opVAbs);
 			return tipo;
 		}
@@ -750,37 +779,47 @@ public class ASintactico {
 	}
 	
 	public tSintetiz term1True() {
-		emite("apila(" + true + ")");
+		emit.emit(Emit.APILA, new Token(tToken.booleano,"true"));
+
+//		emite("apila(" + true + ")");
 		consume(tToken.booleanoCierto);
 		return tSintetiz.tBool;
 	}
 	
 	public tSintetiz term1False() {
-		emite("apila(" + false + ")");
+//		emite("apila(" + false + ")");
+		emit.emit(Emit.APILA, new Token(tToken.booleano,"false"));
 		consume(tToken.booleanoFalso);
 		return tSintetiz.tBool;
 	}
 	
 	public tSintetiz term2() {
-		emite("apila(" + tokActual.getLexema() + ")");
+//		emite("apila(" + tokActual.getLexema() + ")");
+		emit.emit(Emit.APILA, new Token(tToken.cadCaracteres,tokActual.getLexema()));
+
 		consume(tToken.cadCaracteres);
 		return tSintetiz.tChar;
 	}
 	
 	public tSintetiz term3() {
-		emite("apila(" + tokActual.getLexema() + ")");
+//		emite("apila(" + tokActual.getLexema() + ")");
+		emit.emit(Emit.APILA, new Token(tToken.natural,tokActual.getLexema()));
+
 		consume(tToken.natural);
 		return tSintetiz.tNat;
 	}
 	
 	public tSintetiz term4() {
-		emite("apila(" + tokActual.getLexema() + ")");
+//		emite("apila(" + tokActual.getLexema() + ")");
+		emit.emit(Emit.APILA, new Token(tToken.entero,tokActual.getLexema()));
+
 		consume(tToken.entero);
 		return tSintetiz.tInt;
 	}
 	
 	public tSintetiz term5() {
-		emite("apila(" + tokActual.getLexema() + ")");
+//		emite("apila(" + tokActual.getLexema() + ")");
+		emit.emit(Emit.APILA, new Token(tToken.real,tokActual.getLexema()));
 		consume(tToken.real);
 		return tSintetiz.tFloat;
 	}
@@ -797,7 +836,9 @@ public class ASintactico {
 			consume(tToken.identificador);
 			//OBTENEMOS EL TIPO DEL IDENTIFICADOR DE LA TS//
 			tipo = ts.getTabla().get(lexIden).getTipo();
-			emite("apila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+//			emite("apila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+			emit.emit(Emit.APILA_DIR, new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
+
 			return tipo;
 		}
 		else {
@@ -1072,7 +1113,6 @@ public class ASintactico {
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
-		
 		if (scanner.scanFichero(nombreFichero)) {
 			parser.tokensIn = scanner.dameTokens();
 			parser.tokActual = parser.tokensIn.get(parser.contTokens);

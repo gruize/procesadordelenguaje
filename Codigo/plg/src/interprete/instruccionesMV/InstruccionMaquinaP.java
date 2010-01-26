@@ -23,8 +23,8 @@ public abstract class InstruccionMaquinaP extends InstruccionesMaquinaPConstante
 			return MenorIgual.fromBytes(bytes, pos);
 		case MAYORIGUAL:	
 			return MayorIgual.fromBytes(bytes, pos);
-		case IGUAL:			
-			return Igual.fromBytes(bytes, pos);
+		case DISTINTO:			
+			return Distinto.fromBytes(bytes, pos);
 		case SUMA:						
 			return Suma.fromBytes(bytes, pos);
 		case RESTA:						

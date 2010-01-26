@@ -13,7 +13,7 @@ import interprete.instruccionesMV.DesplazamientoDerechas;
 import interprete.instruccionesMV.DesplazamientoIzquierda;
 import interprete.instruccionesMV.Division;
 import interprete.instruccionesMV.Escribir;
-import interprete.instruccionesMV.Igual;
+import interprete.instruccionesMV.Distinto;
 import interprete.instruccionesMV.InstruccionMaquinaP;
 import interprete.instruccionesMV.InstruccionesMaquinaPConstantes;
 import interprete.instruccionesMV.Leer;
@@ -80,8 +80,8 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 			return new MenorIgual();
 		case MAYORIGUAL:	
 			return new MayorIgual();
-		case IGUAL:			
-			return new Igual();
+		case DISTINTO:			
+			return new Distinto();
 		case SUMA:						
 			return new Suma();
 		case RESTA:						
