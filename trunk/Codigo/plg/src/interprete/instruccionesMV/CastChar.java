@@ -15,17 +15,16 @@ import util.Memoria;
 
 public class CastChar extends InstruccionMaquinaP{
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
-			return false;
+			return -1;
 		}
 		StackObject o = p.pop();
 		if (o instanceof MyBuffer || 
 				o instanceof MyBoolean ){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-			return false;
+			return -1;
 		}
 		
 		/*
@@ -33,32 +32,32 @@ public class CastChar extends InstruccionMaquinaP{
 		 */
 		if (o instanceof MyChar){
 			p.push(o);
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyInteger){
 			MyChar c = new MyChar();
 			char c1 = (char)((Integer)o.getValue()).intValue();
 			c.setValue(c1);
 			p.push(c);
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyNatural){
 			MyChar c = new MyChar();
 			char c1 = (char)((Integer)o.getValue()).intValue();
 			c.setValue(c1);
 			p.push(c);
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyFloat){
 			MyChar c = new MyChar();
 			char c1 = (char)((Float)o.getValue()).intValue();
 			c.setValue(c1);
 			p.push(c);
-			return true;
+			return counter+1;
 		}
 
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-		return false;	
+		return -1;
 	}
 	@Override
 	public int size(){

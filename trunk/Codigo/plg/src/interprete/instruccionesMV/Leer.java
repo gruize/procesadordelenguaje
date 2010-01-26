@@ -12,8 +12,8 @@ import util.Memoria;
 public class Leer extends InstruccionMaquinaP{
 
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
+
 		try{
 			// TODO el cast hay que hacerlo?
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -26,7 +26,7 @@ public class Leer extends InstruccionMaquinaP{
 		catch(Exception e){ 
 			e.printStackTrace();
 		}
-		return true;
+		return counter+1;
 	}
 	@Override
 	public int size(){

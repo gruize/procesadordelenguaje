@@ -14,18 +14,17 @@ import java.util.Stack;
 import util.Memoria;
 
 public class ValorAbsoluto extends InstruccionMaquinaP{
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
-			return false;
+			return -1;
 		}
 		StackObject o = p.pop();
 		if (o instanceof MyBuffer || 
 				o instanceof MyBoolean || 
 				o instanceof MyChar ){ 
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operand"));
-			return false;
+			return -1;
 		}
 		
 
@@ -43,11 +42,11 @@ public class ValorAbsoluto extends InstruccionMaquinaP{
 			else 
 				p.push(o);
 			
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyNatural){
 			p.push(o);
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyFloat){
 			MyFloat f = new MyFloat();
@@ -59,10 +58,10 @@ public class ValorAbsoluto extends InstruccionMaquinaP{
 			}
 			else 
 				p.push(o);
-			return true;
+			return counter+1;
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operand"));
-		return false;	
+		return -1;	
 	}
 	@Override
 	public int size(){

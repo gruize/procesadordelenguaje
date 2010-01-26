@@ -15,17 +15,16 @@ import util.Memoria;
 
 public class CastNatural extends InstruccionMaquinaP{
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
-			return false;
+			return -1;
 		}
 		StackObject o = p.pop();
 		if (o instanceof MyBuffer || 
 				o instanceof MyBoolean ){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-			return false;
+			return -1;
 		}
 		
 		
@@ -34,7 +33,7 @@ public class CastNatural extends InstruccionMaquinaP{
 			Character c = (Character)o.getValue();
 			n.setValue(Character.getNumericValue(c));
 			p.push(n);
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyInteger){
 			MyNatural n = new MyNatural();
@@ -47,7 +46,7 @@ public class CastNatural extends InstruccionMaquinaP{
 		if (o instanceof MyNatural){
 
 			p.push(o);
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyFloat){
 			MyNatural n = new MyNatural();
@@ -56,11 +55,11 @@ public class CastNatural extends InstruccionMaquinaP{
 				f = new Float(0.0);
 			n.setValue(f.intValue());
 			p.push(n);
-			return true;
+			return counter+1;
 		}
 
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-		return false;	
+		return -1;
 	}
 	@Override
 	public int size(){

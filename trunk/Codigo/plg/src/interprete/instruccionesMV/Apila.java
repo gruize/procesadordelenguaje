@@ -20,14 +20,13 @@ public class Apila extends InstruccionMaquinaP{
 	public Apila(StackObject e){
 		this.element = e;
 	}
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (element == null){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Element is null"));
-			return false;
+			return -1;
 		}
 		p.push(element);
-		return true;
+		return counter+1;
 	}
 	@Override
 	public int size(){

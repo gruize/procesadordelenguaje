@@ -15,17 +15,16 @@ import util.Memoria;
 
 public class CastInteger extends InstruccionMaquinaP{
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
-			return false;
+			return -1;
 		}
 		StackObject o = p.pop();
 		if (o instanceof MyBuffer || 
 				o instanceof MyBoolean ){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-			return false;
+			return -1;
 		}
 		
 		/*
@@ -36,7 +35,7 @@ public class CastInteger extends InstruccionMaquinaP{
 			Character c = (Character)o.getValue();
 			i.setValue(Character.getNumericValue(c));
 			p.push(i);
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyInteger){
 			p.push(o);
@@ -46,18 +45,18 @@ public class CastInteger extends InstruccionMaquinaP{
 			Integer i1 = (Integer)o.getValue();
 			i.setValue(i1);
 			p.push(i);
-			return true;
+			return counter+1;
 		}
 		if (o instanceof MyFloat){
 			MyInteger i = new MyInteger();
 			Float f = (Float)o.getValue();
 			i.setValue(f.intValue());
 			p.push(i);
-			return true;
+			return counter+1;
 		}
 
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-		return false;	
+		return -1;
 	}
 	@Override
 	public int size(){

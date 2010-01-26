@@ -19,18 +19,17 @@ public class Menor extends InstruccionMaquinaP{
 
 
 
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		if (p.size() < 2){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Not enough elements"));
-			return false;
+			return -1;
 		}
 		StackObject o1 = p.pop();
 		StackObject o2 = p.pop();
 		if (o1 instanceof MyBoolean || o2 instanceof MyBoolean ||
 				o1 instanceof MyBuffer || o2 instanceof MyBuffer){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-			return false;
+			return -1;
 		}
 		MyBoolean e = new MyBoolean();
 		/*
@@ -43,7 +42,7 @@ public class Menor extends InstruccionMaquinaP{
 				Character c2 = (Character)o2.getValue();
 				e.setValue(c1.compareTo(c2) < 0);
 				p.push(e);
-				return true;
+				return counter+1;
 			}
 		/*
 		 * My Float is comparable with MyInteger MyFloat and MyNatural
@@ -54,7 +53,7 @@ public class Menor extends InstruccionMaquinaP{
 				Float v2 = (Float)o2.getValue();
 				e.setValue(v1.compareTo(v2) < 0);
 				p.push(e);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyInteger){
 				Float v1 = (Float)o1.getValue();
@@ -62,14 +61,14 @@ public class Menor extends InstruccionMaquinaP{
 				e.setValue(v1.compareTo(new Float(v2)) < 0);
 				p.push(e);
 
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
 				Float v1 = (Float)o1.getValue();
 				Integer v2 = (Integer)o2.getValue();
 				e.setValue(v1.compareTo(new Float(v2)) < 0);
 				p.push(e);
-				return true;
+				return counter+1;
 			}
 		}
 
@@ -82,21 +81,21 @@ public class Menor extends InstruccionMaquinaP{
 				Float v2 = (Float)o2.getValue();
 				e.setValue(v1.compareTo(v2.intValue()) < 0);
 				p.push(e);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyInteger){
 				Integer v1 = (Integer)o1.getValue();
 				Integer v2 = (Integer)o2.getValue();
 				e.setValue(v1.compareTo((v2)) < 0);
 				p.push(e);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
 				Integer v1 = (Integer)o1.getValue();
 				Integer v2 = (Integer)o2.getValue();
 				e.setValue(v1.compareTo((v2)) < 0);
 				p.push(e);
-				return true;
+				return counter+1;
 			}
 		}
 		/*
@@ -108,25 +107,25 @@ public class Menor extends InstruccionMaquinaP{
 				Float v2 = (Float)o2.getValue();
 				e.setValue(v1.compareTo(v2.intValue()) < 0);
 				p.push(e);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyInteger){
 				Integer v1 = (Integer)o1.getValue();
 				Integer v2 = (Integer)o2.getValue();
 				e.setValue(v1.compareTo((v2)) < 0);
 				p.push(e);
-				return true;
+				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
 				Integer v1 = (Integer)o1.getValue();
 				Integer v2 = (Integer)o2.getValue();
 				e.setValue(v1.compareTo((v2)) < 0);
 				p.push(e);
-				return true;
+				return counter+1;
 			}
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "The operation doesn't support the operands"));
-		return false;
+		return -1;
 	}
 	@Override
 	public int size(){

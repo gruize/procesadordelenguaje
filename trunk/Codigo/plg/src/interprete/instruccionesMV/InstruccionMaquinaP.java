@@ -9,7 +9,7 @@ import util.Memoria;
 public abstract class InstruccionMaquinaP extends InstruccionesMaquinaPConstantes{
 
 	public static final int MAX_SIZE = 10;
-	public abstract boolean exec(Stack<StackObject> p, Memoria m, Integer counter);
+	public abstract int exec(Stack<StackObject> p, Memoria m, Integer counter);
 	public abstract byte[] toBytes();
 	public static InstruccionMaquinaP fromBytes(byte[] bytes,int pos){
 		if (bytes.length <= pos)
@@ -67,6 +67,10 @@ public abstract class InstruccionMaquinaP extends InstruccionesMaquinaPConstante
 			return Leer.fromBytes(bytes, pos);
 		case ESCRIBIR:
 			return Escribir.fromBytes(bytes, pos);
+		case VALOR_ABSOLUTO:
+			return ValorAbsoluto.fromBytes(bytes, pos);
+		case STOP: 
+			return Stop.fromBytes(bytes, pos);
 		default:
 			return null;
 

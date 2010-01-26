@@ -16,24 +16,24 @@ public class DesapilaDir extends InstruccionMaquinaP{
 	public DesapilaDir(int dir){
 		this.dir = dir;
 	}
-	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
-		counter++;
+	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
+
 		if (p.isEmpty()){
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
-			return false;
+			return -1;
 		}
 		if (dir == null){
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Null direction"));
-			return false;
+			return -1;
 		}
 		StackObject o1 = m.getPosicion(dir);
 		StackObject o2 = p.pop();
 		if (o2.getClass().equals(o1.getClass())){
 			m.setPosicion(dir, o2);
-			return true;
+			return counter+1;
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR,"Incorrect types"));
-		return false;
+		return -1;
 
 	}
 	@Override
