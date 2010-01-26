@@ -11,6 +11,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -18,6 +19,7 @@ import util.Memoria;
 
 public class Interprete {
 	private static boolean debug = true;
+	private static boolean traza = false;
 	private static Memoria mem;
 	private static Stack<StackObject> pila;
 	private static Integer contador;
@@ -78,7 +80,33 @@ public class Interprete {
 					System.err.println("Error en el puntero de programa");
 					System.exit(-1);
 				}
-				if (!codigo.get(contador).exec(pila, mem, contador)){
+				InstruccionMaquinaP i = codigo.get(contador); 
+				if (!i.exec(pila, mem, contador)){
+					if (traza){
+						
+						Enumeration<StackObject> elements =pila.elements();
+						if (elements != null){
+							System.out.println("Pila:");
+							int pos = 0;
+							while (elements.hasMoreElements()){
+								System.out.println(pos+": "+elements.toString());
+								pos++;
+							}
+							
+						}
+						elements =mem.elements();
+						if (elements != null){
+							System.out.println("Memoria:");
+							int pos = 0;
+							while (elements.hasMoreElements()){
+								System.out.println(pos+": "+elements.toString());
+								pos++;
+							}
+							
+						}
+						System.out.println("Instruccion ejecutada: ");
+						System.out.println(i);
+					}
 					System.err.println("Error en tiempo de ejecucion");
 					if (!pila.isEmpty()){
 

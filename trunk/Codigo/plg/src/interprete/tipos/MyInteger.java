@@ -46,5 +46,8 @@ public class MyInteger extends StackObject {
 		return true;
 
 	}
+	public String toString(){
+		return "MyInteger:"+value;
+	}
 
 }

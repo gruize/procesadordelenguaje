@@ -66,4 +66,8 @@ public class Or extends InstruccionMaquinaP {
 		}
 		return new Or();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.OLOGICO+". or";
+	}
+
 }

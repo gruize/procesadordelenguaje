@@ -45,6 +45,9 @@ public class MyFloat extends StackObject{
 		}
 		return true;
 	}
+	public String toString(){
+		return "MyFloat:"+value;
+	}
 
 
 

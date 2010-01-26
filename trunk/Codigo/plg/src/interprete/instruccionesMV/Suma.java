@@ -150,4 +150,9 @@ public class Suma extends InstruccionMaquinaP{
 			return null;
 		}
 		return new Suma();
-	}}
+	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.SUMA+". suma";
+	}
+
+}

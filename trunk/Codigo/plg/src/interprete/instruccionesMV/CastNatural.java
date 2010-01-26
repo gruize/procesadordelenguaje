@@ -80,4 +80,8 @@ public class CastNatural extends InstruccionMaquinaP{
 		}
 		return new CastInteger();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.CASTNAT+". (natural)";
+	}
+
 }

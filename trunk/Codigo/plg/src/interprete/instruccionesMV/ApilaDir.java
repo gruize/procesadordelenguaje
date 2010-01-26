@@ -58,6 +58,11 @@ public class ApilaDir extends InstruccionMaquinaP{
 		i.dir = (Integer)new MyNatural().fromBytes(bytes, pos).getValue();
 		return i;
 	}
+	@Override
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.APILA_DIR+". Apila_dir";
+	}
+
 
 	
 }

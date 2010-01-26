@@ -37,5 +37,9 @@ public class Escribir extends InstruccionMaquinaP {
 		}
 		return new Escribir();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.ESCRIBIR+". escribir";
+	}
+
 
 }

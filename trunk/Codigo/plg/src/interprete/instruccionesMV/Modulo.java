@@ -96,6 +96,10 @@ public class Modulo extends InstruccionMaquinaP {
 		}
 		return new Modulo();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.MODULO+". modulo";
+	}
+
 }
 
 

@@ -142,5 +142,9 @@ public class MenorIgual extends InstruccionMaquinaP{
 		}
 		return new MenorIgual();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.MENORIGUAL+". menor o igual";
+	}
+
 }
 

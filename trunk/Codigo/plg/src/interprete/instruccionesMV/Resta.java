@@ -157,4 +157,8 @@ public class Resta extends InstruccionMaquinaP{
 		}
 		return new Resta();
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.RESTA+". resta";
+	}
+
 }

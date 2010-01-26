@@ -64,6 +64,7 @@ public class MyExecutionError extends StackObject {
 	public boolean fromBuffer(MyBuffer buffer) {
 		return false;
 	}
+	
 
 	
 

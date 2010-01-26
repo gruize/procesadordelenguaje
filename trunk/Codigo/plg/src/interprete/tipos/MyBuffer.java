@@ -33,6 +33,8 @@ public class MyBuffer extends StackObject{
 	public boolean fromBuffer(MyBuffer buffer) {
 		return false;
 	}
-
+	public String toString(){
+		return "MyBuffer:"+value;
+	}
 
 }

@@ -26,8 +26,15 @@ public class DesapilaDir extends InstruccionMaquinaP{
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Null direction"));
 			return false;
 		}
-		m.setPosicion(dir, p.pop());
-		return true;
+		StackObject o1 = m.getPosicion(dir);
+		StackObject o2 = p.pop();
+		if (o2.getClass().equals(o1.getClass())){
+			m.setPosicion(dir, o2);
+			return true;
+		}
+		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR,"Incorrect types"));
+		return false;
+
 	}
 	@Override
 	public int size(){
@@ -59,5 +66,9 @@ public class DesapilaDir extends InstruccionMaquinaP{
 		i.dir = (Integer)new MyNatural().fromBytes(bytes, pos).getValue();
 		return i; 
 	}
+	public String toString(){
+		return "Code="+InstruccionMaquinaP.DESAPILA_DIR+". desapilaDir";
+	}
+
 
 }
