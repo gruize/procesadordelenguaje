@@ -1,5 +1,6 @@
 package interprete.instruccionesMV;
 
+import interprete.tipos.MyExecutionError;
 import interprete.tipos.StackObject;
 
 import java.util.Stack;
@@ -10,6 +11,10 @@ public class Desapila extends InstruccionMaquinaP{
 
 	public boolean exec(Stack<StackObject> p, Memoria m, Integer counter) {
 		counter++;
+		if (p.isEmpty()){
+			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
+			return false;
+		}
 		p.pop();
 		return true;
 	}
