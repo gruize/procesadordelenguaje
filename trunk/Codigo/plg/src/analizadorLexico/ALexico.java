@@ -116,6 +116,7 @@ public class ALexico {
 						}
 						if (buff[0] == '('){
 							transita(est.e34);
+							lex = "";
 							break;
 						}
 						if (esLetra(buff[0])) {
