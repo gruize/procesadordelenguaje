@@ -27,7 +27,9 @@ import interprete.instruccionesMV.Or;
 import interprete.instruccionesMV.Producto;
 import interprete.instruccionesMV.Resta;
 import interprete.instruccionesMV.Signo;
+import interprete.instruccionesMV.Stop;
 import interprete.instruccionesMV.Suma;
+import interprete.instruccionesMV.ValorAbsoluto;
 import interprete.tipos.MyBoolean;
 import interprete.tipos.MyBuffer;
 import interprete.tipos.StackObject;
@@ -154,6 +156,10 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 			return new Leer();
 		case ESCRIBIR:
 			return new Escribir();
+		case VALOR_ABSOLUTO :
+			return new ValorAbsoluto();
+		case STOP:
+			return new Stop();
 		default:
 			return null;
 
