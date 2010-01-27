@@ -65,7 +65,6 @@ public class Distinto extends InstruccionMaquinaP{
 				Integer v2 = (Integer)o2.getValue();
 				e.setValue(v1.compareTo(new Float(v2)) != 0);
 				p.push(e);
-
 				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
@@ -86,7 +85,6 @@ public class Distinto extends InstruccionMaquinaP{
 				Float v2 = (Float)o2.getValue();
 				e.setValue(v1.compareTo(v2.intValue()) != 0);
 				p.push(e);
-
 				return counter+1;
 			}
 			if (o2 instanceof MyInteger){

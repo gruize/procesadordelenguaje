@@ -51,8 +51,6 @@ public class Modulo extends InstruccionMaquinaP {
 				Integer n2 = (Integer)o2.getValue();
 				n.setValue(i1%n2);
 				p.push(n);
-
-
 				return counter+1;
 			}
 		}

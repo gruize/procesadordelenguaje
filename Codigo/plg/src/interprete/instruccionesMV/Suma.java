@@ -59,7 +59,6 @@ public class Suma extends InstruccionMaquinaP{
 				Integer i2 = (Integer)o2.getValue();
 				f.setValue(f1+i2);
 				p.push(f);
-
 				return counter+1;
 			}
 			if (o2 instanceof MyNatural){
@@ -82,7 +81,6 @@ public class Suma extends InstruccionMaquinaP{
 				Float f2 = (Float)o2.getValue();
 				f.setValue(i1+f2);
 				p.push(f);
-
 				return counter+1;
 			}
 			if (o2 instanceof MyInteger){
@@ -99,7 +97,6 @@ public class Suma extends InstruccionMaquinaP{
 				Integer n2 = (Integer)o2.getValue();
 				i.setValue(i1+n2);
 				p.push(i);
-
 				return counter+1;
 			}
 		}

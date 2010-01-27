@@ -2,6 +2,7 @@ package interprete.instruccionesMV;
 
 import interprete.tipos.MyExecutionError;
 import interprete.tipos.MyFloat;
+import interprete.tipos.MyInteger;
 import interprete.tipos.MyNatural;
 import interprete.tipos.StackObject;
 
@@ -29,7 +30,12 @@ public class DesapilaDirFloat extends InstruccionMaquinaP{
 		}
 		//StackObject o1 = m.getPosicion(dir);
 		StackObject o = p.pop();
-		
+		if (o instanceof MyNatural || o instanceof MyInteger){
+			MyFloat f = new MyFloat();
+			f.setValue(new Float((Integer)o.getValue()));
+			m.setPosicion(dir, f);
+			return counter+1;
+		}
 		if (o instanceof MyFloat){
 			m.setPosicion(dir, o);
 			return counter+1;

@@ -39,6 +39,7 @@ public class CastInteger extends InstruccionMaquinaP{
 		}
 		if (o instanceof MyInteger){
 			p.push(o);
+			return counter+1;
 		}
 		if (o instanceof MyNatural){
 			MyInteger i = new MyInteger();
@@ -69,7 +70,7 @@ public class CastInteger extends InstruccionMaquinaP{
 		return bytes;
 	}
 	public static CastInteger fromBytes(byte[] bytes, int pos){
-		if (bytes[pos++]!= InstruccionMaquinaP.CASTFLOAT){
+		if (bytes[pos++]!= InstruccionMaquinaP.CASTINT){
 			return null;
 		}
 		return new CastInteger();
