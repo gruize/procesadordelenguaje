@@ -651,10 +651,14 @@ public class ASintactico {
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.opVAbs)
 			tipo1 = exp42();
-		if (esTokenOp41(tokActual.getTipoToken()))
-			tipo1 = exp41();
 		else
-			tipo1 = exp43();
+			if (esTokenOp41(tokActual.getTipoToken()))
+				tipo1 = exp41();
+			else
+				tipo1 = exp43();
+//Antes
+//		else
+//			tipo1 = exp43();
 		tipoH = tipo1;
 		if (tipoH == tSintetiz.tError) {
 			errorProg = true;
@@ -919,8 +923,10 @@ public class ASintactico {
 	public tSintetiz dameTipo(tSintetiz tipoEXP, tOp op4) {
 		switch (op4) {
 		case negArit:
-			if (esTipoNum(tipoEXP))
+			if (esTipoNum(tipoEXP) && tipoEXP != tSintetiz.tNat)
 				return tipoEXP;
+			if (tipoEXP == tSintetiz.tNat)
+				return tSintetiz.tInt;
 			else
 				return tSintetiz.tError;
 		case negLogica:
@@ -1138,7 +1144,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa3.txt";
+		String nombreFichero = "programa4.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
