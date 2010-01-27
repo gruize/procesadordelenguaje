@@ -61,8 +61,16 @@ public abstract class InstruccionMaquinaP extends InstruccionesMaquinaPConstante
 			return ApilaDir.fromBytes(bytes, pos);
 		case DESAPILA:
 			return Desapila.fromBytes(bytes, pos);
-		case DESAPILA_DIR:
-			return DesapilaDir.fromBytes(bytes, pos);
+		case DESAPILA_DIR_BOOLEAN:
+			return DesapilaDirBoolean.fromBytes(bytes, pos);
+		case DESAPILA_DIR_NATURAL:
+			return DesapilaDirNatural.fromBytes(bytes, pos);
+		case DESAPILA_DIR_INTEGER:
+			return DesapilaDirEntero.fromBytes(bytes, pos);
+		case DESAPILA_DIR_FLOAT:
+			return DesapilaDirFloat.fromBytes(bytes, pos);
+		case DESAPILA_DIR_CHAR:
+			return DesapilaDirChar.fromBytes(bytes, pos);
 		case LEER:
 			return Leer.fromBytes(bytes, pos);
 		case ESCRIBIR:
