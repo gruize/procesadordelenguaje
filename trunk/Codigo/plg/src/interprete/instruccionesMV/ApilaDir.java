@@ -22,7 +22,7 @@ public class ApilaDir extends InstruccionMaquinaP{
 			return -1;
 		}
 
-		if (m.size() > dir || m.getPosicion(dir) == null){
+		if (m.getPosicion(dir) == null){
 			p.push(new MyExecutionError(MyExecutionError.MEMORY_ERROR,"Violation Memory"));
 			return -1;
 		}
@@ -41,7 +41,7 @@ public class ApilaDir extends InstruccionMaquinaP{
 	public byte[] toBytes() {
 		byte[] bytes = new byte[size()];
 		int pos = 0;
-		bytes[pos++] = InstruccionMaquinaP.APILA;
+		bytes[pos++] = InstruccionMaquinaP.APILA_DIR;
 		if (this.dir == null)
 			return bytes;
 		MyNatural n = new MyNatural();

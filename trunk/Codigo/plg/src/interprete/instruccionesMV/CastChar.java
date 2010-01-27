@@ -66,7 +66,7 @@ public class CastChar extends InstruccionMaquinaP{
 	@Override
 	public byte[] toBytes() {
 		byte[] bytes = new byte[size()];
-		bytes[0] = InstruccionMaquinaP.YLOGICO;
+		bytes[0] = InstruccionMaquinaP.CASTCHAR;
 		return bytes;
 	}
 

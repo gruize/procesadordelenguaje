@@ -42,6 +42,7 @@ public class CastNatural extends InstruccionMaquinaP{
 				i1 = 0;
 			n.setValue(i1);
 			p.push(n);
+			return counter+1;
 		}
 		if (o instanceof MyNatural){
 

@@ -29,8 +29,10 @@ public class DesapilaDirEntero extends InstruccionMaquinaP{
 		}
 		//StackObject o1 = m.getPosicion(dir);
 		StackObject o = p.pop();
-		
-		if (o instanceof MyInteger){
+		MyInteger i = new MyInteger();
+
+		if (o instanceof MyInteger || o instanceof MyNatural){
+			i.setValue(o.getValue());
 			m.setPosicion(dir, o);
 			return counter+1;
 		}

@@ -113,6 +113,7 @@ public class Producto extends InstruccionMaquinaP{
 				Integer n2 = (Integer)o2.getValue();
 				MyNatural n= new MyNatural();
 				n.setValue(n1*n2);
+				p.push(n);
 				return counter+1;
 			}
 		}
