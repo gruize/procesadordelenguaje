@@ -175,6 +175,10 @@ public class ALexico {
 							lex = "";
 							break;
 						}
+						if (finFichero) {
+							iniciaScanner();
+							break;
+						}
 						else
 							transita(est.e1);
 						break;

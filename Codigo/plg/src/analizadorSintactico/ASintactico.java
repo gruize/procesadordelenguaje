@@ -311,7 +311,7 @@ public class ASintactico {
 		//Declaración de las variables necesarias
 		
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		if (errorProg)
+		if (errorProg || tokActual.getTipoToken() != tToken.finDeFichero)
 			return true;
 		else
 			return false;
@@ -734,7 +734,8 @@ public class ASintactico {
 		tSintetiz tipo, tipo1;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.opVAbs);
-		tipo1 = term();
+		//tipo1 = term();
+		tipo1 = exp();
 		tipo = dameTipo(tipo1,tOp.opVAbs);
 		if (tipo == tSintetiz.tError) {
 			errorProg = true;
@@ -1144,7 +1145,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa4.txt";
+		String nombreFichero = "programa9.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
