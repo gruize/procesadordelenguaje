@@ -393,7 +393,8 @@ public class ASintactico {
 				emite("leer");
 				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
 				emit.emit(Emit.LEER);
-				emit.emit(Emit.DESAPILA_DIR, new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
+				emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getTipo()), 
+						new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
 
 
 				consume(tToken.identificador);
@@ -440,8 +441,8 @@ public class ASintactico {
 			}
 			else {
 				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
-				emit.emit(Emit.DESAPILA_DIR, new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
-
+				emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getTipo()), 
+						new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
 				return false;
 			}
 		}
@@ -1145,7 +1146,7 @@ public class ASintactico {
 			parser.tokensIn = scanner.dameTokens();
 			parser.tokActual = parser.tokensIn.get(parser.contTokens);
 			parser.parse();
-			parser.emit.write("programa.exe");
+			parser.emit.write("programa.bin");
 		}
 	}
 }

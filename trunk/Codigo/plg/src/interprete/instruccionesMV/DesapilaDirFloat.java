@@ -1,6 +1,7 @@
 package interprete.instruccionesMV;
 
 import interprete.tipos.MyExecutionError;
+import interprete.tipos.MyFloat;
 import interprete.tipos.MyNatural;
 import interprete.tipos.StackObject;
 
@@ -8,12 +9,12 @@ import java.util.Stack;
 
 import util.Memoria;
 
-public class DesapilaDir extends InstruccionMaquinaP{
+public class DesapilaDirFloat extends InstruccionMaquinaP{
 	private Integer dir;
-	public DesapilaDir(){
+	public DesapilaDirFloat(){
 		dir = null;
 	}
-	public DesapilaDir(int dir){
+	public DesapilaDirFloat(int dir){
 		this.dir = dir;
 	}
 	public int exec(Stack<StackObject> p, Memoria m, Integer counter) {
@@ -26,10 +27,11 @@ public class DesapilaDir extends InstruccionMaquinaP{
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Null direction"));
 			return -1;
 		}
-		StackObject o1 = m.getPosicion(dir);
-		StackObject o2 = p.pop();
-		if (o2.getClass().equals(o1.getClass())){
-			m.setPosicion(dir, o2);
+		//StackObject o1 = m.getPosicion(dir);
+		StackObject o = p.pop();
+		
+		if (o instanceof MyFloat){
+			m.setPosicion(dir, o);
 			return counter+1;
 		}
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR,"Incorrect types"));
@@ -48,7 +50,7 @@ public class DesapilaDir extends InstruccionMaquinaP{
 	public byte[] toBytes() {
 		byte[] bytes = new byte[size()];
 		int pos = 0;
-		bytes[pos++] = InstruccionMaquinaP.DESAPILA_DIR;
+		bytes[pos++] = InstruccionMaquinaP.DESAPILA_DIR_FLOAT;
 		if (dir == null)
 			return bytes;
 		MyNatural n = new MyNatural();
@@ -58,16 +60,16 @@ public class DesapilaDir extends InstruccionMaquinaP{
 		return bytes;
 	}
 
-	public static DesapilaDir fromBytes(byte[] bytes, int pos){
-		if (bytes[pos++]!= InstruccionMaquinaP.DESAPILA_DIR){
+	public static DesapilaDirFloat fromBytes(byte[] bytes, int pos){
+		if (bytes[pos++]!= InstruccionMaquinaP.DESAPILA_DIR_FLOAT){
 			return null;
 		}
-		DesapilaDir i = new DesapilaDir();
+		DesapilaDirFloat i = new DesapilaDirFloat();
 		i.dir = (Integer)new MyNatural().fromBytes(bytes, pos).getValue();
 		return i; 
 	}
 	public String toString(){
-		return "Code="+InstruccionMaquinaP.DESAPILA_DIR+". desapilaDir";
+		return "Code="+InstruccionMaquinaP.DESAPILA_DIR_FLOAT+". desapilaDir";
 	}
 
 

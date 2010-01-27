@@ -8,7 +8,11 @@ import interprete.instruccionesMV.CastFloat;
 import interprete.instruccionesMV.CastInteger;
 import interprete.instruccionesMV.CastNatural;
 import interprete.instruccionesMV.Desapila;
-import interprete.instruccionesMV.DesapilaDir;
+import interprete.instruccionesMV.DesapilaDirBoolean;
+import interprete.instruccionesMV.DesapilaDirChar;
+import interprete.instruccionesMV.DesapilaDirEntero;
+import interprete.instruccionesMV.DesapilaDirFloat;
+import interprete.instruccionesMV.DesapilaDirNatural;
 import interprete.instruccionesMV.DesplazamientoDerechas;
 import interprete.instruccionesMV.DesplazamientoIzquierda;
 import interprete.instruccionesMV.Division;
@@ -32,6 +36,10 @@ import interprete.instruccionesMV.Suma;
 import interprete.instruccionesMV.ValorAbsoluto;
 import interprete.tipos.MyBoolean;
 import interprete.tipos.MyBuffer;
+import interprete.tipos.MyChar;
+import interprete.tipos.MyFloat;
+import interprete.tipos.MyInteger;
+import interprete.tipos.MyNatural;
 import interprete.tipos.StackObject;
 
 import java.io.BufferedOutputStream;
@@ -48,6 +56,28 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 	}
 	public boolean emit(byte code){
 		return emit(code,null);
+	}
+	public byte desapilaCode(tSintetiz tipo){
+		switch (tipo) {
+		case tBool:
+			return DESAPILA_DIR_BOOLEAN;
+		case tNat:
+			return DESAPILA_DIR_NATURAL;
+		case tInt:
+			return DESAPILA_DIR_INTEGER;
+		case tFloat:
+			return DESAPILA_DIR_FLOAT;
+		case tChar:
+			return DESAPILA_DIR_CHAR;
+
+			
+			
+
+
+
+		default:
+			return -1;
+		}
 	}
 	public boolean emit(byte code, Token token){
 		InstruccionMaquinaP i = factory(code, token);
@@ -126,13 +156,13 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 				if (token.getTipoToken() == tToken.booleano)
 					o = new MyBoolean();
 				if (token.getTipoToken() == tToken.cadCaracteres)
-					o = new MyBoolean();
+					o = new MyChar();
 				if (token.getTipoToken() == tToken.entero)
-					o = new MyBoolean();
+					o = new MyInteger();
 				if (token.getTipoToken() == tToken.natural)
-					o = new MyBoolean();
+					o = new MyNatural();
 				if (token.getTipoToken() == tToken.real)
-					o = new MyBoolean();
+					o = new MyFloat();
 				if (o.fromBuffer(bf)){
 					return new Apila(o);
 				}
@@ -150,10 +180,34 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 			
 		case DESAPILA:
 			return new Desapila();
-		case DESAPILA_DIR:
+		case DESAPILA_DIR_BOOLEAN:
 			if (token != null){
 				Integer i = Integer.valueOf(token.getLexema());
-				return new DesapilaDir(i);
+				return new DesapilaDirBoolean(i);
+			}
+			else return null;
+		case DESAPILA_DIR_INTEGER:
+			if (token != null){
+				Integer i = Integer.valueOf(token.getLexema());
+				return new DesapilaDirEntero(i);
+			}
+			else return null;
+		case DESAPILA_DIR_NATURAL:
+			if (token != null){
+				Integer i = Integer.valueOf(token.getLexema());
+				return new DesapilaDirNatural(i);
+			}
+			else return null;
+		case DESAPILA_DIR_FLOAT:
+			if (token != null){
+				Integer i = Integer.valueOf(token.getLexema());
+				return new DesapilaDirFloat(i);
+			}
+			else return null;
+		case DESAPILA_DIR_CHAR:
+			if (token != null){
+				Integer i = Integer.valueOf(token.getLexema());
+				return new DesapilaDirChar(i);
 			}
 			else return null;
 		case LEER:

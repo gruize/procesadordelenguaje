@@ -96,7 +96,11 @@ public abstract class InstruccionesMaquinaPConstantes {
 	/**
 	 * Tiene un parametro que es una direccion
 	 */
-	public static final byte DESAPILA_DIR= 0X23; 
+	public static final byte DESAPILA_DIR_BOOLEAN= 0X40; 
+	public static final byte DESAPILA_DIR_INTEGER= 0X41; 
+	public static final byte DESAPILA_DIR_NATURAL= 0X42; 
+	public static final byte DESAPILA_DIR_FLOAT= 0X43; 
+	public static final byte DESAPILA_DIR_CHAR= 0X44; 
 	public static final byte LEER=0X24;
 	public static final byte ESCRIBIR =0X25;
 	public static final byte VALOR_ABSOLUTO = 0X26;
