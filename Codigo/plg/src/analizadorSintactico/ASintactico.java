@@ -203,6 +203,13 @@ public class ASintactico {
 			System.out.println("----------------------------------------------");
 			for (int i = 0; i < instMPOut.size(); i++)
 				System.out.println(instMPOut.get(i));
+			System.out.println();
+			System.out.println();
+			System.out.println("***********************************************************************");
+			System.out.println("///////////////////////////////INTERPRETE//////////////////////////////");
+			System.out.println("***********************************************************************");
+			System.out.println();
+			System.out.println();
 		}
 	}
 
