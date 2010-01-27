@@ -59,7 +59,6 @@ public class MyBoolean extends StackObject{
 		return false;
 	}
 	public String toString(){
-		return "MyBoolean:" +
-				""+value;
+		return ""+value;
 	}
 }

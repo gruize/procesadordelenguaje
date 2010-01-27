@@ -11,7 +11,7 @@ public class MyInteger extends StackObject {
 	public void setValue(Object value) {
 		if (value instanceof Integer)
 			this.value = (Integer)value;
-		if (value instanceof MyChar){
+		if (value instanceof MyInteger){
 			this.value = (Integer)((MyInteger)value).getValue();
 		}
 	}	
@@ -47,7 +47,7 @@ public class MyInteger extends StackObject {
 
 	}
 	public String toString(){
-		return "MyInteger:"+value;
+		return ""+value;
 	}
 
 }
