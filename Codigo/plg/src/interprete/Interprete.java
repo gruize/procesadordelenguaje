@@ -20,7 +20,7 @@ import util.Memoria;
 public class Interprete {
 	private static boolean debug = true;
 	private static boolean traza = false;
-	private static boolean fast = true;
+	private static boolean fast = false;
 	private static Memoria mem;
 	private static Stack<StackObject> pila;
 
@@ -35,6 +35,10 @@ public class Interprete {
 				
 		}
 		codigo = new Vector<InstruccionMaquinaP>();
+		if (args.length < 1){
+			System.out.println("Se necesita al menos un parametro. Ejemplo");
+			System.out.println("Interprete fichero.txt [traza]");
+		}
 		if (args.length > 1){
 			try {
 				int bufferPos = 0;
