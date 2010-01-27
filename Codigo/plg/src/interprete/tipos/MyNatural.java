@@ -49,7 +49,7 @@ public class MyNatural extends StackObject{
 		return true;
 	}
 	public String toString(){
-		return "MyNatural:"+value;
+		return ""+value;
 	}
 
 

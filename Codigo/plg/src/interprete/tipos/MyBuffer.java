@@ -34,7 +34,7 @@ public class MyBuffer extends StackObject{
 		return false;
 	}
 	public String toString(){
-		return "MyBuffer:"+value;
+		return ""+value;
 	}
 
 }

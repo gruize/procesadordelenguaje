@@ -11,8 +11,11 @@ public class MyFloat extends StackObject{
 	public void setValue(Object value) {
 		if (value instanceof Float)
 			this.value = (Float)value;
-		if (value instanceof MyChar){
+		if (value instanceof MyFloat){
 			this.value = (Float)((MyFloat)value).getValue();
+		}
+		if (value instanceof Integer){
+			this.value = new Float((Integer)value);
 		}
 	}
 	@Override
@@ -46,7 +49,7 @@ public class MyFloat extends StackObject{
 		return true;
 	}
 	public String toString(){
-		return "MyFloat:"+value;
+		return ""+value;
 	}
 
 

@@ -40,7 +40,7 @@ public class MyChar extends StackObject{
 		return true;
 	}
 	public String toString(){
-		return "MyChar:"+value;
+		return ""+value;
 	}
 
 }
