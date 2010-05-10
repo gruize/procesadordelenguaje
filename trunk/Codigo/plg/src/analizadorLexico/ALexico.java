@@ -68,6 +68,24 @@ public class ALexico {
 		palReservadas.add("char");
 		palReservadas.add("nat");
 		palReservadas.add("int");
+		//Palabras reservadas para la parte del 2º Cuat
+		//Instrucciones de control
+		palReservadas.add("if");
+		palReservadas.add("then");
+		palReservadas.add("else");
+		palReservadas.add("null");
+		palReservadas.add("record");
+		palReservadas.add("array");
+		palReservadas.add("of");
+		palReservadas.add("pointer");
+		palReservadas.add("tipo");
+		palReservadas.add("procedure");
+		palReservadas.add("var");
+		palReservadas.add("dispose");
+		palReservadas.add("while");
+		palReservadas.add("for");
+		palReservadas.add("to");
+		palReservadas.add("do");
 	}
 	
 	public void inicio(String nomFichero) {
@@ -133,9 +151,16 @@ public class ALexico {
 							transita(est.e15);
 							break;
 						}
-						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '-' ||
+						//Nuevo tratamiento del símbolo '-'
+						if (buff[0] == '-' || buff.toString().equals("-")) {
+							carAntConsumido[0] = buff[0];
+							transita(est.e6);
+							break;
+						}
+						///////////////////////////////////
+						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || //buff[0] == '-' || buff.toString().equals("-")
 								buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || buff[0] == '|' ||
-								buff[0] == ')' || buff.toString().equals("-")) {
+								buff[0] == ')' || buff[0] =='{' || buff[0] =='}') {
 							carAntConsumido[0] = buff[0];
 							tok = dameToken(buff[0]);
 							transita(est.e27);
@@ -286,7 +311,15 @@ public class ALexico {
 						}
 						break;		
 					case e6:
-						//Sobra (en el autómata estaba preparado para los enteros)
+						if (buff[0] == '>') {
+							tok = new Token(tToken.puntero);
+							transita (est.e27);
+							break;
+						}
+						else {
+							tokensOut.add(dameToken(carAntConsumido[0]));
+							iniciaScanner();
+						}
 						break;
 					case e7:
 						//Sobra (en el autómata estaba preparado para los enteros)
@@ -592,6 +625,15 @@ public class ALexico {
 		errorLex = true;
 	}
 	
+	public void errorCarAnt(String comentario) {
+		if (comentario == null)
+			descripError = "Caracter inesperado en la linea " + contPrograma + " : '" + carAntConsumido[0] + "'\n";
+		else
+			descripError = "Caracter en buffer: '" + carAntConsumido[0] + "'. Linea: " + contPrograma + '\n' +
+					"Error: " + comentario;
+		errorLex = true;
+	}
+	
 	public Token dameToken(char car) {
 		switch (car) {
 		case '&': 
@@ -609,8 +651,11 @@ public class ALexico {
 						tokensOut.lastElement().getTipoToken() == tToken.parCierre ||
 						tokensOut.lastElement().getTipoToken() == tToken.identificador)
 					return new Token(tToken.resta);
+				else
+					return new Token(tToken.negArit);
 			else
-				return new Token(tToken.negArit);
+				errorCarAnt(null);
+			break;
 		case '*':
 			return new Token(tToken.multiplicacion);
 		case '/':
@@ -623,6 +668,10 @@ public class ALexico {
 			return new Token(tToken.parCierre);
 		case '|':
 			return new Token(tToken.opVAbs);
+		case '{':
+			return new Token(tToken.bloqueApertura);
+		case '}':
+			return new Token(tToken.bloqueCierre);
 		}
 		return new Token();
 	}
@@ -693,6 +742,48 @@ public class ALexico {
 		}
 		if (palReservada.equals("float")) {
 			return new Token(tToken.castFloat);
+		}
+		//Palabras correspondientes a sentencias de control
+		if (palReservada.equals("if")) {
+			return new Token(tToken.ifC);
+		}
+		if (palReservada.equals("then")) {
+			return new Token(tToken.thenC);
+		}
+		if (palReservada.equals("else")) {
+			return new Token(tToken.elseC);
+		}
+		if (palReservada.equals("while")) {
+			return new Token(tToken.whileC);
+		}
+		if (palReservada.equals("do")) {
+			return new Token(tToken.doC);
+		}
+		if (palReservada.equals("for")) {
+			return new Token(tToken.forC);
+		}
+		if (palReservada.equals("to")) {
+			return new Token(tToken.toC);
+		}
+		//Sentencias de reserva y liberación de memoria
+		if (palReservada.equals("new")) {
+			return new Token(tToken.newM);
+		}
+		if (palReservada.equals("dispose")) {
+			return new Token(tToken.disposeM);
+		}
+		//Palabras correspondientes a los tipos
+		if (palReservada.equals("pointer")) {
+			return new Token(tToken.pointerT);
+		}
+		if (palReservada.equals("array")) {
+			return new Token(tToken.arrayT);
+		}
+		if (palReservada.equals("of")) {
+			return new Token(tToken.ofT);
+		}
+		if (palReservada.equals("record")) {
+			return new Token(tToken.recordT);
 		}
 		return new Token();
 	}
@@ -774,7 +865,7 @@ public class ALexico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa.txt";
+		String nombreFichero = "programa66.txt";
 		
 		ALexico scanner = new ALexico();
 		
