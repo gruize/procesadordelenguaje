@@ -1152,7 +1152,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa9.txt";
+		String nombreFichero = "programa10.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
