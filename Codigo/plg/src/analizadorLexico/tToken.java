@@ -28,5 +28,19 @@ public enum tToken {
 		
 		entradaTeclado, salidaPantalla,
 		
-		finDeFichero
+		finDeFichero,
+		
+		ifC, thenC, elseC,
+		
+		whileC, doC,
+		
+		forC, toC,
+		
+		bloqueApertura, bloqueCierre,
+		
+		newM, disposeM,
+		
+		pointerT, arrayT, ofT, recordT,
+		
+		puntero
 }
