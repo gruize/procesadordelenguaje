@@ -774,7 +774,7 @@ public class ASintactico {
 			return term1True();
 		if (tokActual.getTipoToken() == tToken.booleanoFalso)
 			return term1False();
-		if (tokActual.getTipoToken() == tToken.cadCaracteres)
+		if (tokActual.getTipoToken() == tToken.caracter)
 			return term2();
 		if (tokActual.getTipoToken() == tToken.natural)
 			return term3();
@@ -806,9 +806,9 @@ public class ASintactico {
 	
 	public tSintetiz term2() {
 		emite("apila(" + tokActual.getLexema() + ")");
-		emit.emit(Emit.APILA, new Token(tToken.cadCaracteres,tokActual.getLexema()));
+		emit.emit(Emit.APILA, new Token(tToken.caracter,tokActual.getLexema()));
 
-		consume(tToken.cadCaracteres);
+		consume(tToken.caracter);
 		return tSintetiz.tChar;
 	}
 	

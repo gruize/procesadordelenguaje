@@ -1,0 +1,5 @@
+a : character
+&
+in (a);
+out('j');
+out(7+5*36)

@@ -158,7 +158,7 @@ public class ALexico {
 							break;
 						}
 						///////////////////////////////////
-						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || //buff[0] == '-' || buff.toString().equals("-")
+						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || 		//buff[0] == '-' || buff.toString().equals("-")
 								buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || buff[0] == '|' ||
 								buff[0] == ')' || buff[0] =='{' || buff[0] =='}') {
 							carAntConsumido[0] = buff[0];
@@ -427,18 +427,28 @@ public class ALexico {
 						}
 						break;
 					case e13:
-						if (buff[0] == '\'') {
-							tokensOut.add(dameTokenCadCaracteres(lex));
+						carAntConsumido[0] = buff[0];
+						transita(est.e14);
+						/*if (buff[0] == '\'') {
+							tokensOut.add(dameTokenCaracter(lex)); 		//tokensOut.add(dameTokenCadCaracteres(lex));
 							transita(est.e0);
 							lex = "";
 							break;
 						}
 						else
-							transita(est.e13);
+							transita(est.e13);*/
 						break;
 					case e14:
-						//Sobra (en el autómata se usaba cuando se reconocían las siguientes ")
-						break;
+						if (buff[0] != '\'') {
+							error("Se esperaba el caracter `'´.");
+							break;
+						}
+						else {
+							tokensOut.add(dameTokenCaracter("" + carAntConsumido[0] + ""));
+							transita(est.e0);
+							lex = "";
+							break;
+						}
 					case e15:
 						if (buff[0] == '=') {
 							tok = new Token(tToken.asignacion);
@@ -792,8 +802,8 @@ public class ALexico {
 		return new Token(tToken.identificador, lexema);
 	}
 	
-	public Token dameTokenCadCaracteres(String lexema) {
-		return new Token(tToken.cadCaracteres, lexema);
+	public Token dameTokenCaracter(String car) {
+		return new Token(tToken.caracter,car);
 	}
 	
 //	public void extraerPalabras(String archivo){
