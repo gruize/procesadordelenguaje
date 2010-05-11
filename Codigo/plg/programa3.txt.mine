@@ -1,0 +1,10 @@
+cantidad: float;
+euros: integer;
+centimos: float;
+cadena: character;
+numero: natural
+&
+euros := ((76 + 763 * 4) * (645 + 54 + 98)) + 65 + 66;
+euros := ((76));
+cantidad := 67.9797;
+euros := (int)cantidad #

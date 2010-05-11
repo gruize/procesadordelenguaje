@@ -155,7 +155,7 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 				StackObject o = null;
 				if (token.getTipoToken() == tToken.booleano)
 					o = new MyBoolean();
-				if (token.getTipoToken() == tToken.cadCaracteres)
+				if (token.getTipoToken() == tToken.caracter)
 					o = new MyChar();
 				if (token.getTipoToken() == tToken.entero)
 					o = new MyInteger();
