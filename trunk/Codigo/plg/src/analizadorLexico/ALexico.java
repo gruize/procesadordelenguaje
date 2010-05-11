@@ -160,7 +160,7 @@ public class ALexico {
 						///////////////////////////////////
 						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || 		//buff[0] == '-' || buff.toString().equals("-")
 								buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || buff[0] == '|' ||
-								buff[0] == ')' || buff[0] =='{' || buff[0] =='}') {
+								buff[0] == ')' || buff[0] =='{' || buff[0] =='}' || buff[0] =='['|| buff[0] ==']') {
 							carAntConsumido[0] = buff[0];
 							tok = dameToken(buff[0]);
 							transita(est.e27);
@@ -679,9 +679,13 @@ public class ALexico {
 		case '|':
 			return new Token(tToken.opVAbs);
 		case '{':
-			return new Token(tToken.bloqueApertura);
+			return new Token(tToken.bloqApertura);
 		case '}':
-			return new Token(tToken.bloqueCierre);
+			return new Token(tToken.bloqCierre);
+		case '[':
+			return new Token(tToken.corApertura);
+		case ']':
+			return new Token(tToken.corCierre);
 		}
 		return new Token();
 	}

@@ -36,11 +36,13 @@ public enum tToken {
 		
 		forC, toC,
 		
-		bloqueApertura, bloqueCierre,
+		bloqApertura, bloqCierre,
 		
 		newM, disposeM,
 		
 		pointerT, arrayT, ofT, recordT,
 		
-		puntero
+		puntero,
+		
+		corApertura, corCierre,
 }
