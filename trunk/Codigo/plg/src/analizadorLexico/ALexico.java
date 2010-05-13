@@ -86,6 +86,7 @@ public class ALexico {
 		palReservadas.add("for");
 		palReservadas.add("to");
 		palReservadas.add("do");
+		palReservadas.add("forward");
 	}
 	
 	public void inicio(String nomFichero) {
@@ -158,7 +159,7 @@ public class ALexico {
 							break;
 						}
 						///////////////////////////////////
-						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || 		//buff[0] == '-' || buff.toString().equals("-")
+						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '.' ||		//buff[0] == '-' || buff.toString().equals("-")
 								buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || buff[0] == '|' ||
 								buff[0] == ')' || buff[0] =='{' || buff[0] =='}' || buff[0] =='['|| buff[0] ==']') {
 							carAntConsumido[0] = buff[0];
@@ -483,10 +484,10 @@ public class ALexico {
 							error("Operador de desigualdad mal formado.");
 						break;
 					case e19:
-						
+						//Sobra 
 						break;
 					case e20:
-						
+						//Sobra 
 						break;
 					case e21:
 						if (buff[0] == '=') {
@@ -505,10 +506,10 @@ public class ALexico {
 						}
 						break;
 					case e22:
-						
+						//Sobra 
 						break;
 					case e23:
-						
+						//Sobra 
 						break;
 					case e24:
 						if (buff[0] == '=') {
@@ -527,10 +528,10 @@ public class ALexico {
 						}
 						break;
 					case e25:
-		
+						//Sobra 
 						break;
 					case e26:
-		
+						//Sobra 
 						break;
 					case e27:
 						tokensOut.add(tok);
@@ -679,13 +680,15 @@ public class ALexico {
 		case '|':
 			return new Token(tToken.opVAbs);
 		case '{':
-			return new Token(tToken.bloqApertura);
+			return new Token(tToken.llaveApertura);
 		case '}':
-			return new Token(tToken.bloqCierre);
+			return new Token(tToken.llaveCierre);
 		case '[':
 			return new Token(tToken.corApertura);
 		case ']':
 			return new Token(tToken.corCierre);
+		case '.':
+			return new Token(tToken.punto);
 		}
 		return new Token();
 	}
@@ -798,6 +801,21 @@ public class ALexico {
 		}
 		if (palReservada.equals("record")) {
 			return new Token(tToken.recordT);
+		}
+		if (palReservada.equals("var")) {
+			return new Token(tToken.var);
+		}
+		if (palReservada.equals("forward")) {
+			return new Token(tToken.forward);
+		}
+		if (palReservada.equals("tipo")) {
+			return new Token(tToken.decTipo);
+		}
+		if (palReservada.equals("procedure")) {
+			return new Token(tToken.procedure);
+		}
+		if (palReservada.equals("null")) {
+			return new Token(tToken.nullM);
 		}
 		return new Token();
 	}

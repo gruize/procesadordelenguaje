@@ -7,7 +7,7 @@ public enum tToken {
 		
 		igual, mayor, menor, mayorIgual, menorIgual, distinto,
 		
-		separador, puntoyComa, dosPuntos, asignacion,
+		separador, punto, puntoyComa, dosPuntos, asignacion,
 		
 		suma, resta, negArit, multiplicacion, division, resto,
 		
@@ -36,13 +36,15 @@ public enum tToken {
 		
 		forC, toC,
 		
-		bloqApertura, bloqCierre,
+		llaveApertura, llaveCierre,
 		
-		newM, disposeM,
+		newM, disposeM, nullM,
 		
 		pointerT, arrayT, ofT, recordT,
 		
 		puntero,
 		
 		corApertura, corCierre,
+		
+		var, forward, procedure, decTipo
 }
