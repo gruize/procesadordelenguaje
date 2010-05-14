@@ -1,7 +1,7 @@
 package analizadorLexico;
 
 public enum tToken {
-		tipoVarBooleano, tipoVarCadCaracteres, tipoVarNatural, tipoVarEntero,tipoVarReal,
+		tipoVarBooleano, tipoVarCaracter, tipoVarNatural, tipoVarEntero,tipoVarReal,
 		
 		booleano, caracter, natural, entero, real, 			//cadCaracteres
 		

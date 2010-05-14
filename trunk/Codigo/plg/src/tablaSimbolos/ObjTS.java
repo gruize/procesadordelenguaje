@@ -10,6 +10,8 @@ public class ObjTS {
 	//Esta será la dirección de memoria asociada al objeto "Memoria" dentro de la 
 	//estructura de util
 	Integer dirM;
+	tClase clase;
+	Integer nivel;
 	
 	
 	public ObjTS() {
@@ -33,7 +35,23 @@ public class ObjTS {
 	public void setDirM(Integer dirM) {
 		this.dirM = dirM;
 	}
+	
+	public tClase getClase() {
+		return clase;
+	}
 
+	public void setClase(tClase clase) {
+		this.clase = clase;
+	}
+	
+	public Integer getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(Integer nivel) {
+		this.nivel = nivel;
+	}
+	
 	public ObjTS(tSintetiz _tipo, int _dirM) {
 		// TODO Auto-generated constructor stub
 		tipo = _tipo;
