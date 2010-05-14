@@ -4,8 +4,8 @@ import analizadorSintactico.*;
 
 public class ObjTS {
 	//Objeto que contiene los atributos de una fila de la TS
-	
-	tSintetiz tipo;
+	//tSintetiz tipo;
+	//Se quita el tipo de aquí porque irá en el objeto de las propiedades
 	
 	//Esta será la dirección de memoria asociada al objeto "Memoria" dentro de la 
 	//estructura de util
@@ -13,20 +13,23 @@ public class ObjTS {
 	tClase clase;
 	Integer nivel;
 	
+	//Objeto de las propiedades
+	PropsObjTS propiedadesTipo;
+	
 	
 	public ObjTS() {
 		// TODO Auto-generated constructor stub
-		tipo = tSintetiz.tInicial;
+		//tipo = tSintetiz.tInicial;
 		dirM = new Integer(0);
 	}
 	
-	public tSintetiz getTipo() {
+	/*public tSintetiz getTipo() {
 		return tipo;
 	}
 
 	public void setTipo(tSintetiz tipo) {
 		this.tipo = tipo;
-	}
+	}*/
 
 	public Integer getDirM() {
 		return dirM;
@@ -54,7 +57,7 @@ public class ObjTS {
 	
 	public ObjTS(tSintetiz _tipo, int _dirM) {
 		// TODO Auto-generated constructor stub
-		tipo = _tipo;
+		//tipo = _tipo;
 		dirM = new Integer(_dirM);
 	}
 
