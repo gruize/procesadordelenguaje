@@ -19,7 +19,7 @@ public class TS {
 		tabla.put(id, new ObjTS(tipo, dir));
 	}
 	
-	public boolean existeId(String id) {
+	public boolean existeId(String id, tClase clase, Integer nivel) {
 		if (tabla.containsKey(id))
 			return true;
 		else
