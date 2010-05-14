@@ -99,7 +99,7 @@ public class ASintactico {
 	
 	public boolean esTokenTipo(Token t) {
 		if (t.getTipoToken() == tToken.tipoVarBooleano ||
-				t.getTipoToken() == tToken.tipoVarCadCaracteres ||
+				t.getTipoToken() == tToken.tipoVarCaracter ||
 				t.getTipoToken() == tToken.tipoVarNatural ||
 				t.getTipoToken() == tToken.tipoVarEntero ||
 				t.getTipoToken() == tToken.tipoVarReal)
@@ -143,7 +143,7 @@ public class ASintactico {
 		switch (tipo) {
 		case tipoVarBooleano:
 			return tSintetiz.tBool;
-		case tipoVarCadCaracteres:
+		case tipoVarCaracter:
 			return tSintetiz.tChar;
 		case tipoVarNatural:
 			return tSintetiz.tNat;
