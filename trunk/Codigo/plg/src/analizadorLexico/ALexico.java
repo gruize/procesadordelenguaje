@@ -159,7 +159,7 @@ public class ALexico {
 							break;
 						}
 						///////////////////////////////////
-						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '.' ||		//buff[0] == '-' || buff.toString().equals("-")
+						if (buff[0] == '&' || buff[0] == ';' || buff[0] == '+' || buff[0] == '.' ||	buff[0] == ',' ||	//buff[0] == '-' || buff.toString().equals("-")
 								buff[0] == '*' || buff[0] == '/' || buff[0] == '(' || buff[0] == '|' ||
 								buff[0] == ')' || buff[0] =='{' || buff[0] =='}' || buff[0] =='['|| buff[0] ==']') {
 							carAntConsumido[0] = buff[0];
@@ -691,6 +691,8 @@ public class ALexico {
 			return new Token(tToken.corCierre);
 		case '.':
 			return new Token(tToken.punto);
+		case ',':
+			return new Token(tToken.coma);
 		}
 		return new Token();
 	}
@@ -907,7 +909,7 @@ public class ALexico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "progEjemplo.txt";
+		String nombreFichero = "programa66.txt";
 		
 		ALexico scanner = new ALexico();
 		
