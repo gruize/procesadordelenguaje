@@ -87,6 +87,7 @@ public class ALexico {
 		palReservadas.add("to");
 		palReservadas.add("do");
 		palReservadas.add("forward");
+		palReservadas.add("new");
 	}
 	
 	public void inicio(String nomFichero) {
@@ -337,6 +338,7 @@ public class ALexico {
 							break;
 						}
 						else
+							//Sobra realmente??
 							error("Después de '.' sólo debe haber dígitos, ó 'e' ó 'E'.");
 						break;
 					case e9:
@@ -909,7 +911,7 @@ public class ALexico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa66.txt";
+		String nombreFichero = "programa10.txt";
 		
 		ALexico scanner = new ALexico();
 		
