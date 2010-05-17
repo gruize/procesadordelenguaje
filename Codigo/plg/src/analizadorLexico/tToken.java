@@ -7,7 +7,7 @@ public enum tToken {
 		
 		igual, mayor, menor, mayorIgual, menorIgual, distinto,
 		
-		separador, punto, puntoyComa, dosPuntos, asignacion,
+		separador, punto, coma, puntoyComa, dosPuntos, asignacion,
 		
 		suma, resta, negArit, multiplicacion, division, resto,
 		
