@@ -27,7 +27,7 @@ public class ParString {
 		iden = new String(_iden);
 	}
 
-	public tipoT getTipo() {
+	public tipoT getT() {
 		return tipo;
 	}
 

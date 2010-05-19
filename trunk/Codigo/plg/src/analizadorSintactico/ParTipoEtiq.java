@@ -1,25 +1,27 @@
 package analizadorSintactico;
 
+import tablaSimbolos.*;
+
 public class ParTipoEtiq {
 
-	private tSintetiz tipo;
+	private tipoT tipo;
 	private int etiq;
 	
 	public ParTipoEtiq() {
-		this.tipo = tSintetiz.tInicial;
+		this.tipo = tipoT.tInicial;
 		this.etiq = 0;
 	}
 	
-	public ParTipoEtiq(tSintetiz tipo, int etiq) {
+	public ParTipoEtiq(tipoT tipo, int etiq) {
 		this.tipo = tipo;
 		this.etiq = etiq;
 	}
 	
-	public tSintetiz getTipo() {
+	public tipoT getT() {
 		return tipo;
 	}
 	
-	public void setTipo(tSintetiz tipo) {
+	public void setTipo(tipoT tipo) {
 		this.tipo = tipo;
 	}
 	

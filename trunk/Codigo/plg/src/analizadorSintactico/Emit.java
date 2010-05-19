@@ -1,5 +1,6 @@
 package analizadorSintactico;
 
+
 import interprete.instruccionesMV.And;
 import interprete.instruccionesMV.Apila;
 import interprete.instruccionesMV.ApilaDir;
@@ -49,6 +50,8 @@ import java.util.Vector;
 import analizadorLexico.Token;
 import analizadorLexico.tToken;
 import util.Globales;
+import tablaSimbolos.*;
+
 public class Emit extends InstruccionesMaquinaPConstantes{
 	Vector <InstruccionMaquinaP> codigo;
 	public Emit(){
@@ -57,7 +60,7 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 	public boolean emit(byte code){
 		return emit(code,null);
 	}
-	public byte desapilaCode(tSintetiz tipo){
+	public byte desapilaCode(tipoT tipo){
 		switch (tipo) {
 		case tBool:
 			return DESAPILA_DIR_BOOLEAN;
