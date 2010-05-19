@@ -486,6 +486,53 @@ public class ASintactico {
 			return false;
 	}
 	
+	public ParBooleanInt sif(int etiqIn) {
+		
+		
+		return new ParBooleanInt(true, 0);
+	}
+	
+	public ParBooleanInt swhile(int etiqIn) {
+		//Declaración de las variables necesarias
+		//tSintetiz tipo; //Ahora necesitamos guardar tipo y etiqueta
+		ParTipoEtiq tipoEtiq = new ParTipoEtiq();
+		ParBooleanInt errorEtiq = new ParBooleanInt();
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//Consumimos el token del while
+		consume(tToken.whileC);
+		//LLamada a la epx()
+		tipoEtiq = exp(etiqIn);
+		if (tipoEtiq.getTipo() != tSintetiz.tBool) { 
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error en la instrucción 'while': El tipo de la expresión a evaluar no es 'boolean'." +"\n");
+			return new ParBooleanInt(true, 0);
+		}
+		else {
+			//Consumimos el token del 'do'
+			consume(tToken.doC);
+			//Emitimos las correspondientes instrucciones a pila ya que por ahora es todo correcto
+			//Instrucción a parchear
+			emite("ir-f(?)");
+			//Llamada a la sentencia que conforma el cuerpo del while
+			errorEtiq = sent(tipoEtiq.getEtiq() + 1);
+			if (errorEtiq.getBooleanVal()) {
+				errorProg = true;
+				vaciaCod();
+				System.out.println("Error en el cuerpo de la instrucción 'while'." + "\n");
+				return new ParBooleanInt(true, 0);
+			}
+			else {
+				//Emitimos las correspondientes instrucciones a pila ya que por ahora es todo correcto
+				emite("ir-a(" + etiqIn + ")");
+				//Como ya tenemos la etiqueta de salida de 'sent()', 
+				//podemos parchear el anterior 'ir-f()' del código a pila
+				parchea(tipoEtiq.getEtiq(), errorEtiq.getIntVal() + 1);
+				return new ParBooleanInt(false, errorEtiq.getIntVal() + 1);
+			}
+		}
+	}
+	
 	public ParBooleanInt sfor(int etiqIn) {
 		//Declaración de las variables necesarias
 		//tSintetiz tipo; //Ahora necesitamos guardar tipo y etiqueta, 1 variable para cada expresión
@@ -537,9 +584,13 @@ public class ASintactico {
 				}
 				else {
 					//Emitimos las correspondientes instrucciones a pila ya que por ahora es todo correcto
+					//Se realiza la comparación sel contador del 'for'
 					//Faltan las instrucciones para la máquina virtual con 'emit'
 					emite("menorIgual");
+					//Instrucción a parchear
 					emite("ir-f(?)");
+					//Consumimos el token del 'do'
+					consume(tToken.doC);
 					//Llamada a la sentencia que conforma el cuerpo del for
 					errorEtiq = sent(tipoEtiq2.getEtiq() + 2);
 					if (errorEtiq.getBooleanVal()) {
@@ -574,7 +625,7 @@ public class ASintactico {
 	}
 	
 	public void parchea (int nInst, int etiq) {
-		
+		//Falta el código
 	}
 	
 	public ParTipoEtiq exp(int etiqIn) {
