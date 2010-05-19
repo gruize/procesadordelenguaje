@@ -1,5 +1,8 @@
 package tablaSimbolos;
 
-public class PropsObjTS {
+public abstract class PropsObjTS {
+
+	//public abstract tipoT getTipo();
+	public abstract tipoT getT();
 
 }

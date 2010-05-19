@@ -1,17 +1,19 @@
 package analizadorSintactico;
 
+import tablaSimbolos.*;
+
 public class ParString {
 	
 	private String iden;
-	private tSintetiz tipo;
+	private tipoT tipo;
 
 	public ParString() {
 		// TODO Auto-generated constructor stub
 		iden = new String();
-		tipo = tSintetiz.tInicial;
+		tipo = tipoT.tInicial;
 	}
 	
-	public ParString(String _iden, tSintetiz _tipo) {
+	public ParString(String _iden, tipoT _tipo) {
 		// TODO Auto-generated constructor stub
 		iden = new String(_iden);
 		tipo = _tipo;
@@ -25,11 +27,11 @@ public class ParString {
 		iden = new String(_iden);
 	}
 
-	public tSintetiz getTipo() {
+	public tipoT getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(tSintetiz _tipo) {
+	public void setTipo(tipoT _tipo) {
 		tipo = _tipo;
 	}
 
