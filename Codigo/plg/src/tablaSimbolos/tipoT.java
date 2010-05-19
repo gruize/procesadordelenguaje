@@ -1,6 +1,7 @@
 package tablaSimbolos;
 
 public enum tipoT {
+	//1º Cuat
 	tBool,
 	tChar,
 	tNat,
@@ -9,5 +10,9 @@ public enum tipoT {
 	tError,
 	tInicial,
 	//2º Cuat
-	puntero, registro, array, procedimiento, referencia
+	puntero,
+	registro,
+	array,
+	procedimiento,
+	referencia
 }

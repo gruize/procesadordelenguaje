@@ -1,11 +1,26 @@
 package tablaSimbolos;
 
-import analizadorSintactico.*;
+//import analizadorSintactico.*;
 
 public class ObjTS {
 	//Objeto que contiene los atributos de una fila de la TS
 	//tSintetiz tipo;
 	//Se quita el tipo de aquí porque irá en el objeto de las propiedades
+	
+	//Se deja uno auxiliar para probar sentencias de control
+	////////////////////////////////////////////////////////
+	tipoT tipo;
+	////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////
+	public tipoT getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(tipoT tipo) {
+		this.tipo = tipo;
+	}
+	////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////
 	
 	//Esta será la dirección de memoria asociada al objeto "Memoria" dentro de la 
 	//estructura de util
@@ -63,9 +78,9 @@ public class ObjTS {
 		this.nivel = nivel;
 	}
 	
-	public ObjTS(tSintetiz _tipo, int _dirM) {
+	public ObjTS(tipoT _tipo, int _dirM) {
 		// TODO Auto-generated constructor stub
-		//tipo = _tipo;
+		tipo = _tipo;
 		dirM = new Integer(_dirM);
 	}
 

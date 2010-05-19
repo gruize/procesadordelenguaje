@@ -13,7 +13,8 @@ public class TS {
 		tabla = new Hashtable<String, ObjTS>();
 	}
 	
-	public void anadeId(String id, tSintetiz tipo, int dir) {
+	//Se debe hacer un añade para cada clase de objeto de la tabla de símbolos
+	public void anadeId(String id, tipoT tipo, int dir) {
 		//No comprobamos la existencia del id porque eso se hara en el codigo
 		//del sintactico
 		tabla.put(id, new ObjTS(tipo, dir));
