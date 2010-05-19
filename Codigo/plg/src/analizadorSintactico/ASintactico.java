@@ -225,7 +225,8 @@ public class ASintactico {
 		
 		errorDec = decs();
 		consume(tToken.separador);
-		errorSent = sents();
+		//Lanzamos sents() con la etiqueta a 0, ya que es la primera vez que se llama
+		errorSent = sents(0).getBooleanVal();
 		//La linea de abajo habría que cambiarla por esta:
 		//errorProg = errorDec || errorSent;
 		errorProg = errorProg || errorDec || errorSent;
@@ -245,7 +246,7 @@ public class ASintactico {
 			errorDec1_dir = rdecs1();
 		else
 			errorDec1_dir = rdecs2();
-		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getIden()))
+		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getIden(), tClase.variable, new Integer(0)))
 			return true;
 		else {
 			ts.anadeId(id_tipo.getIden(), id_tipo.getTipo(), errorDec1_dir.getIntVal());
@@ -264,7 +265,7 @@ public class ASintactico {
 			errorDec1_dir1 = rdecs1();
 		else
 			errorDec1_dir1 = rdecs2();
-		if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getIden()))
+		if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getIden(), tClase.variable, new Integer(0)))
 			return new ParBooleanInt(true, -1);
 		else {
 			ts.anadeId(id_tipo.getIden(), id_tipo.getTipo(), errorDec1_dir1.getIntVal());
@@ -289,11 +290,11 @@ public class ASintactico {
 		return parOut;
 	}
 	
-	public boolean sents() {
+	public ParBooleanInt sents(int etiqIn) {
 		//Declaración de las variables necesarias
 		boolean errorSent1, errorSent2 = false;
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		errorSent1 = sent();
+		errorSent1 = sent(etiqIn);
 		if (tokActual.getTipoToken() == tToken.puntoyComa)
 			errorSent2 = rsents1();
 		else
@@ -395,7 +396,7 @@ public class ASintactico {
 		if (tokActual.getTipoToken() == tToken.parApertura) {
 			consume(tToken.parApertura);
 			if (tokActual.getTipoToken() == tToken.identificador &&
-					ts.existeId(tokActual.getLexema())) {
+					ts.existeId(tokActual.getLexema(), tClase.variable, new Integer(0))) {
 				lexIden = tokActual.getLexema();
 				emite("leer");
 				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
@@ -431,7 +432,7 @@ public class ASintactico {
 		String lexIden = new String();
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema())) {
+				ts.existeId(tokActual.getLexema(), tClase.variable, new Integer(0))) {
 			lexIden = tokActual.getLexema();
 			consume(tToken.identificador);
 			//Una vez parseado el identificador vamos con el simbolo de la asignación
@@ -486,6 +487,27 @@ public class ASintactico {
 			return false;
 	}
 	
+	public ParBooleanInt sbloque(int etiqIn) {
+		//Declaración de las variables necesarias
+		ParBooleanInt errorEtiq = new ParBooleanInt();
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//Consumimos el token 'llave de apertura'
+		consume(tToken.llaveApertura);
+		//Llamada a sents()
+		errorEtiq = sents(etiqIn);
+		if (errorEtiq.getBooleanVal()) {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error en el bloque de instrucciones." + "\n");
+			return new ParBooleanInt(true, 0);
+		}
+		else {
+			//Consumimos el token 'llave de cierre'
+			consume(tToken.llaveCierre);
+			return errorEtiq;
+		}
+	}
+	
 	public ParBooleanInt sif(int etiqIn) {
 		//Declaración de las variables necesarias
 		//tSintetiz tipo; //Ahora necesitamos guardar tipo y etiqueta
@@ -535,7 +557,7 @@ public class ASintactico {
 					//Como ya tenemos la etiqueta de salida de 'else()', 
 					//podemos parchear el anterior 'ir-a()' del código a pila
 					parchea(errorEtiq1.getIntVal(), errorEtiq2.getIntVal());
-					return new ParBooleanInt(false, errorEtiq2.getIntVal());
+					return errorEtiq2;
 				}
 			}
 		}
@@ -557,12 +579,12 @@ public class ASintactico {
 			if (errorEtiq.getBooleanVal()) {
 				errorProg = true;
 				vaciaCod();
-				System.out.println("Error en el cuerpo de la instrucción 'if'." + "\n");
+				System.out.println("Error en el cuerpo de la instrucción 'else'." + "\n");
 				return new ParBooleanInt(true, 0);
 			}
 			else {
 				//Devolvemos la nueva etiqueta
-				return new ParBooleanInt(false, errorEtiq.getIntVal());
+				return errorEtiq;
 			}
 		}
 	}
@@ -735,7 +757,7 @@ public class ASintactico {
 		}
 	}
 	
-	public tSintetiz rexp1(tSintetiz tipoH) {
+	public ParTipoEtiq rexp1(tSintetiz tipoH) {
 		//Declaración de las variables necesarias
 		tSintetiz tipo, tipo1;
 		tOp op;
@@ -759,7 +781,7 @@ public class ASintactico {
 		}	
 	}
 	
-	public tSintetiz exp1() {
+	public ParTipoEtiq exp1() {
 		//Declaración de las variables necesarias
 		tSintetiz tipo1, tipo2, tipoH;
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -783,7 +805,7 @@ public class ASintactico {
 		}
 	}
 	
-	public tSintetiz rexp11(tSintetiz tipoH) {
+	public ParTipoEtiq rexp11(tSintetiz tipoH) {
 		//Declaración de las variables necesarias
 		tSintetiz tipo1, tipo2, tipoH1;
 		tOp op;
@@ -814,7 +836,7 @@ public class ASintactico {
 		}
 	}
 	
-	public tSintetiz exp2() {
+	public ParTipoEtiq exp2() {
 		//Declaración de las variables necesarias
 		tSintetiz tipo1, tipo2, tipoH;
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -1008,7 +1030,6 @@ public class ASintactico {
 	
 	public tSintetiz term1True() {
 		emit.emit(Emit.APILA, new Token(tToken.booleano,"true"));
-
 		emite("apila(" + true + ")");
 		consume(tToken.booleanoCierto);
 		return tSintetiz.tBool;
