@@ -324,18 +324,18 @@ public class ASintactico {
 			return false;
 	}
 	
-	public boolean sent() {
+	public ParBooleanInt sent(int etiqIn) {
 		//Declaración de las variables necesarias
 		
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.entradaTeclado) {
-			return sread();
+			return sread(etiqIn);
 		}
 		if (tokActual.getTipoToken() == tToken.salidaPantalla) {
-			return swrite();
+			return swrite(etiqIn);
 		}
 		if (tokActual.getTipoToken() == tToken.identificador) {
-			return sasign();
+			return sasign(etiqIn);
 		}
 		//Añadimos control de errores
 		else {
@@ -345,12 +345,12 @@ public class ASintactico {
 					"	- Entrada por teclado		=>  'in()'\n" +
 					"	- Salida por pantalla 'out()'	=>  'out()'\n\n" +
 					"Token en preanálisis: " + tokActual.getTipoToken() + "\n");
-			return true;
+			return new ParBooleanInt(true, 0);
 		}
 //		consume(tToken.puntoyComa);
 	}
 	
-	public boolean swrite() {
+	public ParBooleanInt swrite(int etiqIn) {
 		//Declaración de las variables necesarias
 		tSintetiz tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -366,7 +366,7 @@ public class ASintactico {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en la expresión de la instrucción de salida por pantalla." + "\n");
-				return true;
+				return new ParBooleanInt(true, 0);
 			}
 			else {
 				emite("escribir");
@@ -381,11 +381,11 @@ public class ASintactico {
 			vaciaCod();
 			System.out.println("Error: Se esperaba paréntesis de apertura después de operación de entrada" + "\n" +
 					"por teclado.\n");
-			return true;
+			return new ParBooleanInt(true, 0);
 		}
 	}
 	
-	public boolean sread() {
+	public ParBooleanInt sread(int etiqIn) {
 		//Declaración de las variables necesarias
 		String lexIden = new String();
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -425,7 +425,7 @@ public class ASintactico {
 		}
 	}
 	
-	public boolean sasign() {
+	public ParBooleanInt sasign(int etiqIn) {
 		//Declaración de las variables necesarias
 		tSintetiz tipo;
 		String lexIden = new String();
@@ -486,7 +486,98 @@ public class ASintactico {
 			return false;
 	}
 	
-	public tSintetiz exp() {
+	public ParBooleanInt sfor(int etiqIn) {
+		//Declaración de las variables necesarias
+		//tSintetiz tipo; //Ahora necesitamos guardar tipo y etiqueta, 1 variable para cada expresión
+		ParTipoEtiq tipoEtiq1 = new ParTipoEtiq();
+		ParTipoEtiq tipoEtiq2 = new ParTipoEtiq();
+		ParBooleanInt errorEtiq = new ParBooleanInt();
+		String lexIden = new String();
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//Consumimos el token del for
+		consume(tToken.forC);
+		if (tokActual.getTipoToken() == tToken.identificador &&
+				ts.existeId(tokActual.getLexema(), tClase.variable, new Integer(0))) {
+			lexIden = tokActual.getLexema();
+			consume(tToken.identificador);
+			//Una vez parseado el identificador vamos con el simbolo '='
+			consume(tToken.igual);
+			//LLamada a la 1ª epx()
+			tipoEtiq1 = exp(etiqIn);
+			/////////////////////////////////////////////////////////////////////////
+			//Falta cambiar el getTipo
+			if (!(tipoEtiq1.getTipo() == tSintetiz.tNat || tipoEtiq1.getTipo() == tSintetiz.tInt) 
+					|| !esCompatibleAsig(ts.getTabla().get(lexIden).getTipo(), tipoEtiq1.getTipo())) {
+				errorProg = true;
+				vaciaCod();
+				System.out.println("Error en la instrucción 'for': La 1ª expresión es errónea, o el tipo de la" + "\n" +
+						"misma es incompatible con el del identificador." + "\n");
+				return new ParBooleanInt(true, 0);
+			}
+			else {
+				//Emitimos las correspondientes instrucciones a pila ya que por ahora es todo correcto
+				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+				//Instrucciones para la máquina virtual con 'emit'
+				//emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getTipo()), 
+				//		new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
+				emite("apila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+				//Consumimos el token 'to'
+				consume(tToken.toC);
+				//LLamada a la 2ª epx()
+				tipoEtiq2 = exp(tipoEtiq1.getEtiq() + 2);
+				/////////////////////////////////////////////////////////////////////////
+				//Falta cambiar el getTipo
+				if (!(tipoEtiq2.getTipo() == tSintetiz.tNat || tipoEtiq2.getTipo() == tSintetiz.tInt) 
+						|| !esCompatibleAsig(ts.getTabla().get(lexIden).getTipo(), tipoEtiq2.getTipo())) {
+					errorProg = true;
+					vaciaCod();
+					System.out.println("Error en la instrucción 'for': La 2ª expresión es errónea, o el tipo de la" + "\n" +
+							"misma es incompatible con el del identificador." + "\n");
+					return new ParBooleanInt(true, 0);
+				}
+				else {
+					//Emitimos las correspondientes instrucciones a pila ya que por ahora es todo correcto
+					//Faltan las instrucciones para la máquina virtual con 'emit'
+					emite("menorIgual");
+					emite("ir-f(?)");
+					//Llamada a la sentencia que conforma el cuerpo del for
+					errorEtiq = sent(tipoEtiq2.getEtiq() + 2);
+					if (errorEtiq.getBooleanVal()) {
+						errorProg = true;
+						vaciaCod();
+						System.out.println("Error en el cuerpo de la instrucción 'for'." + "\n");
+						return new ParBooleanInt(true, 0);
+					}
+					else {
+						//Como ya tenemos la etiqueta de salida de 'sent()', 
+						//podemos parchear el anterior 'ir-f()' del código a pila
+						parchea(tipoEtiq2.getEtiq() + 1, errorEtiq.getIntVal() + 5);
+						//Emitimos las correspondientes instrucciones a pila ya que por ahora es todo correcto
+						//Hay que incrementar el contador
+						emite("apila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+						emite("apila(1)");
+						emite("suma");
+						emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+						emite("ir-a(" + etiqIn + ")");
+						return new ParBooleanInt(false, errorEtiq.getIntVal() + 5);
+					}
+				}
+			}
+		}
+		else {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error: Se espera identificador declarado después de 'for'." + "\n" +
+					"Token en preanálisis: " + tokActual.getLexema() + " Tipo de token: " + tokActual.getTipoToken() + "\n");
+			return new ParBooleanInt(true, 0);
+		}
+	}
+	
+	public void parchea (int nInst, int etiq) {
+		
+	}
+	
+	public ParTipoEtiq exp(int etiqIn) {
 		//Declaración de las variables necesarias
 		tSintetiz tipo1, tipo2, tipoH;
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -841,7 +932,7 @@ public class ASintactico {
 		tSintetiz tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema())) {
+				ts.existeId(tokActual.getLexema(), tClase.variable, new Integer(0))) {
 			lexIden = tokActual.getLexema();
 			//Ya tenemos todo lo necesario acerca del token, pues lo consumimos
 			consume(tToken.identificador);
