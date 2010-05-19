@@ -196,8 +196,9 @@ public class ASintactico {
 					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\tDirección: " +
 							ts.getTabla().get(id).getDirM());
 				else*/
-				System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\t\tDirección: " +
-						ts.getTabla().get(id).getDirM());
+				//System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\t\tDirección: " +
+				System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
+					ts.getTabla().get(id).getDirM());
 			}
 			System.out.println();
 			System.out.println();
@@ -463,7 +464,8 @@ public class ASintactico {
 			//LLamada a epx()
 			tipoEtiq = exp(etiqIn);
 			/////////////////////////////////////////////////////////////////////////
-			if (tipoEtiq.getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getT())) {
+			//if (tipoEtiq.getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getT())) {
+			if (tipoEtiq.getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getTipo(), tipoEtiq.getT())) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en la asignación: La expresión es errónea, o los tipos de la" + "\n" +
@@ -1114,7 +1116,8 @@ public class ASintactico {
 			//Ya tenemos todo lo necesario acerca del token, pues lo consumimos
 			consume(tToken.identificador);
 			//OBTENEMOS EL TIPO DEL IDENTIFICADOR DE LA TS//
-			tipo = ts.getTabla().get(lexIden).getPropiedadesTipo().getT();
+			//tipo = ts.getTabla().get(lexIden).getPropiedadesTipo().getT();
+			tipo = ts.getTabla().get(lexIden).getTipo();
 			emite("apila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
 			emit.emit(Emit.APILA_DIR, new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
 			return new ParTipoEtiq(tipo, etiqIn + 1);

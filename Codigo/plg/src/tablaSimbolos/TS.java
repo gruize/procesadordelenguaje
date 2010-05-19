@@ -2,7 +2,7 @@ package tablaSimbolos;
 
 import java.util.*;
 
-import analizadorSintactico.*;
+//import analizadorSintactico.*;
 
 public class TS {
 
