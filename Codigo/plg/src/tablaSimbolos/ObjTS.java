@@ -43,6 +43,14 @@ public class ObjTS {
 		return clase;
 	}
 
+	public PropsObjTS getPropiedadesTipo() {
+		return propiedadesTipo;
+	}
+
+	public void setPropiedadesTipo(PropsObjTS propiedadesTipo) {
+		this.propiedadesTipo = propiedadesTipo;
+	}
+
 	public void setClase(tClase clase) {
 		this.clase = clase;
 	}

@@ -23,5 +23,4 @@ public class Puntero extends PropsObjTS {
 	public void setTam(Integer tam) {
 		this.tam = tam;
 	}
-	
 }
