@@ -328,7 +328,8 @@ public class ASintactico {
 		//Declaración de las variables necesarias
 		
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		if (errorProg || tokActual.getTipoToken() != tToken.finDeFichero)
+		if (errorProg || !(tokActual.getTipoToken() == tToken.finDeFichero
+				|| tokActual.getTipoToken() == tToken.llaveCierre))
 			return new ParBooleanInt(true, etiqIn);
 		else
 			return new ParBooleanInt(false, etiqIn);
@@ -365,7 +366,7 @@ public class ASintactico {
 			System.out.println("Error: Se esperaba una de las siguientes instrucciones:\n" +
 					"	- Asignación			=>  ':='\n" +
 					"	- Entrada por teclado		=>  'in()'\n" +
-					"	- Salida por pantalla			=>  'out()'\n" +
+					"	- Salida por pantalla		=>  'out()'\n" +
 					"	- if-then-else\n" +
 					"	- while-do\n" +
 					"	- for-to-do\n" +
