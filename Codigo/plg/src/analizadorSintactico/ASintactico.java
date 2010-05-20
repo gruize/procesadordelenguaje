@@ -198,8 +198,15 @@ public class ASintactico {
 								ts.getTabla().get(id).getDirM());
 					else*/
 					//System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\t\tDirección: " +
-					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
-						ts.getTabla().get(id).getDirM());
+					if (id.length() < 4)
+						System.out.println("Id: " + id + "\t\t\t" + "Tipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
+								ts.getTabla().get(id).getDirM());
+					if ((id.length() >= 4) && (id.length() < 12))
+						System.out.println("Id: " + id + "\t\t" + "Tipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
+								ts.getTabla().get(id).getDirM());
+					if ((id.length() >= 12))
+						System.out.println("Id: " + id + "\t" + "Tipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
+								ts.getTabla().get(id).getDirM());
 				}
 			}
 			else
