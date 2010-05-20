@@ -207,7 +207,7 @@ public class ASintactico {
 			System.out.println("Instrucciones para la máquina a pila generadas");
 			System.out.println("----------------------------------------------");
 			for (int i = 0; i < instMPOut.size(); i++)
-				System.out.println(instMPOut.get(i));
+				System.out.println(i +":" + "\t" + instMPOut.get(i));
 			System.out.println();
 			System.out.println();
 			System.out.println("***********************************************************************");
@@ -477,7 +477,7 @@ public class ASintactico {
 				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
 				//emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getPropiedadesTipo().getT()), 
 				//		new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
-				return new ParBooleanInt(false, etiqIn + 1);
+				return new ParBooleanInt(false, tipoEtiq.getEtiq() + 1);
 			}
 		}
 		else {
@@ -730,7 +730,7 @@ public class ASintactico {
 						emite("apila(1)");
 						emite("suma");
 						emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
-						emite("ir-a(" + etiqIn + ")");
+						emite("ir-a(" + (tipoEtiq1.getEtiq() + 1)+ ")");
 						return new ParBooleanInt(false, errorEtiq.getIntVal() + 5);
 					}
 				}
@@ -745,8 +745,21 @@ public class ASintactico {
 		}
 	}
 	
-	public void parchea (int nInst, int etiq) {
-		//Falta el código
+	public void parchea (int nLinea, int etiq) {
+		//Se hace en principio para el vector de Strings de instrucciones apila
+		String linAParchear;
+		linAParchear = instMPOut.get(nLinea);
+		if (linAParchear.equals("ir-a(?)")) {
+			linAParchear = "ir-a(" + etiq + ")";
+			instMPOut.setElementAt(linAParchear, nLinea);
+			return;
+		}
+		if (linAParchear.equals("ir-f(?)")) {
+			linAParchear = "ir-f(" + etiq + ")";
+			instMPOut.setElementAt(linAParchear, nLinea);
+			return;
+		}
+		System.out.print("Error: Se intentó parchear la siguiente instrucción: " + linAParchear + "." + "\n");
 	}
 	
 	public ParTipoEtiq exp(int etiqIn) {
@@ -1423,7 +1436,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa10.txt";
+		String nombreFichero = "prueba10.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
