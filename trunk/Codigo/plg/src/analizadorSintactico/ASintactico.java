@@ -301,11 +301,56 @@ public class ASintactico {
 	}
 	
 	public ParString dec() {
+		//Declaración de las variables necesarias
+		
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		if (tokActual.getTipoToken() == tToken.identificador) {
+			return decVar();
+		}
+		if (tokActual.getTipoToken() == tToken.decTipo) {
+			return decTipo();
+		}
+		if (tokActual.getTipoToken() == tToken.procedure) {
+			return decProc();
+		}
+		//Añadimos control de errores
+		errorProg = true;
+		System.out.println("Error: Se esperaba una de las siguientes declaraciones:\n" +
+				"	- Variable" + "\n" +
+				"	- Tipo	=> 'tipo'" + "\n" +
+				"	- Procedimiento	=> 'procedure'" + "\n" +
+				"Token en análisis: " + tokActual.getTipoToken() + "\n");
+		return new ParString();
+	}
+	
+	public ParString decVar() {
 		ParString parOut = new ParString();
 		parOut.setIden(consumeId().getLexema());
 		consume(tToken.dosPuntos);
 		parOut.setTipo(dametipoT(consumeTipo().getTipoToken()));
 		return parOut;
+	}
+	
+	public ParString decTipo() {
+		//Consumimos el token 'tipo'
+		consume(tToken.decTipo);
+//		ParString parOut = new ParString();
+//		parOut.setIden(consumeId().getLexema());
+//		consume(tToken.dosPuntos);
+//		parOut.setTipo(dametipoT(consumeTipo().getTipoToken()));
+//		return parOut;
+		
+		return new ParString();
+	}
+	
+	public ParString decProc() {
+//		ParString parOut = new ParString();
+//		parOut.setIden(consumeId().getLexema());
+//		consume(tToken.dosPuntos);
+//		parOut.setTipo(dametipoT(consumeTipo().getTipoToken()));
+//		return parOut;
+		
+		return new ParString();
 	}
 	
 	public ParBooleanInt sents(int etiqIn) {
@@ -374,18 +419,16 @@ public class ASintactico {
 			return sasign(etiqIn);
 		}
 		//Añadimos control de errores
-		else {
-			errorProg = true;
-			System.out.println("Error: Se esperaba una de las siguientes instrucciones:\n" +
-					"	- Asignación			=>  ':='\n" +
-					"	- Entrada por teclado		=>  'in()'\n" +
-					"	- Salida por pantalla		=>  'out()'\n" +
-					"	- if-then-else\n" +
-					"	- while-do\n" +
-					"	- for-to-do\n" +
-					"Token en preanálisis: " + tokActual.getTipoToken() + "\n");
-			return new ParBooleanInt(true, etiqIn);
-		}
+		errorProg = true;
+		System.out.println("Error: Se esperaba una de las siguientes instrucciones:\n" +
+				"	- Asignación			=>  ':='\n" +
+				"	- Entrada por teclado		=>  'in()'\n" +
+				"	- Salida por pantalla		=>  'out()'\n" +
+				"	- if-then-else\n" +
+				"	- while-do\n" +
+				"	- for-to-do\n" +
+				"Token en análisis: " + tokActual.getTipoToken() + "\n");
+		return new ParBooleanInt(true, etiqIn);
 //		consume(tToken.puntoyComa);
 	}
 	
