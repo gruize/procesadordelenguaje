@@ -238,17 +238,29 @@ public class ASintactico {
 	public void programa(){ //PROGRAMA ::= DECS & SENTS
 		boolean errorDec, errorSent;
 		errorProg = errorDec = errorSent = false;
-		
-		errorDec = decs();
-		consume(tToken.separador);
-		//Lanzamos sents() con la etiqueta a 0, ya que es la primera vez que se llama
-		errorSent = sents(0).getBooleanVal();
-		//La linea de abajo habría que cambiarla por esta:
-		//errorProg = errorDec || errorSent;
-		errorProg = errorProg || errorDec || errorSent;
-		
-		emite("stop");
-		emit.emit(Emit.STOP);
+		//////////////////////////////////////////////////////////////////////////
+		if (tokActual.getTipoToken() == tToken.separador) {
+		//////////////////////////////////////////////////////////////////////////
+			consume(tToken.separador);
+			//Lanzamos sents() con la etiqueta a 0, ya que es la primera vez que se llama
+			errorSent = sents(0).getBooleanVal();
+			//La linea de abajo habría que cambiarla por esta:
+			//errorProg = errorDec || errorSent;
+			errorProg = errorProg || errorSent;
+			emite("stop");
+			emit.emit(Emit.STOP);
+		}
+		else {
+			errorDec = decs();
+			consume(tToken.separador);
+			//Lanzamos sents() con la etiqueta a 0, ya que es la primera vez que se llama
+			errorSent = sents(0).getBooleanVal();
+			//La linea de abajo habría que cambiarla por esta:
+			//errorProg = errorDec || errorSent;
+			errorProg = errorProg || errorDec || errorSent;
+			emite("stop");
+			emit.emit(Emit.STOP);
+		}
 	}
 	
 	public boolean decs(){
@@ -257,27 +269,18 @@ public class ASintactico {
 		ParString id_tipo = new ParString();
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//Si no hay declaraciones, devolvemos sin error, y sin añadir nada a la TS
-		//////////////////////////////////////////////////////////////////////////
-		if (tokActual.getTipoToken() != tToken.separador) {
-		//////////////////////////////////////////////////////////////////////////	
-			id_tipo = dec();
-			if (tokActual.getTipoToken() == tToken.puntoyComa)
-				errorDec1_dir = rdecs1();
-			else
-				errorDec1_dir = rdecs2();
-			if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getIden(), tClase.variable, new Integer(0)))
-				return true;
-			else {
-				ts.anadeId(id_tipo.getIden(), id_tipo.getT(), errorDec1_dir.getIntVal());
-				// faltan dos emits
-				return false;
-			}
-		}
-		//Si no hay declaraciones, devolvemos sin error, y sin añadir nada a la TS
-		//////////////////////////////////////////////////////////////////////////
-		else 
+		id_tipo = dec();
+		if (tokActual.getTipoToken() == tToken.puntoyComa)
+			errorDec1_dir = rdecs1();
+		else
+			errorDec1_dir = rdecs2();
+		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getIden(), tClase.variable, new Integer(0)))
+			return true;
+		else {
+			ts.anadeId(id_tipo.getIden(), id_tipo.getT(), errorDec1_dir.getIntVal());
+			// faltan dos emits
 			return false;
-		//////////////////////////////////////////////////////////////////////////
+		}
 	}
 	
 	public ParBooleanInt rdecs1() {
@@ -492,9 +495,9 @@ public class ASintactico {
 				//emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getT()), 
 				//		new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
 
-
 				consume(tToken.identificador);
 				consume(tToken.parCierre);
+				//LEER de la MV sólo se emite en una instrucción
 				return new ParBooleanInt(false, etiqIn + 2);
 			}
 			else {

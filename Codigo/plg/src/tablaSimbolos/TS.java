@@ -26,7 +26,14 @@ public class TS {
 		else
 			return false;
 	}
-
+	
+	public boolean existeTipo(String tipo, tClase clase) {
+		if (tabla.containsKey(tipo) && tabla.get(tipo).clase == tClase.tipo )
+			return true;
+		else
+			return false;
+	}
+	
 	public Hashtable<String, ObjTS> getTabla() {
 		return tabla;
 	}
