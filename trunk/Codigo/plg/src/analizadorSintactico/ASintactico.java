@@ -190,16 +190,20 @@ public class ASintactico {
 			System.out.println();
 			//Mostramos la información de la tabla de símbolos		
 			e = ts.getTabla().keys();
-			while (e.hasMoreElements()) {
-				id = e.nextElement();
-				/*if (ts.getTabla().get(id).getPropiedadesTipo().getT() == tipoT.tChar)
-					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\tDirección: " +
-							ts.getTabla().get(id).getDirM());
-				else*/
-				//System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\t\tDirección: " +
-				System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
-					ts.getTabla().get(id).getDirM());
+			if (e.hasMoreElements()) {
+				while (e.hasMoreElements()) {
+					id = e.nextElement();
+					/*if (ts.getTabla().get(id).getPropiedadesTipo().getT() == tipoT.tChar)
+						System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\tDirección: " +
+								ts.getTabla().get(id).getDirM());
+					else*/
+					//System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\t\tDirección: " +
+					System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
+						ts.getTabla().get(id).getDirM());
+				}
 			}
+			else
+				System.out.println("Tabla de símbolos vacía.");
 			System.out.println();
 			System.out.println();
 			System.out.println("El análisis ha sido satisfactorio.");
@@ -238,7 +242,6 @@ public class ASintactico {
 		
 		emite("stop");
 		emit.emit(Emit.STOP);
-
 	}
 	
 	public boolean decs(){
@@ -246,18 +249,28 @@ public class ASintactico {
 		ParBooleanInt errorDec1_dir = new ParBooleanInt();
 		ParString id_tipo = new ParString();
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		id_tipo = dec();
-		if (tokActual.getTipoToken() == tToken.puntoyComa)
-			errorDec1_dir = rdecs1();
-		else
-			errorDec1_dir = rdecs2();
-		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getIden(), tClase.variable, new Integer(0)))
-			return true;
-		else {
-			ts.anadeId(id_tipo.getIden(), id_tipo.getT(), errorDec1_dir.getIntVal());
-			// faltan dos emits
-			return false;
+		//Si no hay declaraciones, devolvemos sin error, y sin añadir nada a la TS
+		//////////////////////////////////////////////////////////////////////////
+		if (tokActual.getTipoToken() != tToken.separador) {
+		//////////////////////////////////////////////////////////////////////////	
+			id_tipo = dec();
+			if (tokActual.getTipoToken() == tToken.puntoyComa)
+				errorDec1_dir = rdecs1();
+			else
+				errorDec1_dir = rdecs2();
+			if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getIden(), tClase.variable, new Integer(0)))
+				return true;
+			else {
+				ts.anadeId(id_tipo.getIden(), id_tipo.getT(), errorDec1_dir.getIntVal());
+				// faltan dos emits
+				return false;
+			}
 		}
+		//Si no hay declaraciones, devolvemos sin error, y sin añadir nada a la TS
+		//////////////////////////////////////////////////////////////////////////
+		else 
+			return false;
+		//////////////////////////////////////////////////////////////////////////
 	}
 	
 	public ParBooleanInt rdecs1() {
@@ -1436,7 +1449,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "prueba10.txt";
+		String nombreFichero = "programa10.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
