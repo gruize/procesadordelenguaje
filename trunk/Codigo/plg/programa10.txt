@@ -3,18 +3,19 @@ euros: integer;
 centimos: float;
 car: character;
 numero: natural;
-aux: boolean
+aux: boolean;
+xxxxxxxxxxxx: natural
 &
-#euros := |((76 + 763 * 4) * -(645 + 54 + 98)) + 65 + 66|;
-#euros := |-7|;
-#aux := true or false;
-#car := 'k';
-for euros = 10 to 20*10 do
+euros := |((76 + 763 * 4) * -(645 + 54 + 98)) + 65 + 66|;
+euros := |-7|;
+aux := true or false;
+car := 'k';
+for euros = 10 to (20*10) do
 {
 	numero := numero + 2;
 	car := 'o'
 };
-while euros < 10 do
+while (euros < 10) do
 {
 	euros := euros + 4;
 	if euros > 6 then {
