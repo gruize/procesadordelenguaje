@@ -38,6 +38,17 @@ public class ObjTS {
 		dirM = new Integer(0);
 	}
 	
+	public ObjTS(tipoT _tipo, int _dirM) {
+		// TODO Auto-generated constructor stub
+		tipo = _tipo;
+		dirM = new Integer(_dirM);
+	}
+	
+	//Será el método que sustituya al antiguo getTipo()
+	public tipoT getT() {
+		return propiedadesTipo.getT();
+	}
+	
 	/*public tSintetiz getTipo() {
 		return tipo;
 	}
@@ -76,12 +87,6 @@ public class ObjTS {
 
 	public void setNivel(Integer nivel) {
 		this.nivel = nivel;
-	}
-	
-	public ObjTS(tipoT _tipo, int _dirM) {
-		// TODO Auto-generated constructor stub
-		tipo = _tipo;
-		dirM = new Integer(_dirM);
 	}
 
 }

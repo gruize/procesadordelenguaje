@@ -2,7 +2,7 @@ package tablaSimbolos;
 import java.util.*;
 
 public class Registro extends PropsObjTS{
-	private tipoT t; 
+	private tipoT t;
 	private Vector<Campo> campos;
 	private Integer tam;
 	
