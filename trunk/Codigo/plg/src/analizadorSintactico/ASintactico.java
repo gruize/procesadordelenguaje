@@ -22,6 +22,9 @@ public class ASintactico {
 	//del analizador sintáctico. Se puede cambiar a salida a fichero
 	private Vector<String> instMPOut;
 	private boolean errorProg;
+	//Atributos del 2º Cuat
+	//Lista de pendientes para punteros y el forward
+	private Vector<String> listaPendientes;
 	
 	public ASintactico() {
 		// TODO Auto-generated constructor stub
@@ -158,6 +161,12 @@ public class ASintactico {
 		default:
 			return tipoT.tError;
 		}
+	}
+	
+	//Se usa para copiar nuevas tablas de símbolos pertenecientes a los procedimientos
+	@SuppressWarnings("unchecked")
+	public TS creaTS() {
+		return new TS((Hashtable<String, ObjTS>) ts.getTabla().clone());
 	}
 	
 	//Hay que hacer un método que obtenga el array de tokens de entrada
