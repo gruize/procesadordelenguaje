@@ -912,6 +912,11 @@ public class ASintactico {
 			instMPOut.setElementAt(linAParchear, nLinea);
 			return;
 		}
+		if (linAParchear.equals("ir-v(?)")) {
+			linAParchear = "ir-v(" + etiq + ")";
+			instMPOut.setElementAt(linAParchear, nLinea);
+			return;
+		}
 		System.out.print("Error: Se intentó parchear la siguiente instrucción: " + linAParchear + "." + "\n");
 	}
 	
@@ -996,7 +1001,77 @@ public class ASintactico {
 		}
 	}
 	
+	//Definición con el cortocircuito para 'or'
 	public ParTipoEtiq rexp11(ParTipoEtiq tipoEtiqH) {
+		//Declaración de las variables necesarias
+		ParTipoEtiq tipoEtiq1, tipoEtiq2;
+		tipoT tipoH1;
+		tOp op;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//Necesitamos obtener el operador concreto
+		op = op1();
+		//Si no es una oLogica, actuamos como siempre
+		if (op != tOp.oLogica) {
+			tipoEtiq1 = exp2(tipoEtiqH.getEtiq());
+			tipoH1 = dameTipo(tipoEtiqH.getT(), tipoEtiq1.getT(), op);
+			if (tipoH1 != tipoT.tError) {
+				emite(op.toString());
+				emit.emit(opUtils.getOperationCode(op));
+			}
+			if (esTokenOp1(tokActual.getTipoToken())) {
+				tipoEtiq2 = rexp11(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1));
+				if (tipoEtiq2.getT() == tipoT.tError) {
+					errorProg = true;
+					vaciaCod();
+					System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
+					return new ParTipoEtiq(tipoT.tError, tipoEtiq2.getEtiq());
+				}
+				else {
+					return tipoEtiq2;
+				}
+			}
+			else {
+				// Hemos llegado al fin de la instrucción
+				if (tipoH1 == tipoT.tError)
+					return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq());
+				else
+					return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1);
+			}
+		}
+		//Si es una oLogica, procedemos insertando las instrucciones a pila
+		//para el cortocircuito
+		else {
+			emite("copia");
+			emite("ir-v(?)");
+			emite("desapila");
+			tipoEtiq1 = exp2(tipoEtiqH.getEtiq() + 3);
+			tipoH1 = dameTipo(tipoEtiqH.getT(), tipoEtiq1.getT(), op);
+			if (esTokenOp1(tokActual.getTipoToken())) {
+				tipoEtiq2 = rexp11(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq()));
+				if (tipoEtiq2.getT() == tipoT.tError) {
+					errorProg = true;
+					vaciaCod();
+					System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
+					return new ParTipoEtiq(tipoT.tError, tipoEtiq2.getEtiq());
+				}
+				else {
+					//Parcheamos con la etiqueta del final de las expresiones
+					//reconocidas
+					parchea(tipoEtiqH.getEtiq() + 1, tipoEtiq2.getEtiq());
+					return tipoEtiq2;
+				}
+			}
+			else {
+				//Hemos llegado al fin de la instrucción
+				//Parcheamos con la etiqueta del final de exp2()
+				parchea(tipoEtiqH.getEtiq() + 1, tipoEtiq1.getEtiq());
+				return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq());
+			}
+		}
+	}
+	
+	//Definición sin el cortocircuito
+	/*public ParTipoEtiq rexp11(ParTipoEtiq tipoEtiqH) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2;
 		tipoT tipoH1;
@@ -1029,7 +1104,7 @@ public class ASintactico {
 			else
 				return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1);
 		}
-	}
+	}*/
 	
 	public ParTipoEtiq exp2(int etiqIn) {
 		//Declaración de las variables necesarias
@@ -1055,7 +1130,80 @@ public class ASintactico {
 		}
 	}
 	
+	//Definición con el cortocircuito para 'and'
 	public ParTipoEtiq rexp21(ParTipoEtiq tipoEtiqH) {
+		//Declaración de las variables necesarias
+		ParTipoEtiq tipoEtiq1, tipoEtiq2;
+		tipoT tipoH1;
+		tOp op;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//Necesitamos obtener el operador concreto
+		op = op2();
+		//Si no es una yLogica, actuamos como siempre
+		if (op != tOp.yLogica) {
+			tipoEtiq1 = exp3(tipoEtiqH.getEtiq());
+			tipoH1 = dameTipo(tipoEtiqH.getT(), tipoEtiq1.getT(),op);
+			if (tipoH1 != tipoT.tError) {
+				emite(op.toString());
+				emit.emit(opUtils.getOperationCode(op));
+			}
+			if (esTokenOp2(tokActual.getTipoToken())) {
+				tipoEtiq2 = rexp21(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1));
+				if (tipoEtiq2.getT() == tipoT.tError) {
+					errorProg = true;
+					vaciaCod();
+					System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
+					return tipoEtiq2;
+				}
+				else {
+					return tipoEtiq2;
+				}
+			}
+			else {
+				// Hemos llegado al fin de la instrucción
+				if (tipoH1 == tipoT.tError)
+					return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq());
+				else
+					return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1);
+			}
+		}
+		//Si es una yLogica, procedemos insertando las instrucciones a pila
+		//para el cortocircuito
+		else {
+			emite("ir-f(?)");
+			tipoEtiq1 = exp3(tipoEtiqH.getEtiq() + 1);
+			tipoH1 = dameTipo(tipoEtiqH.getT(), tipoEtiq1.getT(),op);
+			if (esTokenOp2(tokActual.getTipoToken())) {
+				tipoEtiq2 = rexp21(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq()));
+				if (tipoEtiq2.getT() == tipoT.tError) {
+					errorProg = true;
+					vaciaCod();
+					System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
+					return tipoEtiq2;
+				}
+				else {
+					emite("ir-a(" + (tipoEtiq2.getEtiq() + 2)  + ")");
+					//emite("apila(0)");
+					emite("apila(false)");
+					parchea(tipoEtiqH.getEtiq(), tipoEtiq2.getEtiq() + 1);
+					//return tipoEtiq2;
+					return new ParTipoEtiq(tipoEtiq2.getT(), tipoEtiq2.getEtiq() + 2);
+				}
+			}
+			else {
+				//Hemos llegado al fin de la instrucción
+				//Parcheamos con la etiqueta del final de exp3()
+				emite("ir-a(" + (tipoEtiq1.getEtiq() + 2)  + ")");
+				//emite("apila(0)");
+				emite("apila(false)");
+				parchea(tipoEtiqH.getEtiq(), tipoEtiq1.getEtiq() + 1);
+				return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 2);
+			}
+		}
+	}
+	
+	//Definición sin el cortocircuito
+	/*public ParTipoEtiq rexp21(ParTipoEtiq tipoEtiqH) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2;
 		tipoT tipoH1;
@@ -1088,7 +1236,7 @@ public class ASintactico {
 			else
 				return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1);
 		}
-	}
+	}*/
 	
 	public ParTipoEtiq exp3(int etiqIn) {
 		//Declaración de las variables necesarias
