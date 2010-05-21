@@ -631,6 +631,93 @@ public class ASintactico {
 				return new ParBooleanInt(true, 0);
 			}
 			else {
+				//Llamada a pelse
+				errorEtiq2 = pelse(errorEtiq1.getIntVal());
+				if (errorEtiq2.getBooleanVal()) {
+					errorProg = true;
+					vaciaCod();
+					System.out.println("Error en el cuerpo de la instrucción 'else'." + "\n");
+					return new ParBooleanInt(true, 0);
+				}
+				else {
+					//Podemos parchear el anterior 'ir-f()' del código a pila
+					//pero hay que saber si nos viene un else o no, ya que se
+					//debe calcular una posición más o no
+					if (errorEtiq1.getIntVal() == errorEtiq2.getIntVal()) {
+						parchea(tipoEtiq.getEtiq(), errorEtiq1.getIntVal());
+						return errorEtiq2;
+					}
+					else {
+						parchea(tipoEtiq.getEtiq(), errorEtiq1.getIntVal() + 1);
+						return errorEtiq2;
+					}
+				}
+			}
+		}
+	}
+	
+	public ParBooleanInt pelse(int etiqIn) {
+		//Declaración de las variables necesarias
+		ParBooleanInt errorEtiq;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//Si no aparece el token 'else', consideramos que es sólo un if-then
+		if (tokActual.getTipoToken() != tToken.elseC) {
+			return new ParBooleanInt(false, etiqIn);
+		}
+		else {
+			//Consumimos el token del 'else'
+			consume(tToken.elseC);
+			emite("ir-a(?)");
+			//Llamada a la sentencia que conforma el cuerpo del else
+			errorEtiq = sent(etiqIn + 1);
+			if (errorEtiq.getBooleanVal()) {
+				errorProg = true;
+				vaciaCod();
+				System.out.println("Error en el cuerpo de la instrucción 'else'." + "\n");
+				return new ParBooleanInt(true, 0);
+			}
+			else {
+				//Ya podemos parchear el 'ir-a', porque ya tenemos la dirección
+				parchea(etiqIn, errorEtiq.getIntVal());
+				//Devolvemos la nueva etiqueta
+				return errorEtiq;
+			}
+		}
+	}
+	
+	//sif sin optimizar. Genera un ir-a que puede ser innecesario en caso
+	//de que no haya else
+	/*public ParBooleanInt sif(int etiqIn) {
+		//Declaración de las variables necesarias
+		//tSintetiz tipo; //Ahora necesitamos guardar tipo y etiqueta
+		ParTipoEtiq tipoEtiq = new ParTipoEtiq();
+		ParBooleanInt errorEtiq1, errorEtiq2;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		//Consumimos el token del while
+		consume(tToken.ifC);
+		//LLamada a la epx()
+		tipoEtiq = exp(etiqIn);
+		if (tipoEtiq.getT() != tipoT.tBool) { 
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error en la instrucción 'if': El tipo de la expresión a evaluar no es 'boolean'." +"\n");
+			return new ParBooleanInt(true, 0);
+		}
+		else {
+			//Consumimos el token del 'then'
+			consume(tToken.thenC);
+			//Emitimos las correspondientes instrucciones a pila ya que por ahora es todo correcto
+			//Instrucción a parchear
+			emite("ir-f(?)");
+			//Llamada a la sentencia que conforma el cuerpo del if
+			errorEtiq1 = sent(tipoEtiq.getEtiq() + 1);
+			if (errorEtiq1.getBooleanVal()) {
+				errorProg = true;
+				vaciaCod();
+				System.out.println("Error en el cuerpo de la instrucción 'if'." + "\n");
+				return new ParBooleanInt(true, 0);
+			}
+			else {
 				//Emitimos las correspondientes instrucciones a pila ya que por ahora es todo correcto
 				emite("ir-a(?)");
 				//Como ya tenemos la etiqueta de salida de 'sent()', 
@@ -652,9 +739,9 @@ public class ASintactico {
 				}
 			}
 		}
-	}
+	}*/
 	
-	public ParBooleanInt pelse(int etiqIn) {
+	/*public ParBooleanInt pelse(int etiqIn) {
 		//Declaración de las variables necesarias
 		ParBooleanInt errorEtiq;
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -678,7 +765,7 @@ public class ASintactico {
 				return errorEtiq;
 			}
 		}
-	}
+	}*/
 	
 	public ParBooleanInt swhile(int etiqIn) {
 		//Declaración de las variables necesarias
@@ -1502,7 +1589,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa10.txt";
+		String nombreFichero = "prueba10.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
