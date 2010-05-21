@@ -3,10 +3,10 @@ package tablaSimbolos;
 public class Campo {
 	
 	private String id;
-	private String tipo;
+	private PropsObjTS tipo;
 	private Integer desp;
 	
-	public Campo(String id, String tipo, Integer desp) {
+	public Campo(String id, PropsObjTS tipo, Integer desp) {
 		this.id = id;
 		this.tipo = tipo;
 		this.desp = desp;
@@ -20,11 +20,11 @@ public class Campo {
 		this.id = id;
 	}
 
-	public String getTipo() {
+	public PropsObjTS getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(String tipo) {
+	public void setTipo(PropsObjTS tipo) {
 		this.tipo = tipo;
 	}
 

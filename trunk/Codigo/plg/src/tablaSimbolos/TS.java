@@ -39,6 +39,13 @@ public class TS {
 			return false;
 	}
 	
+	public boolean existeProc(String proc, tClase clase) {
+		if (tabla.containsKey(proc)&& tabla.get(proc).clase == tClase.procedimiento )
+			return true;
+		else
+			return false;
+	}
+	
 	public Hashtable<String, ObjTS> getTabla() {
 		return tabla;
 	}

@@ -3,14 +3,16 @@ package tablaSimbolos;
 public class Array extends PropsObjTS {
 	private tipoT t;
 	private Integer nElems;
-	//private PropsObjTS tBase;
-	private tipoT tBase;
+	private PropsObjTS tBase;
+	//private tipoT tBase;
 	
-	public Array(int nElems, tipoT tBase) {
+	
+	public Array(int nElems, PropsObjTS tBase) {
 		t = tipoT.array;
 		nElems = new Integer(nElems);
 		this.tBase = tBase;
 	}
+	
 	public tipoT getT() {
 		return t;
 	}
@@ -23,10 +25,10 @@ public class Array extends PropsObjTS {
 	public void setNElems(Integer elems) {
 		nElems = elems;
 	}
-	public tipoT getTBase() {
+	public PropsObjTS getTBase() {
 		return tBase;
 	}
-	public void setTBase(tipoT base) {
+	public void setTBase(PropsObjTS base) {
 		tBase = base;
 	}
 //	public PropsObjTS getTBase() {
