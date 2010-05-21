@@ -2,7 +2,7 @@ package tablaSimbolos;
 
 public class Puntero extends PropsObjTS {
 	private tipoT t;
-	private PropsObjTS tBase;
+	private tipoT tBase;
 	private Integer tam;
 	
 	public tipoT getT() {
@@ -11,10 +11,10 @@ public class Puntero extends PropsObjTS {
 	public void setT(tipoT t) {
 		this.t = t;
 	}
-	public PropsObjTS getTBase() {
+	public tipoT getTBase() {
 		return tBase;
 	}
-	public void setTBase(PropsObjTS base) {
+	public void setTBase(tipoT base) {
 		tBase = base;
 	}
 	public Integer getTam() {
