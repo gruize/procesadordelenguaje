@@ -19,10 +19,16 @@ public class TS {
 	}
 	
 	//Se debe hacer un añade para cada clase de objeto de la tabla de símbolos
-	public void anadeId(String id, tipoT tipo, int dir) {
+	/*public void anadeId(String id, tipoT tipo, int dir) {
 		//No comprobamos la existencia del id porque eso se hara en el codigo
 		//del sintactico
 		tabla.put(id, new ObjTS(tipo, dir));
+	}*/
+	//Se debe hacer un añade para cada clase de objeto de la tabla de símbolos
+	public void anadeId(String id, PropsObjTS tipo, int dir, tClase clase, int nivel) {
+		//No comprobamos la existencia del id porque eso se hara en el codigo
+		//del sintactico
+		tabla.put(id, new ObjTS(tipo, dir, clase, nivel));
 	}
 	
 	public boolean existeId(String id, tClase clase, Integer nivel) {
@@ -32,7 +38,7 @@ public class TS {
 			return false;
 	}
 	
-	public boolean existeTipo(String tipo, tClase clase) {
+	public boolean existeTipo(String tipo) {
 		if (tabla.containsKey(tipo) && tabla.get(tipo).clase == tClase.tipo )
 			return true;
 		else
