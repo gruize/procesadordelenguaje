@@ -20,4 +20,10 @@ public class Referencia extends PropsObjTS {
 		return id;
 	}
 
+	@Override
+	public int getTam() {
+		// TODO Auto-generated method stub
+		return 1;
+	}
+
 }

@@ -17,8 +17,8 @@ public class Puntero extends PropsObjTS {
 	public void setTBase(PropsObjTS base) {
 		tBase = base;
 	}
-	public Integer getTam() {
-		return tam;
+	public int getTam() {
+		return tam.intValue();
 	}
 	public void setTam(Integer tam) {
 		this.tam = tam;
