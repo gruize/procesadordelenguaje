@@ -5,12 +5,14 @@ public class Array extends PropsObjTS {
 	private Integer nElems;
 	private PropsObjTS tBase;
 	//private tipoT tBase;
+	private Integer tam;
 	
 	
 	public Array(int nElems, PropsObjTS tBase) {
 		t = tipoT.array;
-		nElems = new Integer(nElems);
+		this.nElems = new Integer(nElems);
 		this.tBase = tBase;
+		this.tam = nElems * tBase.getTam();
 	}
 	
 	public tipoT getT() {
@@ -31,10 +33,10 @@ public class Array extends PropsObjTS {
 	public void setTBase(PropsObjTS base) {
 		tBase = base;
 	}
-//	public PropsObjTS getTBase() {
-//		return tBase;
-//	}
-//	public void setTBase(PropsObjTS base) {
-//		tBase = base;
-//	}
+	public void setTam(Integer tam) {
+		this.tam = tam;
+	}
+	public int getTam() {
+		return tam.intValue();
+	}
 }

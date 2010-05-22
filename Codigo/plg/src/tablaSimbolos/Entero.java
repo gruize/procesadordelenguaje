@@ -12,4 +12,10 @@ public class Entero extends PropsObjTS {
 		// TODO Auto-generated method stub
 		return t;
 	}
+
+	@Override
+	public int getTam() {
+		// TODO Auto-generated method stub
+		return 1;
+	}
 }
