@@ -4,6 +4,12 @@ public class Puntero extends PropsObjTS {
 	private tipoT t;
 	private PropsObjTS tBase;
 	private Integer tam;
+	//Debe haber tamaño en los procedimientos??
+	public Puntero(PropsObjTS tBase) {
+		t = tipoT.puntero;
+		this.tBase = tBase;
+		this.tam = new Integer(1);
+	}
 	
 	public tipoT getT() {
 		return t;

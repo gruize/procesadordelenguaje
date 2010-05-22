@@ -7,7 +7,7 @@ public class Array extends PropsObjTS {
 	//private tipoT tBase;
 	private Integer tam;
 	
-	
+	//Debemos tener en cuenta que tBase debe ser distinto de 'procedimiento'
 	public Array(int nElems, PropsObjTS tBase) {
 		t = tipoT.array;
 		this.nElems = new Integer(nElems);

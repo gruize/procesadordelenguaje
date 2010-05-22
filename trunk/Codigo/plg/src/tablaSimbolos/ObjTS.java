@@ -37,11 +37,19 @@ public class ObjTS {
 		//tipo = tSintetiz.tInicial;
 		dirM = new Integer(0);
 	}
-	
+	//Constructor 1º Cuat
 	public ObjTS(tipoT _tipo, int _dirM) {
 		// TODO Auto-generated constructor stub
 		tipo = _tipo;
 		dirM = new Integer(_dirM);
+	}
+	//Constructor 2º Cuat
+	public ObjTS(PropsObjTS _tipo, int _dirM, tClase clase, int nivel) {
+		// TODO Auto-generated constructor stub
+		propiedadesTipo = _tipo;
+		dirM = new Integer(_dirM);
+		this.clase = clase;
+		this.nivel = new Integer(nivel);
 	}
 	
 	//Será el método que sustituya al antiguo getTipo()

@@ -7,7 +7,7 @@ public class Procedimiento extends PropsObjTS {
 	private Vector<Param> lParams;
 	//private tipoT tBase;
 	private Integer tam;
-	
+	//Debe haber tamaño en los procedimientos??
 	public Procedimiento() {
 		t = tipoT.procedimiento;
 		lParams = new Vector<Param>();
