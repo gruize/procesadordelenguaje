@@ -33,6 +33,13 @@ public class Registro extends PropsObjTS{
 	}
 	
 	//Añadir un campo al registro
+	public void añadeCampo(Campo campo) {
+		campos.add(campo);
+		//Esto es así??
+		tam = tam + campo.getDesp();
+	}
+	
+	//Añadir un campo al registro
 	public void añadeCampo(String id, PropsObjTS tipo, int desp) {
 		campos.add(new Campo(id, tipo, new Integer(desp)));
 		//Esto es así??

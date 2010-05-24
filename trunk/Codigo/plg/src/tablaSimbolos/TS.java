@@ -31,8 +31,16 @@ public class TS {
 		tabla.put(id, new ObjTS(tipo, dir, clase, nivel));
 	}
 	
-	public boolean existeId(String id, tClase clase, Integer nivel) {
+	public boolean existeId(String id) {
 		if (tabla.containsKey(id))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean existeId(String id, tClase clase, int nivel) {
+		if (tabla.containsKey(id) && tabla.get(id).clase == clase
+				&& tabla.get(id).getNivel().intValue() == nivel)
 			return true;
 		else
 			return false;
