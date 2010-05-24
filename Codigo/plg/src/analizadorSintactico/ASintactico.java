@@ -32,6 +32,7 @@ public class ASintactico {
 		ts = new TS();
 		tokActual = new Token();
 		tokensIn = new Vector<Token>();
+		listaPendientes = new Vector<String>();
 		contTokens = 0;
 		instMPOut = new Vector<String>();
 		errorProg = false;
@@ -208,13 +209,13 @@ public class ASintactico {
 					else*/
 					//System.out.println("Id: " + id + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\t\tDirección: " +
 					if (id.length() < 4)
-						System.out.println("Id: " + id + "\t\t\t" + "Tipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
+						System.out.println("Id: " + id + "\t\t\t" + "Clase: " + ts.getTabla().get(id).getClase() + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\t\tDirección: " +
 								ts.getTabla().get(id).getDirM());
 					if ((id.length() >= 4) && (id.length() < 12))
-						System.out.println("Id: " + id + "\t\t" + "Tipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
+						System.out.println("Id: " + id + "\t\t" + "Clase: " + ts.getTabla().get(id).getClase() + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\t\tDirección: " +
 								ts.getTabla().get(id).getDirM());
 					if ((id.length() >= 12))
-						System.out.println("Id: " + id + "\t" + "Tipo: " + ts.getTabla().get(id).getTipo().toString() + "\t\tDirección: " +
+						System.out.println("Id: " + id + "\t" + "Clase: " + ts.getTabla().get(id).getClase() + "\t\tTipo: " + ts.getTabla().get(id).getPropiedadesTipo().getT().toString() + "\t\tDirección: " +
 								ts.getTabla().get(id).getDirM());
 				}
 			}
@@ -283,7 +284,7 @@ public class ASintactico {
 			errorDec1_dir = rdecs1(nivel);
 		else
 			errorDec1_dir = rdecs2();
-		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0)))
+		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getId()))
 			return true;
 		else {
 			ts.anadeId(id_tipo.getId(), id_tipo.props, errorDec1_dir.getIntVal(), id_tipo.getClase(), id_tipo.getNivel());
@@ -378,10 +379,12 @@ public class ASintactico {
 		if (tokActual.getTipoToken() == tToken.identificador) {
 			int tamRef;
 			//Comprobamos si esxiste el tipo en la tabla de símbolos
-			if (ts.existeTipo(tokActual.getLexema())) {
-				tamRef = ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo().getTam();
+			//if (ts.existeTipo(tokActual.getLexema())) {
+			if (this.listaPendientes.contains(tokActual.getLexema())) {
+				//tamRef = ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo().getTam();
 				consume(tToken.identificador);
-				return new Referencia(tokActual.getLexema(), tamRef);
+				//return new Referencia(tokActual.getLexema(), tamRef);
+				return new Referencia(tokActual.getLexema(), 0);
 			}
 			//Añadimos control de errores
 			errorProg = true;
@@ -435,64 +438,101 @@ public class ASintactico {
 			reg = campos(reg);
 			
 			if (errorProg) {
-				System.out.print("Hubo error en la declaración de los campos del registro'" + id + "'." + "\n" +
+				System.out.print("Hubo error en la declaración de los campos del registro '" + id + "'." + "\n" +
 						"Token encontrado en su lugar: " + tokActual.getLexema());
 				return null;
 			}
 			
 			consume(tToken.llaveCierre);
-			return null;
+			return reg;
 		}
-		
+		errorProg = true;
+		System.out.print("Hubo error en la declaración de los campos del registro '" + id + "'." + "\n" +
+				"Token encontrado en su lugar: " + tokActual.getLexema());
 		return null;
 	}
 	//Si devolvemos el registro a null qes que ha habido errores
 	public Registro campos(Registro reg) {
 		//Declaración de las variables necesarias
-		Registro reg1, reg2;
+		Registro reg2 = null;
+		Campo campo;
+		boolean aux;
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		reg1 = campo(reg);
-		if (tokActual.getTipoToken() == tToken.puntoyComa)
-			reg2 = rcampos1(reg1);
-		else
-			reg2 = rcampos2(reg1);
-		if (reg2.equals(null)) {
-			errorProg = true;
+		campo = campo();
+		aux = tokActual.getTipoToken() == tToken.puntoyComa;
+		if (aux)
+			reg2 = rcampos1(reg);
+		if (errorProg) {
 			return null;
 		}
 		else {
-			reg.añadeCampo(id, tipo, desp)
-			// faltan dos emits
-			return reg;
+			if (aux) {
+				reg2.añadeCampo(campo);
+				// faltan dos emits
+				return reg2;
+			}
+			else {
+				reg.añadeCampo(campo);
+				// faltan dos emits
+				return reg;
+			}
 		}
 	}
 	
 	public Registro rcampos1(Registro reg) {
-		
-		return reg;
+		//Declaración de las variables necesarias
+		Registro reg2 = null;
+		Campo campo;
+		boolean aux;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		consume(tToken.puntoyComa);
+		campo = campo();
+		aux = tokActual.getTipoToken() == tToken.puntoyComa;
+		if (aux)
+			reg2 = rcampos1(reg);
+		if (errorProg) {
+			return null;
+		}
+		else {
+			if (aux) {
+				reg2.añadeCampo(campo);
+				// faltan dos emits
+				return reg2;
+			}
+			else {
+				reg.añadeCampo(campo);
+				// faltan dos emits
+				return reg;
+			}
+		}
 	}
 	
-	public Registro rcampos2(Registro reg) {
-		
-		return reg;
+	public void rcampos2() {
+		//La tabla se crea en el constructor, sino la crearíamos aquí
+//		if (errorProg)
+//			return true;
+//		else
+//			return false;
 	}
 	
-	public Registro campo(Registro reg) {
-		
-		return reg;
+	public Campo campo() {
+		Campo campo = new Campo();
+		campo.setId(consumeId().getLexema());
+		consume(tToken.dosPuntos);
+		campo.setTipo(tipoIden(campo.getId()));
+		return campo;
 	}
 	
 	public ParIdProps decTipo(int nivel) {
+		ParIdProps parOut = new ParIdProps(tClase.tipo, nivel);
 		//Consumimos el token 'tipo'
 		consume(tToken.decTipo);
-//		ParString parOut = new ParString();
-//		parOut.setIden(consumeId().getLexema());
-//		consume(tToken.dosPuntos);
-//		parOut.setTipo(dametipoT(consumeTipo().getTipoToken()));
-//		return parOut;
-		
-		//return new ParIdProps();
-		return null;
+		parOut.setId(consumeId().getLexema());
+		consume(tToken.igual);
+		parOut.setProps(tipoIden(parOut.getId()));
+		if (!errorProg)
+			this.listaPendientes.add(parOut.getId());
+		return parOut;
 	}
 	
 	public ParIdProps decProc(int nivel) {
@@ -666,7 +706,8 @@ public class ASintactico {
 		String lexIden = new String();
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema(), tClase.variable, new Integer(0))) {
+				ts.existeId(tokActual.getLexema())) {
+				//ts.existeId(tokActual.getLexema(), tClase.variable) {
 			lexIden = tokActual.getLexema();
 			consume(tToken.identificador);
 			//Una vez parseado el identificador vamos con el simbolo de la asignación
@@ -675,7 +716,7 @@ public class ASintactico {
 			tipoEtiq = exp(etiqIn);
 			/////////////////////////////////////////////////////////////////////////
 			//if (tipoEtiq.getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getT())) {
-			if (tipoEtiq.getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getTipo(), tipoEtiq.getT())) {
+			if (tipoEtiq.getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getT())) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en la asignación: La expresión es errónea, o los tipos de la" + "\n" +
@@ -971,7 +1012,7 @@ public class ASintactico {
 			/////////////////////////////////////////////////////////////////////////
 			//Falta cambiar el getTipo
 			if (!(tipoEtiq1.getT() == tipoT.tNat || tipoEtiq1.getT() == tipoT.tInt) 
-					|| !esCompatibleAsig(ts.getTabla().get(lexIden).getTipo(), tipoEtiq1.getT())) {
+					|| !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq1.getT())) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en la instrucción 'for': La 1ª expresión es errónea, o el tipo de la" + "\n" +
@@ -982,7 +1023,7 @@ public class ASintactico {
 				//Emitimos las correspondientes instrucciones a pila ya que por ahora es todo correcto
 				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
 				//Instrucciones para la máquina virtual con 'emit'
-				//emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getTipo()), 
+				//emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getPropiedadesTipo().getT()), 
 				//		new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
 				emite("apila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
 				//Consumimos el token 'to'
@@ -992,7 +1033,7 @@ public class ASintactico {
 				/////////////////////////////////////////////////////////////////////////
 				//Falta cambiar el getTipo
 				if (!(tipoEtiq2.getT() == tipoT.tNat || tipoEtiq2.getT() == tipoT.tInt) 
-						|| !esCompatibleAsig(ts.getTabla().get(lexIden).getTipo(), tipoEtiq2.getT())) {
+						|| !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq2.getT())) {
 					errorProg = true;
 					vaciaCod();
 					System.out.println("Error en la instrucción 'for': La 2ª expresión es errónea, o el tipo de la" + "\n" +
@@ -1575,7 +1616,7 @@ public class ASintactico {
 			consume(tToken.identificador);
 			//OBTENEMOS EL TIPO DEL IDENTIFICADOR DE LA TS//
 			//tipo = ts.getTabla().get(lexIden).getPropiedadesTipo().getT();
-			tipo = ts.getTabla().get(lexIden).getTipo();
+			tipo = ts.getTabla().get(lexIden).getPropiedadesTipo().getT();
 			emite("apila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
 			emit.emit(Emit.APILA_DIR, new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
 			return new ParTipoEtiq(tipo, etiqIn + 1);
