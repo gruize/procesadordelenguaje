@@ -23,8 +23,19 @@ public class ASintactico {
 	private Vector<String> instMPOut;
 	private boolean errorProg;
 	//Atributos del 2º Cuat
+	
+	///////////////////////////////////////////////////////////////////
+	//						LISTAS DE PENDIENTES					 //
+	///////////////////////////////////////////////////////////////////
 	//Lista de pendientes para punteros y el forward
 	private Vector<String> listaPendientes;
+	//Lista de tipos pendientes que ya han sido declarados pero todavía
+	//no se han añadido a la TS
+	private Vector<ParIdProps> tiposPenTS;
+	///////////////////////////////////////////////////////////////////
+	//						LISTAS DE PENDIENTES					 //
+	///////////////////////////////////////////////////////////////////
+	
 	
 	public ASintactico() {
 		// TODO Auto-generated constructor stub
@@ -33,13 +44,33 @@ public class ASintactico {
 		tokActual = new Token();
 		tokensIn = new Vector<Token>();
 		listaPendientes = new Vector<String>();
+		tiposPenTS = new Vector<ParIdProps>();
 		contTokens = 0;
 		instMPOut = new Vector<String>();
 		errorProg = false;
 		emit = new Emit();
 	}
 	
-	
+	//Métodos de acceso y modificación de la lista de tipos pendientes
+	public int existeIdTiposPen(String id) {
+		ParIdProps e;
+		boolean encontrado = false;
+		int i = 0;
+		while (!encontrado && (i < tiposPenTS.size())) {
+			e = tiposPenTS.get(i);
+			encontrado = e.getId().equals(id);
+			if (!encontrado)
+				i++;
+		}
+		if (i == tiposPenTS.size())
+			return -1;
+		else
+			return i;
+	}
+	//Acceder al tamaño de los tipos en la lista de pendientes
+	/*public int getTamTiposPen(String id) {
+
+	}*/
 	
 	/*public Token token() {
 		return tokActual;
@@ -262,7 +293,7 @@ public class ASintactico {
 			emit.emit(Emit.STOP);
 		}
 		else {
-			errorDec = decs(0);
+			errorDec = decs(0, 0);
 			consume(tToken.separador);
 			//Lanzamos sents() con la etiqueta a 0, ya que es la primera vez que se llama
 			errorSent = sents(0).getBooleanVal();
@@ -274,50 +305,76 @@ public class ASintactico {
 		}
 	}
 	
-	public boolean decs(int nivel){
+	public boolean decs(int nivel, int tam){
 		//Declaración de las variables necesarias
 		ParBooleanInt errorDec1_dir = new ParBooleanInt();
 		ParIdProps id_tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		id_tipo = dec(nivel);
-		if (tokActual.getTipoToken() == tToken.puntoyComa)
-			errorDec1_dir = rdecs1(nivel);
+		if (tokActual.getTipoToken() == tToken.puntoyComa) {
+			if (id_tipo.getProps() != null)
+				errorDec1_dir = rdecs1(nivel, tam + id_tipo.getProps().getTam());
+			else
+				errorDec1_dir = new ParBooleanInt(true, -1);
+		}	
 		else
-			errorDec1_dir = rdecs2();
-		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getId()))
-			return true;
+			if (id_tipo.getProps() != null)
+				errorDec1_dir = rdecs2(tam + id_tipo.getProps().getTam());
+			else
+				errorDec1_dir = new ParBooleanInt(true, -1);
+		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getId())) {
+			if (ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
+				System.out.print("Error: El identificador '" + id_tipo.getId() + "' fue declarado previamente" + "\n");
+				return true;
+			}
+			else
+				return true;
+		}
 		else {
-			ts.anadeId(id_tipo.getId(), id_tipo.props, errorDec1_dir.getIntVal(), id_tipo.getClase(), id_tipo.getNivel());
+			ts.anadeId(id_tipo.getId(), id_tipo.props, tam, id_tipo.getClase(), id_tipo.getNivel());
 			// faltan dos emits
 			return false;
 		}
 	}
 	
-	public ParBooleanInt rdecs1(int nivel) {
+	public ParBooleanInt rdecs1(int nivel, int tam) {
 		ParIdProps id_tipo;
 		ParBooleanInt errorDec1_dir1 = new ParBooleanInt();
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.puntoyComa);
 		id_tipo = dec(nivel);
-		if (tokActual.getTipoToken() == tToken.puntoyComa)
-			errorDec1_dir1 = rdecs1(id_tipo.getNivel());
+		if (tokActual.getTipoToken() == tToken.puntoyComa) {
+			if (id_tipo.getProps() != null)
+				errorDec1_dir1 = rdecs1(nivel, tam + id_tipo.getProps().getTam());
+			else 
+				errorDec1_dir1 = new ParBooleanInt(true, -1);
+		}
 		else
-			errorDec1_dir1 = rdecs2();
-		if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0)))
-			return new ParBooleanInt(true, -1);
+			if (id_tipo.getProps() != null)
+				errorDec1_dir1 = rdecs2(tam + id_tipo.getProps().getTam());
+			else
+				errorDec1_dir1 = new ParBooleanInt(true, -1);
+		if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
+			if (ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
+				System.out.print("Error: El identificador '" + id_tipo.getId() + "' fue declarado previamente" + "\n");
+				return new ParBooleanInt(true, -1);
+			}
+			else
+				return new ParBooleanInt(true, -1);
+		}
 		else {
-			ts.anadeId(id_tipo.getId(), id_tipo.props, errorDec1_dir1.getIntVal(), id_tipo.getClase(), id_tipo.getNivel());
-			return new ParBooleanInt(false, errorDec1_dir1.getIntVal() + 1);
+			ts.anadeId(id_tipo.getId(), id_tipo.props, tam, id_tipo.getClase(), id_tipo.getNivel());
+			return new ParBooleanInt(false, errorDec1_dir1.getIntVal());
 		}
 	}
 	
 	//Devolvemos el par: (error = false, dir = 0)
-	public ParBooleanInt rdecs2() {
+	public ParBooleanInt rdecs2(int tam) {
 		//La tabla se crea en el constructor, sino la crearíamos aquí
 		if (errorProg)
 			return new ParBooleanInt(true, -1);
 		else
-			return new ParBooleanInt(false, 0);
+			return new ParBooleanInt(false, tam);
 	}
 	
 	public ParIdProps dec(int nivel) {
@@ -377,14 +434,15 @@ public class ASintactico {
 		}
 		//Referencias a otros tipos
 		if (tokActual.getTipoToken() == tToken.identificador) {
-			int tamRef;
 			//Comprobamos si esxiste el tipo en la tabla de símbolos
 			//if (ts.existeTipo(tokActual.getLexema())) {
-			if (this.listaPendientes.contains(tokActual.getLexema())) {
+			int i;
+			i = existeIdTiposPen(tokActual.getLexema());
+			if (i != -1) {
 				//tamRef = ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo().getTam();
 				consume(tToken.identificador);
 				//return new Referencia(tokActual.getLexema(), tamRef);
-				return new Referencia(tokActual.getLexema(), 0);
+				return new Referencia(id, tiposPenTS.get(i).getProps().getTam());
 			}
 			//Añadimos control de errores
 			errorProg = true;
@@ -425,7 +483,10 @@ public class ASintactico {
 			//Consumimos el token 'pointer'
 			consume(tToken.pointerT);
 			//Devolvemos propiedades para nuevo puntero con su tipo base asociado
-			return new Puntero(tipoIden(id));
+			if (tokActual.getTipoToken() == tToken.nullM)
+				return new Puntero(null);
+			else
+				return new Puntero(tipoIden(id));
 		}
 		//Registros
 		if (tokActual.getTipoToken() == tToken.recordT) {
@@ -454,22 +515,23 @@ public class ASintactico {
 	//Si devolvemos el registro a null qes que ha habido errores
 	public Registro campos(Registro reg) {
 		//Declaración de las variables necesarias
-		Registro reg2 = null;
+		ParRegistroTam reg2 = new ParRegistroTam(null, 0);
 		Campo campo;
 		boolean aux;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		campo = campo();
 		aux = tokActual.getTipoToken() == tToken.puntoyComa;
 		if (aux)
-			reg2 = rcampos1(reg);
+			reg2 = rcampos1(reg, 0);
 		if (errorProg) {
 			return null;
 		}
 		else {
 			if (aux) {
-				reg2.añadeCampo(campo);
+				reg2.getReg().añadeCampo(campo);
 				// faltan dos emits
-				return reg2;
+				reg2.getReg().setTam(reg2.getTam() + campo.getDesp());
+				return reg2.getReg();
 			}
 			else {
 				reg.añadeCampo(campo);
@@ -479,9 +541,9 @@ public class ASintactico {
 		}
 	}
 	
-	public Registro rcampos1(Registro reg) {
+	public ParRegistroTam rcampos1(Registro reg, int tam) {
 		//Declaración de las variables necesarias
-		Registro reg2 = null;
+		ParRegistroTam reg2 = new ParRegistroTam(null, 0);
 		Campo campo;
 		boolean aux;
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -489,20 +551,22 @@ public class ASintactico {
 		campo = campo();
 		aux = tokActual.getTipoToken() == tToken.puntoyComa;
 		if (aux)
-			reg2 = rcampos1(reg);
+			reg2 = rcampos1(reg, tam + campo.getDesp());
 		if (errorProg) {
 			return null;
 		}
 		else {
 			if (aux) {
-				reg2.añadeCampo(campo);
+				reg2.getReg().añadeCampo(campo);
 				// faltan dos emits
+				reg2.getReg().setTam(tam + campo.getDesp());
 				return reg2;
 			}
 			else {
 				reg.añadeCampo(campo);
+				reg.setTam(tam + campo.getDesp());
 				// faltan dos emits
-				return reg;
+				return new ParRegistroTam(reg, reg.getTam());
 			}
 		}
 	}
@@ -520,6 +584,7 @@ public class ASintactico {
 		campo.setId(consumeId().getLexema());
 		consume(tToken.dosPuntos);
 		campo.setTipo(tipoIden(campo.getId()));
+		campo.setDesp(campo.getTipo().getTam());
 		return campo;
 	}
 	
@@ -531,7 +596,7 @@ public class ASintactico {
 		consume(tToken.igual);
 		parOut.setProps(tipoIden(parOut.getId()));
 		if (!errorProg)
-			this.listaPendientes.add(parOut.getId());
+			tiposPenTS.add(parOut);
 		return parOut;
 	}
 	
@@ -1104,6 +1169,53 @@ public class ASintactico {
 		System.out.print("Error: Se intentó parchear la siguiente instrucción: " + linAParchear + "." + "\n");
 	}
 	
+	public ParTipoEtiq mem(int etiqIn, tipoT tipo) {
+		//Declaración de las variables necesarias
+		ParTipoEtiq tipoEtiq;
+		String lexIden;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		if (tokActual.getTipoToken() == tToken.identificador &&
+				ts.existeId(tokActual.getLexema(), tClase.variable, new Integer(0))) {
+			//Obtenemos el nombre del identificador
+			lexIden = tokActual.getLexema();
+			//Lo consumimos
+			consume(tToken.identificador);
+			//Hacemos el emite correspondiente
+			emite("apila(" + ts.getTabla().get(lexIden).getDirM() + ")");
+			//Vamos con lo siguiente que puede venir tras un identificador
+			tipoEtiq = rmem(etiqIn, tipo);
+		}
+		else {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error: Se esperaba identificador, o si lo es no fue declarado previamente." + "\n");
+			return new ParTipoEtiq(tipoT.tError, etiqIn);
+		}
+		
+		/*if (tipoEtiq.getT() == tipoT.array || tipoEtiq.getT() == tipoT.registro) {
+			
+		}*/
+		
+		return tipoEtiq;
+	}
+	
+	public ParTipoEtiq rmem(int etiqIn, tipoT tipo) {
+		//Declaración de las variables necesarias
+		ParTipoEtiq tipoEtiq;
+		
+		if (tokActual.getTipoToken() == tToken.puntero) {
+			
+		}
+		if (tokActual.getTipoToken() == tToken.corApertura) {
+			
+		}
+		if (tokActual.getTipoToken() == tToken.punto) {
+			
+		}
+		
+		return tipoEtiq;
+	}
+	
 	public ParTipoEtiq exp(int etiqIn) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2, tipoEtiqH;
@@ -1553,8 +1665,13 @@ public class ASintactico {
 			return term4(etiqIn);
 		if (tokActual.getTipoToken() == tToken.real)
 			return term5(etiqIn);
-		if (tokActual.getTipoToken() == tToken.identificador)
-			return term6(etiqIn);
+		//Ahora debemos hacer referencia a la memoria a la hora de encontrarnos con
+		//un identificador
+		if (tokActual.getTipoToken() == tToken.identificador) {
+			//OBTENEMOS EL TIPO DEL IDENTIFICADOR A PARTIR DE LA TS//
+			return mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo().getT());
+			//return term6(etiqIn);
+		}
 		if (tokActual.getTipoToken() == tToken.parApertura)
 			return term7(etiqIn);
 		return new ParTipoEtiq(tipoT.tError, etiqIn);
@@ -1921,7 +2038,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "prueba10.txt";
+		String nombreFichero = "prueba11.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
