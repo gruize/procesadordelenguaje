@@ -1,0 +1,17 @@
+tipo array10 = array [10] of natural;
+registro : record {
+		a : character;
+		b : float;
+		c : array10;
+		r : record {
+				h : array10;
+				i : integer;
+				j : pointer array10;
+				k : boolean
+				}
+			};
+x : integer;
+y : integer;
+z : integer
+&
+out('h')
