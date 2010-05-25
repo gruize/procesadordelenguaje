@@ -36,7 +36,8 @@ public class Registro extends PropsObjTS{
 	public void añadeCampo(Campo campo) {
 		campos.add(campo);
 		//Esto es así??
-		tam = tam + campo.getDesp();
+		//tam = tam + campo.getDesp();
+		tam = tam + campo.getTipo().getTam();
 	}
 	
 	//Añadir un campo al registro
@@ -60,6 +61,10 @@ public class Registro extends PropsObjTS{
 			return -1;
 		else
 			return i;
+	}
+	
+	public int getSizeCampos(){
+		return campos.size();
 	}
 	
 	public Campo getCampo(String id) {

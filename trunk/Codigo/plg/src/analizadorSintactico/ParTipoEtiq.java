@@ -4,24 +4,25 @@ import tablaSimbolos.*;
 
 public class ParTipoEtiq {
 
-	private tipoT tipo;
+	//private tipoT tipo;
+	private PropsObjTS tipo;
 	private int etiq;
 	
 	public ParTipoEtiq() {
-		this.tipo = tipoT.tInicial;
+		this.tipo = new ErrorT();
 		this.etiq = 0;
 	}
 	
-	public ParTipoEtiq(tipoT tipo, int etiq) {
+	public ParTipoEtiq(PropsObjTS tipo, int etiq) {
 		this.tipo = tipo;
 		this.etiq = etiq;
 	}
 	
-	public tipoT getT() {
+	public PropsObjTS getTipo() {
 		return tipo;
 	}
 	
-	public void setTipo(tipoT tipo) {
+	public void setTipo(PropsObjTS tipo) {
 		this.tipo = tipo;
 	}
 	

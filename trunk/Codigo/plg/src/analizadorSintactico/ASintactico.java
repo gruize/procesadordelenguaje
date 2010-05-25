@@ -30,8 +30,10 @@ public class ASintactico {
 	//Lista de pendientes para punteros y el forward
 	private Vector<String> listaPendientes;
 	//Lista de tipos pendientes que ya han sido declarados pero todavía
-	//no se han añadido a la TS
+	//no se han añadido a la TS, y que se necesita preguntar por ellos
 	private Vector<ParIdProps> tiposPenTS;
+	//Lista de pares de tipos visitados
+	private Vector<ParProps> parTiposVisitados;
 	///////////////////////////////////////////////////////////////////
 	//						LISTAS DE PENDIENTES					 //
 	///////////////////////////////////////////////////////////////////
@@ -45,6 +47,7 @@ public class ASintactico {
 		tokensIn = new Vector<Token>();
 		listaPendientes = new Vector<String>();
 		tiposPenTS = new Vector<ParIdProps>();
+		parTiposVisitados = new Vector<ParProps>();
 		contTokens = 0;
 		instMPOut = new Vector<String>();
 		errorProg = false;
@@ -522,7 +525,7 @@ public class ASintactico {
 		campo = campo(0);
 		aux = tokActual.getTipoToken() == tToken.puntoyComa;
 		if (aux)
-			reg2 = rcampos1(reg, campo.getTipo().getTam());
+			reg2 = rcampos1(reg, campo.getTipo().getTam() + campo.getDesp());
 		if (errorProg) {
 			return null;
 		}
@@ -530,13 +533,13 @@ public class ASintactico {
 			if (aux) {
 				reg2.getReg().añadeCampo(campo);
 				// faltan dos emits
-				reg2.getReg().setTam(campo.getDesp() + campo.getTipo().getTam());
+				//reg2.getReg().setTam(campo.getDesp() + campo.getTipo().getTam());
 				return reg2.getReg();
 			}
 			else {
 				reg.añadeCampo(campo);
 				// faltan dos emits
-				reg2.setTam(campo.getDesp() + campo.getTipo().getTam());
+				//reg.setTam(campo.getDesp() + campo.getTipo().getTam());
 				return reg;
 			}
 		}
@@ -560,14 +563,13 @@ public class ASintactico {
 			if (aux) {
 				reg2.getReg().añadeCampo(campo);
 				// faltan dos emits
-				reg2.getReg().setTam(campo.getTipo().getTam() + campo.getDesp());
+				//reg2.getReg().setTam(tam + campo.getTipo().getTam());
 				return reg2;
 			}
 			else {
 				reg.añadeCampo(campo);
-				reg.setTam(tam + campo.getDesp());
+				//reg.setTam(tam + campo.getTipo().getTam());
 				// faltan dos emits
-				reg.setTam(campo.getDesp() + campo.getTipo().getTam());
 				return new ParRegistroTam(reg, reg.getTam());
 			}
 		}
@@ -705,7 +707,7 @@ public class ASintactico {
 			consume(tToken.parApertura);
 			tipoEtiq = exp(etiqIn);
 			///////////////////////////////////////////////////////////////
-			if (tipoEtiq.getT() == tipoT.tError) {
+			if (tipoEtiq.getTipo().getT() == tipoT.tError) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en la expresión de la instrucción de salida por pantalla." + "\n");
@@ -767,8 +769,46 @@ public class ASintactico {
 			return new ParBooleanInt(true, etiqIn);
 		}
 	}
-	
+	//Adaptación de la asignación al acceso a memoria
 	public ParBooleanInt sasign(int etiqIn) {
+		//Declaración de las variables necesarias
+		ParTipoEtiq tipoEtiq;
+		String lexIden = new String();
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		if (tokActual.getTipoToken() == tToken.identificador &&
+				ts.existeId(tokActual.getLexema())) {
+				//ts.existeId(tokActual.getLexema(), tClase.variable) {
+			lexIden = tokActual.getLexema();
+			consume(tToken.identificador);
+			//Una vez parseado el identificador vamos con el simbolo de la asignación
+			consume(tToken.asignacion);
+			//LLamada a epx()
+			tipoEtiq = exp(etiqIn);
+			/////////////////////////////////////////////////////////////////////////
+			//if (tipoEtiq.getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getT())) {
+			if (tipoEtiq.getTipo().getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getTipo().getT())) {
+				errorProg = true;
+				vaciaCod();
+				System.out.println("Error en la asignación: La expresión es errónea, o los tipos de la" + "\n" +
+						"asignación son incompatibles." + "\n");
+				return new ParBooleanInt(true, etiqIn);
+			}
+			else {
+				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
+				//emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getPropiedadesTipo().getT()), 
+				//		new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
+				return new ParBooleanInt(false, tipoEtiq.getEtiq() + 1);
+			}
+		}
+		else {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error: El identificador " + tokActual.getLexema() + " no fue declarado previamente." + "\n");
+			return new ParBooleanInt(true, etiqIn);
+		}
+	}
+	//Versión de la asignación del 1º Cuat
+	/*public ParBooleanInt sasign(int etiqIn) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		String lexIden = new String();
@@ -804,6 +844,64 @@ public class ASintactico {
 			System.out.println("Error: El identificador " + tokActual.getLexema() + " no fue declarado previamente." + "\n");
 			return new ParBooleanInt(true, etiqIn);
 		}
+	}*/
+	//Se debe limpiar el vector 'parTiposVisitados' antes de llamar a la función
+	//No se realmente si nosotros la vamos a usar, ya que en mem() realizamos una
+	//comprobación exhaustiva en el acceso a memoria, y devolvemos el tipo final
+	//relativo a ese acceso, sea cual sea.
+	//De todos modos va a ser necesaria su utilización aunque sólo sea para 
+	//comprobar tipos de cara a las asignaciones entre tipos que no sean básicos.
+	public boolean tiposCompatibles(ParProps parTipos) {//(PropsObjTS tipo1, PropsObjTS tipo2){
+		//Comprobamos que la lista de tipos visitados contiene el par de entrada
+		//Seguramente tengamos que hacer una función para comprobar que estén dentro
+		//Algo que va a valer seguro es un recorrido del vector preguntando por equals
+		//para cada componente
+		//if (parTiposVisitados.contains(parTipos)) {
+		if (existeParVisitado(parTipos))
+			return true;
+		//Si no lo contiene lo añadimos
+		else parTiposVisitados.add(parTipos);
+		//Compatibilidad entre tipos básicos
+		if ((esTipoNum(parTipos.getTipo1().getT()) && esTipoNum(parTipos.getTipo2().getT())) 
+				|| (parTipos.getTipo1().getT() == tipoT.tBool && parTipos.getTipo2().getT() == tipoT.tBool)
+				|| (parTipos.getTipo1().getT() == tipoT.tChar && parTipos.getTipo2().getT() == tipoT.tChar))
+			return true;
+		//Compatibilidad entre arrays
+		if ((parTipos.getTipo1().getT() == tipoT.array && parTipos.getTipo2().getT() == tipoT.array)
+				&& (((Array)parTipos.getTipo1()).getNElems() 
+						== ((Array)parTipos.getTipo2()).getNElems()))
+			return tiposCompatibles(new ParProps(((Array)parTipos.getTipo1()).getTBase(), 
+					((Array)parTipos.getTipo2()).getTBase()));
+		//Compatibilidad entre registros
+		if ((parTipos.getTipo1().getT() == tipoT.registro && parTipos.getTipo2().getT() == tipoT.registro)
+				&& (((Registro)parTipos.getTipo1()).getSizeCampos() 
+						== ((Registro)parTipos.getTipo2()).getSizeCampos())) {
+			//Recorremos los vectores de campos de los registros
+			for (int i = 0; i < ((Registro)parTipos.getTipo1()).getSizeCampos(); i++)
+				if (!tiposCompatibles(new ParProps(((Registro)parTipos.getTipo1()).getCampoI(i).getTipo(), 
+						((Registro)parTipos.getTipo2()).getCampoI(i).getTipo())))
+					return false;
+			return true;
+		}
+		//Compatibilidad entre punteros
+		if ((parTipos.getTipo1().getT() == tipoT.puntero && parTipos.getTipo2().getT() == tipoT.puntero))
+			return tiposCompatibles(new ParProps(((Puntero)parTipos.getTipo1()).getTBase(), 
+					((Puntero)parTipos.getTipo2()).getTBase()));
+		//Si no cae dentro de ninguna de las opciones anteriores, devolvemos falso
+		return false;
+	}
+	//Comprobar que está el par de tipos en la lista de tipos visitados
+	public boolean existeParVisitado(ParProps parTipos) {
+		boolean encontrado = false;
+		int i = 0;
+		while (!encontrado && (i < parTiposVisitados.size())) {
+			if (parTiposVisitados.get(i).getTipo1().equals(parTipos.getTipo1())
+					&& parTiposVisitados.get(i).getTipo2().equals(parTipos.getTipo2()))
+				encontrado = true;
+			else
+				i++;
+		}
+		return encontrado;
 	}
 	
 	public boolean esCompatibleAsig(tipoT tipoId, tipoT tipoExp) {
@@ -862,7 +960,7 @@ public class ASintactico {
 		consume(tToken.ifC);
 		//LLamada a la epx()
 		tipoEtiq = exp(etiqIn);
-		if (tipoEtiq.getT() != tipoT.tBool) { 
+		if (tipoEtiq.getTipo().getT() != tipoT.tBool) { 
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error en la instrucción 'if': El tipo de la expresión a evaluar no es 'boolean'." +"\n");
@@ -1029,7 +1127,7 @@ public class ASintactico {
 		consume(tToken.whileC);
 		//LLamada a la epx()
 		tipoEtiq = exp(etiqIn);
-		if (tipoEtiq.getT() != tipoT.tBool) { 
+		if (tipoEtiq.getTipo().getT() != tipoT.tBool) { 
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error en la instrucción 'while': El tipo de la expresión a evaluar no es 'boolean'." +"\n");
@@ -1078,9 +1176,8 @@ public class ASintactico {
 			//LLamada a la 1ª epx()
 			tipoEtiq1 = exp(etiqIn);
 			/////////////////////////////////////////////////////////////////////////
-			//Falta cambiar el getTipo
-			if (!(tipoEtiq1.getT() == tipoT.tNat || tipoEtiq1.getT() == tipoT.tInt) 
-					|| !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq1.getT())) {
+			if (!(tipoEtiq1.getTipo().getT() == tipoT.tNat || tipoEtiq1.getTipo().getT() == tipoT.tInt) 
+					|| !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq1.getTipo().getT())) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en la instrucción 'for': La 1ª expresión es errónea, o el tipo de la" + "\n" +
@@ -1100,8 +1197,8 @@ public class ASintactico {
 				tipoEtiq2 = exp(tipoEtiq1.getEtiq() + 2);
 				/////////////////////////////////////////////////////////////////////////
 				//Falta cambiar el getTipo
-				if (!(tipoEtiq2.getT() == tipoT.tNat || tipoEtiq2.getT() == tipoT.tInt) 
-						|| !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq2.getT())) {
+				if (!(tipoEtiq2.getTipo().getT() == tipoT.tNat || tipoEtiq2.getTipo().getT() == tipoT.tInt) 
+						|| !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq2.getTipo().getT())) {
 					errorProg = true;
 					vaciaCod();
 					System.out.println("Error en la instrucción 'for': La 2ª expresión es errónea, o el tipo de la" + "\n" +
@@ -1193,13 +1290,13 @@ public class ASintactico {
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error: Se esperaba identificador, o si lo es no fue declarado previamente." + "\n");
-			return new ParTipoEtiq(tipoT.tError, etiqIn);
+			return new ParTipoEtiq(new ErrorT(), etiqIn);
 		}
 		
 		//if (tipoEtiq.getT() != tipoT.array || tipoEtiq.getT() != tipoT.registro) {
 		//No se si la comparación con el puntero habría que hacerla, pero creo que sí
 		//Falta cumplimentar para referencias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		if (tipo.getT() == tipoT.array || tipo.getT() == tipoT.registro) { //|| tipo.getT() == tipoT.puntero) {
+		if (tipoEtiq.getTipo().getT() == tipoT.array || tipoEtiq.getTipo().getT() == tipoT.registro) { //|| tipo.getT() == tipoT.puntero) {
 			
 		}
 		else {
@@ -1214,7 +1311,7 @@ public class ASintactico {
 		ParTipoEtiq tipoEtiq, tipoEtiq2;
 		//Vamos primero con los punteros
 		if (tokActual.getTipoToken() == tToken.puntero) {
-			//Comprobamos que el tipo actual es 'puntero', sino error!!
+			//Comprobamos que el tipo actual es 'puntero' en la declaracion, sino error!!
 			if (tipo.getT() == tipoT.puntero) {
 				//Consumimos el token 'puntero'
 				consume(tToken.puntero);
@@ -1230,18 +1327,18 @@ public class ASintactico {
 				System.out.println("Error: No se esperaba que la variable '" + lexId + "" +"' hiciera referencia " + "\n" +
 						"a memoria mediante puntero." + "\n" + 
 						"Tipo afectado: " + tipo.getT().toString() + "\n");
-				return new ParTipoEtiq(tipoT.tError, -1);
+				return new ParTipoEtiq(new ErrorT(), -1);
 			}
 		}
 		//Los arrays
 		if (tokActual.getTipoToken() == tToken.corApertura) {
-			//Comprobamos que el tipo actual es 'array', sino error!!
+			//Comprobamos que el tipo actual es 'array' en la declaracion, sino error!!
 			if (tipo.getT() == tipoT.array) {
 				//Consumimos el token '['
 				consume(tToken.corApertura);
 				//Llamada a exp(), que debería finalizar con int o nat
 				tipoEtiq = exp(etiqIn);
-				if (tipoEtiq.getT() == tipoT.tInt || tipoEtiq.getT() == tipoT.tNat) {
+				if (tipoEtiq.getTipo().getT() == tipoT.tInt || tipoEtiq.getTipo().getT() == tipoT.tNat) {
 					//Consumimos el token ']'
 					consume(tToken.corCierre);
 					//Hacemos los emites correspondientes
@@ -1257,7 +1354,7 @@ public class ASintactico {
 					vaciaCod();
 					System.out.println("Error: Expresión en el índice del array de la variable '" + 
 							lexId + "\n' de tipo distinto a entero." + "\n");
-					return new ParTipoEtiq(tipoT.tError, -1);
+					return new ParTipoEtiq(new ErrorT(), -1);
 				}
 			}
 			else {
@@ -1265,12 +1362,12 @@ public class ASintactico {
 				vaciaCod();
 				System.out.println("Error: No se esperaba token '[' en la variable '" + lexId + "'." + "\n" +
 						"Tipo afectado: " + tipo.getT().toString() + "\n");
-				return new ParTipoEtiq(tipoT.tError, -1);
+				return new ParTipoEtiq(new ErrorT(), -1);
 			}
 		}
 		//Los registros
 		if (tokActual.getTipoToken() == tToken.punto) {
-			//Comprobamos que el tipo actual es 'registro', sino error!!
+			//Comprobamos que el tipo actual es 'registro' en la declaracion, sino error!!
 			if (tipo.getT() == tipoT.registro) {
 				//Consumimos el token '.'
 				consume(tToken.punto);
@@ -1290,9 +1387,9 @@ public class ASintactico {
 					else {
 						errorProg = true;
 						vaciaCod();
-						System.out.println("Error: Se esperaba identificador para el registro asociado a la variable '" + 
-								lexId + "'.\n");
-						return new ParTipoEtiq(tipoT.tError, -1);
+						System.out.println("Error: El campo '" + tokActual.getLexema() + "' del registro asociado a la variable '" + 
+								lexId + "' no existe en dicho registro.\n");
+						return new ParTipoEtiq(new ErrorT(), -1);
 					}
 				}
 				else {
@@ -1300,7 +1397,7 @@ public class ASintactico {
 					vaciaCod();
 					System.out.println("Error: Se esperaba identificador para el registro asociado a la variable '" + 
 							lexId + "'.\n");
-					return new ParTipoEtiq(tipoT.tError, -1);
+					return new ParTipoEtiq(new ErrorT(), -1);
 				}
 			}
 			else {
@@ -1308,12 +1405,12 @@ public class ASintactico {
 				vaciaCod();
 				System.out.println("Error: No se esperaba token '.' en la variable '" + lexId + "'." + "\n" +
 						"Tipo afectado: " + tipo.getT().toString() + "\n");
-				return new ParTipoEtiq(tipoT.tError, -1);
+				return new ParTipoEtiq(new ErrorT(), -1);
 			}
 		}
 		//Aquí debe ir la actuacion al final del reconocimiento del acceso a memoria
 		//de la variable.
-		return new ParTipoEtiq(tipo.getT(), etiqIn);
+		return new ParTipoEtiq(tipo, etiqIn);
 	}
 	
 	public ParTipoEtiq exp(int etiqIn) {
@@ -1324,7 +1421,7 @@ public class ASintactico {
 		//LLamada a epx1()
 		tipoEtiq1 = exp1(etiqIn);
 		tipoEtiqH = tipoEtiq1;
-		if (tipoEtiq1.getT() == tipoT.tError) {
+		if (tipoEtiq1.getTipo().getT() == tipoT.tError) {
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error en expresión. Categoría sintáctica afectada: (EXP1).\n");
@@ -1333,14 +1430,14 @@ public class ASintactico {
 		else {
 			if (esTokenOp0(tokActual.getTipoToken())) {
 				tipoEtiq2 = rexp1(tipoEtiqH);
-				if (tipoEtiq2.getT() == tipoT.tError) {
+				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
 					System.out.println("Error en expresión. Categoría sintáctica afectada: (REXP_1).\n");
 					return tipoEtiq2;
 				}
 				else
-					return new ParTipoEtiq(tipoT.tBool, tipoEtiq2.getEtiq());
+					return new ParTipoEtiq(new Booleano(), tipoEtiq2.getEtiq());
 			}
 			else {
 				// Hemos llegado al fin de la instrucción
@@ -1352,18 +1449,19 @@ public class ASintactico {
 	public ParTipoEtiq rexp1(ParTipoEtiq tipoEtiqH) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
-		tipoT tipo;
+		//tipoT tipo;
+		PropsObjTS tipo;
 		tOp op;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//Necesitamos obtener el operador concreto
 		op = op0();
 		tipoEtiq = exp1(tipoEtiqH.getEtiq());
-		tipo = dameTipo(tipoEtiqH.getT(), tipoEtiq.getT(), op);
-		if (tipo == tipoT.tError) {
+		tipo = dameTipo(tipoEtiqH.getTipo(), tipoEtiq.getTipo(), op);
+		if (tipo.getT() == tipoT.tError) {
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error de tipos en operación de igualdad: '"+ op.toString() +"'.\n");
-			return new ParTipoEtiq(tipoT.tError, tipoEtiq.getEtiq());
+			return new ParTipoEtiq(new ErrorT(), tipoEtiq.getEtiq());
 		}
 		else {
 			// TODO
@@ -1382,11 +1480,11 @@ public class ASintactico {
 		tipoEtiqH = tipoEtiq1;
 		if (esTokenOp1(tokActual.getTipoToken())) {
 			tipoEtiq2 = rexp11(tipoEtiqH);
-			if (tipoEtiq1.getT() == tipoT.tError || tipoEtiq2.getT() == tipoT.tError) {
+			if (tipoEtiq1.getTipo().getT() == tipoT.tError || tipoEtiq2.getTipo().getT() == tipoT.tError) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en expresión. Categoría sintáctica afectada: (REXP1_1).\n");
-				return new ParTipoEtiq(tipoT.tError, tipoEtiq2.getEtiq());
+				return new ParTipoEtiq(new ErrorT(), tipoEtiq2.getEtiq());
 			}
 			else
 				return tipoEtiq2;
@@ -1401,7 +1499,7 @@ public class ASintactico {
 	public ParTipoEtiq rexp11(ParTipoEtiq tipoEtiqH) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2;
-		tipoT tipoH1;
+		PropsObjTS tipoH1;
 		tOp op;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//Necesitamos obtener el operador concreto
@@ -1409,18 +1507,18 @@ public class ASintactico {
 		//Si no es una oLogica, actuamos como siempre
 		if (op != tOp.oLogica) {
 			tipoEtiq1 = exp2(tipoEtiqH.getEtiq());
-			tipoH1 = dameTipo(tipoEtiqH.getT(), tipoEtiq1.getT(), op);
-			if (tipoH1 != tipoT.tError) {
+			tipoH1 = dameTipo(tipoEtiqH.getTipo(), tipoEtiq1.getTipo(), op);
+			if (tipoH1.getT() != tipoT.tError) {
 				emite(op.toString());
 				emit.emit(opUtils.getOperationCode(op));
 			}
 			if (esTokenOp1(tokActual.getTipoToken())) {
 				tipoEtiq2 = rexp11(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1));
-				if (tipoEtiq2.getT() == tipoT.tError) {
+				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
 					System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
-					return new ParTipoEtiq(tipoT.tError, tipoEtiq2.getEtiq());
+					return new ParTipoEtiq(new ErrorT(), tipoEtiq2.getEtiq());
 				}
 				else {
 					return tipoEtiq2;
@@ -1428,7 +1526,7 @@ public class ASintactico {
 			}
 			else {
 				// Hemos llegado al fin de la instrucción
-				if (tipoH1 == tipoT.tError)
+				if (tipoH1.getT() == tipoT.tError)
 					return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq());
 				else
 					return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1);
@@ -1441,14 +1539,14 @@ public class ASintactico {
 			emite("ir-v(?)");
 			emite("desapila");
 			tipoEtiq1 = exp2(tipoEtiqH.getEtiq() + 3);
-			tipoH1 = dameTipo(tipoEtiqH.getT(), tipoEtiq1.getT(), op);
+			tipoH1 = dameTipo(tipoEtiqH.getTipo(), tipoEtiq1.getTipo(), op);
 			if (esTokenOp1(tokActual.getTipoToken())) {
 				tipoEtiq2 = rexp11(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq()));
-				if (tipoEtiq2.getT() == tipoT.tError) {
+				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
 					System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
-					return new ParTipoEtiq(tipoT.tError, tipoEtiq2.getEtiq());
+					return new ParTipoEtiq(new ErrorT(), tipoEtiq2.getEtiq());
 				}
 				else {
 					//Parcheamos con la etiqueta del final de las expresiones
@@ -1511,11 +1609,11 @@ public class ASintactico {
 		tipoEtiqH = tipoEtiq1;
 		if (esTokenOp2(tokActual.getTipoToken())) {
 			tipoEtiq2 = rexp21(tipoEtiqH);
-			if (tipoEtiq1.getT() == tipoT.tError || tipoEtiq2.getT() == tipoT.tError) {
+			if (tipoEtiq1.getTipo().getT() == tipoT.tError || tipoEtiq2.getTipo().getT() == tipoT.tError) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en expresión. Categoría sintáctica afectada: (REXP2_1).\n");
-				return new ParTipoEtiq(tipoT.tError, tipoEtiq2.getEtiq());
+				return new ParTipoEtiq(new ErrorT(), tipoEtiq2.getEtiq());
 			}
 			else
 				return tipoEtiq2;
@@ -1530,7 +1628,7 @@ public class ASintactico {
 	public ParTipoEtiq rexp21(ParTipoEtiq tipoEtiqH) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2;
-		tipoT tipoH1;
+		PropsObjTS tipoH1;
 		tOp op;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//Necesitamos obtener el operador concreto
@@ -1538,14 +1636,14 @@ public class ASintactico {
 		//Si no es una yLogica, actuamos como siempre
 		if (op != tOp.yLogica) {
 			tipoEtiq1 = exp3(tipoEtiqH.getEtiq());
-			tipoH1 = dameTipo(tipoEtiqH.getT(), tipoEtiq1.getT(),op);
-			if (tipoH1 != tipoT.tError) {
+			tipoH1 = dameTipo(tipoEtiqH.getTipo(), tipoEtiq1.getTipo(), op);
+			if (tipoH1.getT() != tipoT.tError) {
 				emite(op.toString());
 				emit.emit(opUtils.getOperationCode(op));
 			}
 			if (esTokenOp2(tokActual.getTipoToken())) {
 				tipoEtiq2 = rexp21(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1));
-				if (tipoEtiq2.getT() == tipoT.tError) {
+				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
 					System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
@@ -1557,7 +1655,7 @@ public class ASintactico {
 			}
 			else {
 				// Hemos llegado al fin de la instrucción
-				if (tipoH1 == tipoT.tError)
+				if (tipoH1.getT() == tipoT.tError)
 					return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq());
 				else
 					return new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1);
@@ -1568,10 +1666,10 @@ public class ASintactico {
 		else {
 			emite("ir-f(?)");
 			tipoEtiq1 = exp3(tipoEtiqH.getEtiq() + 1);
-			tipoH1 = dameTipo(tipoEtiqH.getT(), tipoEtiq1.getT(),op);
+			tipoH1 = dameTipo(tipoEtiqH.getTipo(), tipoEtiq1.getTipo(), op);
 			if (esTokenOp2(tokActual.getTipoToken())) {
 				tipoEtiq2 = rexp21(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq()));
-				if (tipoEtiq2.getT() == tipoT.tError) {
+				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
 					System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
@@ -1583,7 +1681,7 @@ public class ASintactico {
 					emite("apila(false)");
 					parchea(tipoEtiqH.getEtiq(), tipoEtiq2.getEtiq() + 1);
 					//return tipoEtiq2;
-					return new ParTipoEtiq(tipoEtiq2.getT(), tipoEtiq2.getEtiq() + 2);
+					return new ParTipoEtiq(tipoEtiq2.getTipo(), tipoEtiq2.getEtiq() + 2);
 				}
 			}
 			else {
@@ -1649,7 +1747,7 @@ public class ASintactico {
 //		else
 //			tipo1 = exp43();
 		tipoEtiqH = tipoEtiq1;
-		if (tipoEtiqH.getT() == tipoT.tError) {
+		if (tipoEtiqH.getTipo().getT() == tipoT.tError) {
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error en expresión. Categoría sintáctica afectada: (EXP4_1), (EXP4_2) o (EXP4_3).\n");
@@ -1659,14 +1757,14 @@ public class ASintactico {
 			//Aquí es donde venía esta signación => 'tipoH = tipo1;' Se opta por poner arriba
 			if (esTokenOp3(tokActual.getTipoToken())) {
 				tipoEtiq2 = rexp31(tipoEtiqH);
-				if (tipoEtiq2.getT() == tipoT.tError) {
+				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
 					System.out.println("Error en expresión. Categoría sintáctica afectada: (REXP3_1).\n");
 					return tipoEtiq2;
 				}
 				else
-					return new ParTipoEtiq(tipoT.tNat, tipoEtiq2.getEtiq());
+					return new ParTipoEtiq(new Natural(), tipoEtiq2.getEtiq());
 			}
 			else {
 				// Hemos llegado al fin de la instrucción
@@ -1678,17 +1776,17 @@ public class ASintactico {
 	public ParTipoEtiq rexp31(ParTipoEtiq tipoEtiqH) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
-		tipoT tipo;
+		PropsObjTS tipo;
 		tOp op;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		op = op3();
 		tipoEtiq = exp3(tipoEtiqH.getEtiq());
-		tipo = dameTipo(tipoEtiq.getT(), tipoEtiqH.getT(), op);
-		if (tipo == tipoT.tError) {
+		tipo = dameTipo(tipoEtiq.getTipo(), tipoEtiqH.getTipo(), op);
+		if (tipo.getT() == tipoT.tError) {
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
-			return new ParTipoEtiq(tipoT.tError, tipoEtiq.getEtiq());
+			return new ParTipoEtiq(new ErrorT(), tipoEtiq.getEtiq());
 		}
 		else {
 			emite(op.toString());
@@ -1855,7 +1953,8 @@ public class ASintactico {
 		return tipoEtiq;
 	}
 	
-	public tipoT dameTipo(tipoT tipoEXPIzq, tipoT tipoEXPDer, tOp op) {
+	//public tipoT dameTipo(tipoT tipoEXPIzq, tipoT tipoEXPDer, tOp op) {
+	public PropsObjTS dameTipo(PropsObjTS tipoEXPIzq, PropsObjTS tipoEXPDer, tOp op) {
 		if (esOp0(op)) {
 			if (tipoEXPIzq == tipoEXPDer || (esTipoNum(tipoEXPIzq) && esTipoNum(tipoEXPDer)))
 				return tipoT.tBool;
