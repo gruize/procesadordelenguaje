@@ -7,11 +7,26 @@ registro : record {
 				h : array10;
 				i : integer;
 				j : pointer array10;
-				k : boolean
+				k : boolean;
+				arr : array [56] of record {
+										a: boolean;
+										b: integer;
+										c: pointer boolean
+										}
 				}
 			};
 x : integer;
 y : integer;
-z : integer
+z : integer;
+v : pointer pointer pointer array10;
+w : record {
+				a : natural;
+				b : array10;
+				c : boolean
+				};
+m : array10;
+miArray : array [10] of integer
 &
-out('h')
+out('h');
+#v -> -> -> [5] := 7;
+out(miArray[5])
