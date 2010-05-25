@@ -1370,13 +1370,14 @@ public class ASintactico {
 		//if (tipoEtiq.getT() != tipoT.array || tipoEtiq.getT() != tipoT.registro) {
 		//No se si la comparación con el puntero habría que hacerla, pero creo que sí
 		//Falta cumplimentar para referencias!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		if (tipoEtiq.getTipo().getT() == tipoT.array || tipoEtiq.getTipo().getT() == tipoT.registro) { //|| tipo.getT() == tipoT.puntero) {
+		/*if (tipoEtiq.getTipo().getT() == tipoT.array || tipoEtiq.getTipo().getT() == tipoT.registro) { //|| tipo.getT() == tipoT.puntero) {
 			
 		}
 		else {
+			//Esto no habría que emitirlo en una asignacion
 			emite("apila-ind");
 			tipoEtiq.setEtiq(tipoEtiq.getEtiq() + 1);
-		}
+		}*/
 		return tipoEtiq;
 	}
 	
@@ -1924,6 +1925,7 @@ public class ASintactico {
 	
 	public ParTipoEtiq term(int etiqIn) {
 		//Declaración de las variables necesarias
+		ParTipoEtiq tipoEtiq;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.booleanoCierto)
 			return term1True(etiqIn);
@@ -1941,8 +1943,15 @@ public class ASintactico {
 		//un identificador
 		if (tokActual.getTipoToken() == tToken.identificador) {
 			//OBTENEMOS EL TIPO DEL IDENTIFICADOR A PARTIR DE LA TS//
-			if (ts.existeId(tokActual.getLexema(), tClase.variable, 0))
-				return mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+			if (ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
+				tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+				//if (tipoEtiq.getTipo().getT() == tipoT.array || tipoEtiq.getTipo().getT() == tipoT.registro)
+				if (!esTipoBasico(tipoEtiq.getTipo()))
+					return tipoEtiq;
+				emite("apila-ind");
+				tipoEtiq.setEtiq(tipoEtiq.getEtiq() + 1);
+				return tipoEtiq;
+			}
 			else
 				return new ParTipoEtiq(new ErrorT(), etiqIn);
 			//return term6(etiqIn);
