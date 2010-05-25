@@ -1798,17 +1798,17 @@ public class ASintactico {
 	public ParTipoEtiq exp41(int etiqIn) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
-		tipoT tipo;
+		PropsObjTS tipo;
 		tOp op;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		op = op41();
 		tipoEtiq = term(etiqIn);
-		tipo = dameTipo(tipoEtiq.getT(), op);
-		if (tipo == tipoT.tError) {
+		tipo = dameTipo(tipoEtiq.getTipo(), op);
+		if (tipo.getT() == tipoT.tError) {
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error en la operación: '"+ op.toString() +"'.\n");
-			return new ParTipoEtiq(tipoT.tError, tipoEtiq.getEtiq());
+			return new ParTipoEtiq(new ErrorT(), tipoEtiq.getEtiq());
 		}
 		else {
 			emite(op.toString());
@@ -1820,17 +1820,17 @@ public class ASintactico {
 	public ParTipoEtiq exp42(int etiqIn) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
-		tipoT tipo;
+		PropsObjTS tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.opVAbs);
 		//tipo1 = term();
 		tipoEtiq = exp(etiqIn);
-		tipo = dameTipo(tipoEtiq.getT(), tOp.opVAbs);
-		if (tipo == tipoT.tError) {
+		tipo = dameTipo(tipoEtiq.getTipo(), tOp.opVAbs);
+		if (tipo.getT() == tipoT.tError) {
 			errorProg = true;
 			vaciaCod();
 			System.out.println("Error en la operación: '"+ tOp.opVAbs.toString() +"'.\n");
-			return new ParTipoEtiq(tipoT.tError, tipoEtiq.getEtiq());
+			return new ParTipoEtiq(new ErrorT(), tipoEtiq.getEtiq());
 		}
 		else {
 			emite(tToken.opVAbs.toString());
@@ -1872,28 +1872,28 @@ public class ASintactico {
 		}
 		if (tokActual.getTipoToken() == tToken.parApertura)
 			return term7(etiqIn);
-		return new ParTipoEtiq(tipoT.tError, etiqIn);
+		return new ParTipoEtiq(new ErrorT(), etiqIn);
 	}
 	
 	public ParTipoEtiq term1True(int etiqIn) {
 		emit.emit(Emit.APILA, new Token(tToken.booleano,"true"));
 		emite("apila(" + true + ")");
 		consume(tToken.booleanoCierto);
-		return new ParTipoEtiq(tipoT.tBool, etiqIn + 1);
+		return new ParTipoEtiq(new Booleano(), etiqIn + 1);
 	}
 	
 	public ParTipoEtiq term1False(int etiqIn) {
 		emite("apila(" + false + ")");
 		emit.emit(Emit.APILA, new Token(tToken.booleano,"false"));
 		consume(tToken.booleanoFalso);
-		return new ParTipoEtiq(tipoT.tBool, etiqIn + 1);
+		return new ParTipoEtiq(new Booleano(), etiqIn + 1);
 	}
 	
 	public ParTipoEtiq term2(int etiqIn) {
 		emite("apila(" + tokActual.getLexema() + ")");
 		emit.emit(Emit.APILA, new Token(tToken.caracter,tokActual.getLexema()));
 		consume(tToken.caracter);
-		return new ParTipoEtiq(tipoT.tChar, etiqIn + 1);
+		return new ParTipoEtiq(new Caracter(), etiqIn + 1);
 	}
 	
 	public ParTipoEtiq term3(int etiqIn) {
@@ -1901,7 +1901,7 @@ public class ASintactico {
 		emit.emit(Emit.APILA, new Token(tToken.natural,tokActual.getLexema()));
 
 		consume(tToken.natural);
-		return new ParTipoEtiq(tipoT.tNat, etiqIn + 1);
+		return new ParTipoEtiq(new Natural(), etiqIn + 1);
 	}
 	
 	public ParTipoEtiq term4(int etiqIn) {
@@ -1909,17 +1909,18 @@ public class ASintactico {
 		emit.emit(Emit.APILA, new Token(tToken.entero,tokActual.getLexema()));
 
 		consume(tToken.entero);
-		return new ParTipoEtiq(tipoT.tInt, etiqIn + 1);
+		return new ParTipoEtiq(new Entero(), etiqIn + 1);
 	}
 	
 	public ParTipoEtiq term5(int etiqIn) {
 		emite("apila(" + tokActual.getLexema() + ")");
 		emit.emit(Emit.APILA, new Token(tToken.real,tokActual.getLexema()));
 		consume(tToken.real);
-		return new ParTipoEtiq(tipoT.tFloat, etiqIn + 1);
+		return new ParTipoEtiq(new Real(), etiqIn + 1);
 	}
 	
-	public ParTipoEtiq term6(int etiqIn) {
+	//En el 2º Cuat se usa mem() en su lugar
+	/*public ParTipoEtiq term6(int etiqIn) {
 		//Declaración de las variables necesarias
 		String lexIden = new String();
 		tipoT tipo;
@@ -1941,7 +1942,7 @@ public class ASintactico {
 			System.out.println("Error: Se esperaba identificador, o si lo es no fue declarado previamente." + "\n");
 			return new ParTipoEtiq(tipoT.tError, etiqIn);
 		}
-	}
+	}*/
 	
 	public ParTipoEtiq term7(int etiqIn) {
 		//Declaración de las variables necesarias
@@ -1956,42 +1957,42 @@ public class ASintactico {
 	//public tipoT dameTipo(tipoT tipoEXPIzq, tipoT tipoEXPDer, tOp op) {
 	public PropsObjTS dameTipo(PropsObjTS tipoEXPIzq, PropsObjTS tipoEXPDer, tOp op) {
 		if (esOp0(op)) {
-			if (tipoEXPIzq == tipoEXPDer || (esTipoNum(tipoEXPIzq) && esTipoNum(tipoEXPDer)))
-				return tipoT.tBool;
+			if (tipoEXPIzq.getT() == tipoEXPDer.getT() || (esTipoNum(tipoEXPIzq.getT()) && esTipoNum(tipoEXPDer.getT())))
+				return new Booleano();
 			else
-				return tipoT.tError;
+				return new ErrorT();
 		}
 		if (esOp1(op)) {
 			switch (op) {
 			case oLogica:
-				if (tipoEXPIzq == tipoT.tBool && tipoEXPIzq == tipoEXPDer)
-					return tipoT.tBool;
+				if (tipoEXPIzq.getT() == tipoT.tBool && tipoEXPIzq.getT() == tipoEXPDer.getT())
+					return new Booleano();
 				else
-					return tipoT.tError;
+					return new ErrorT();
 			default:
-				if (esTipoNum(tipoEXPIzq) && esTipoNum(tipoEXPDer))
+				if (esTipoNum(tipoEXPIzq.getT()) && esTipoNum(tipoEXPDer.getT()))
 					return dameTipoDom(tipoEXPIzq, tipoEXPDer);
 			}
 		}
 		if (esOp2(op)) {
 			switch (op) {
 			case yLogica:
-				if (tipoEXPIzq == tipoT.tBool && tipoEXPIzq == tipoEXPDer)
-					return tipoT.tBool;
+				if (tipoEXPIzq.getT() == tipoT.tBool && tipoEXPIzq == tipoEXPDer)
+					return new Booleano();
 				else
-					return tipoT.tError;
+					return new ErrorT();
 			default:
-				if (esTipoNum(tipoEXPIzq) && esTipoNum(tipoEXPDer))
+				if (esTipoNum(tipoEXPIzq.getT()) && esTipoNum(tipoEXPDer.getT()))
 					return dameTipoDom(tipoEXPIzq, tipoEXPDer);
 			}
 		}
 		
 		if (esOp3(op)) {
-			if (tipoEXPIzq == tipoT.tNat && tipoEXPDer == tipoT.tNat )
-				return tipoT.tNat;
+			if (tipoEXPIzq.getT() == tipoT.tNat && tipoEXPDer.getT() == tipoT.tNat )
+				return new Natural();
 		}
 		
-		return tipoT.tError;
+		return new ErrorT();
 		
 //		switch (op) {
 //		case menor:
@@ -2012,53 +2013,60 @@ public class ASintactico {
 //		}
 	}
 	
-	public tipoT dameTipo(tipoT tipoEXP, tOp op4) {
+	public PropsObjTS dameTipo(PropsObjTS tipoEXP, tOp op4) {
 		switch (op4) {
 		case negArit:
-			if (esTipoNum(tipoEXP) && tipoEXP != tipoT.tNat)
+			if (esTipoNum(tipoEXP.getT()) && tipoEXP.getT() != tipoT.tNat)
 				return tipoEXP;
-			if (tipoEXP == tipoT.tNat)
-				return tipoT.tInt;
+			if (tipoEXP.getT() == tipoT.tNat) {
+				//El comentario de abajo no va a ser necesario
+				//tipoEXP.setT(tipoT.tInt);
+				return new Entero();
+			}
 			else
-				return tipoT.tError;
+				return new ErrorT();
 		case negLogica:
-			if (tipoEXP == tipoT.tBool)
+			if (tipoEXP.getT() == tipoT.tBool)
 				return tipoEXP;
 			else
-				return tipoT.tError;
+				return new ErrorT();
 		case opVAbs:
-			if (esTipoNum(tipoEXP) && !(tipoEXP == tipoT.tInt))
+			if (esTipoNum(tipoEXP.getT()) && !(tipoEXP.getT() == tipoT.tInt))
 				return tipoEXP;
-			if (tipoEXP == tipoT.tInt)
-				return tipoT.tNat;
-			return tipoT.tError;
+			if (tipoEXP.getT() == tipoT.tInt)
+				//El comentario de abajo no va a ser necesario
+				//tipoEXP.setT(tipoT.tNat);
+				return new Natural();
+			return new ErrorT();
 		case castChar:
-			if (tipoEXP == tipoT.tNat || tipoEXP == tipoT.tChar)
-				return tipoT.tChar;
-			return tipoT.tError;
+			if (tipoEXP.getT() == tipoT.tNat || tipoEXP.getT() == tipoT.tChar)
+				//El comentario de abajo no va a ser necesario
+				//tipoEXP.setT(tipoT.tChar);
+				return new Caracter();
+			return new ErrorT();
 		case castNat:
-			if (tipoEXP == tipoT.tNat || tipoEXP == tipoT.tChar)
-				return tipoT.tNat;
-			return tipoT.tError;
+			if (tipoEXP.getT() == tipoT.tNat || tipoEXP.getT() == tipoT.tChar)
+				return new Natural();
+			return new ErrorT();
 		case castInt:
-			if (esTipoNum(tipoEXP) || tipoEXP == tipoT.tChar)
-				return tipoT.tInt;
-			return tipoT.tError;
+			if (esTipoNum(tipoEXP.getT()) || tipoEXP.getT() == tipoT.tChar)
+				return new Entero();
+			return new ErrorT();
 		case castFloat:
-			if (esTipoNum(tipoEXP) || tipoEXP == tipoT.tChar)
-				return tipoT.tFloat;
-			return tipoT.tError;
+			if (esTipoNum(tipoEXP.getT()) || tipoEXP.getT() == tipoT.tChar)
+				return new Real();
+			return new ErrorT();
 		default:
-			return tipoT.tError;
+			return new ErrorT();
 		}
 	}
 	
-	public tipoT dameTipoDom(tipoT tipo1, tipoT tipo2) {
-		if (tipo1 == tipoT.tFloat && esTipoNum(tipo2) || tipo2 == tipoT.tFloat && esTipoNum(tipo1))
-			return tipoT.tFloat;
-		if (tipo1 == tipoT.tInt && esTipoNatInt(tipo2) || tipo2 == tipoT.tInt && esTipoNatInt(tipo1))
-			return tipoT.tInt;
-		return tipoT.tNat;
+	public PropsObjTS dameTipoDom(PropsObjTS tipo1, PropsObjTS tipo2) {
+		if (tipo1.getT() == tipoT.tFloat && esTipoNum(tipo2.getT()) || tipo2.getT() == tipoT.tFloat && esTipoNum(tipo1.getT()))
+			return new Real();
+		if (tipo1.getT() == tipoT.tInt && esTipoNatInt(tipo2.getT()) || tipo2.getT() == tipoT.tInt && esTipoNatInt(tipo1.getT()))
+			return new Entero();
+		return new Natural();
 	}
 	
 	public boolean esOp0(tOp op) {
