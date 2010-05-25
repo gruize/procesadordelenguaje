@@ -739,8 +739,10 @@ public class ASintactico {
 		//si el análisis va bien, y luego el identificador correspondiente
 		if (tokActual.getTipoToken() == tToken.parApertura) {
 			consume(tToken.parApertura);
+			//Hacer referencia al mem
+			//Comprobar que el tipo es un tipo básico al final, sino no se puede hacer el read
 			if (tokActual.getTipoToken() == tToken.identificador &&
-					ts.existeId(tokActual.getLexema(), tClase.variable, new Integer(0))) {
+					ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
 				lexIden = tokActual.getLexema();
 				emite("leer");
 				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
@@ -772,21 +774,23 @@ public class ASintactico {
 	//Adaptación de la asignación al acceso a memoria
 	public ParBooleanInt sasign(int etiqIn) {
 		//Declaración de las variables necesarias
-		ParTipoEtiq tipoEtiq;
+		ParTipoEtiq tipoEtiq1, tipoEtiq2;
 		String lexIden = new String();
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema())) {
+				ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
 				//ts.existeId(tokActual.getLexema(), tClase.variable) {
 			lexIden = tokActual.getLexema();
-			consume(tToken.identificador);
+			//Llamada a mem()
+			tipoEtiq1 = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
 			//Una vez parseado el identificador vamos con el simbolo de la asignación
 			consume(tToken.asignacion);
 			//LLamada a epx()
-			tipoEtiq = exp(etiqIn);
+			tipoEtiq2 = exp(etiqIn);
 			/////////////////////////////////////////////////////////////////////////
 			//if (tipoEtiq.getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getT())) {
-			if (tipoEtiq.getTipo().getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getTipo().getT())) {
+			//if (tipoEtiq.getTipo().getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getTipo().getT())) {
+			if (tipoEtiq2.getTipo().getT() == tipoT.tError || !tiposCompatibles(new ParProps(tipoEtiq1.getTipo(), tipoEtiq2.getTipo()))) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en la asignación: La expresión es errónea, o los tipos de la" + "\n" +
@@ -794,10 +798,11 @@ public class ASintactico {
 				return new ParBooleanInt(true, etiqIn);
 			}
 			else {
+				//Hacemos la distinción de tipos básicos y procedemos segun sea
 				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
 				//emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getPropiedadesTipo().getT()), 
 				//		new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
-				return new ParBooleanInt(false, tipoEtiq.getEtiq() + 1);
+				return new ParBooleanInt(false, tipoEtiq2.getEtiq() + 1);
 			}
 		}
 		else {
@@ -1353,7 +1358,7 @@ public class ASintactico {
 					errorProg = true;
 					vaciaCod();
 					System.out.println("Error: Expresión en el índice del array de la variable '" + 
-							lexId + "\n' de tipo distinto a entero." + "\n");
+							lexId + "'\nde tipo distinto a entero." + "\n");
 					return new ParTipoEtiq(new ErrorT(), -1);
 				}
 			}
@@ -1867,7 +1872,10 @@ public class ASintactico {
 		//un identificador
 		if (tokActual.getTipoToken() == tToken.identificador) {
 			//OBTENEMOS EL TIPO DEL IDENTIFICADOR A PARTIR DE LA TS//
-			return mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+			if (ts.existeId(tokActual.getLexema(), tClase.variable, 0))
+				return mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+			else
+				return new ParTipoEtiq(new ErrorT(), etiqIn);
 			//return term6(etiqIn);
 		}
 		if (tokActual.getTipoToken() == tToken.parApertura)

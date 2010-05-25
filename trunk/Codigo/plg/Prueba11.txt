@@ -30,11 +30,11 @@ miArray : array [10] of integer
 &
 #out('h');
 #out(v -> -> -> [5]);
-#out(v2 -> -> -> [2]);
+out(v2 -> -> -> [2]);
 #out(miArray[5]);
 #out('h')
 #out(registro.a);
 #out(registro.b);
 #out(registro.r.h);
 #out(registro.r.i)
-out(registro.r.arr[10+10*2].c->)
+out(registro.r.arr[10 + registro + 10 * 2].c->)
