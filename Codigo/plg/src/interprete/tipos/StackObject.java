@@ -18,5 +18,35 @@ public abstract class StackObject {
 	}
 	public abstract byte type();
 	public abstract boolean fromBuffer(MyBuffer buffer);
+	public final StackObject duplica(){
+		StackObject o = null;
+		if (this instanceof MyBoolean){
+			o = new MyBoolean();
+			o.setValue(this.getValue());
+		}
+		if (this instanceof MyBuffer){
+			o = new MyBuffer();
+			o.setValue(this.getValue());
+		}
+		if (this instanceof MyChar){
+			o = new MyChar();
+			o.setValue(this.getValue());
+		}
+		if (this instanceof MyFloat){
+			o = new MyFloat();
+			o.setValue(this.getValue());
+		}
+		if (this instanceof MyInteger){
+			o = new MyInteger();
+			o.setValue(this.getValue());
+		}
+		if (this instanceof MyNatural){
+			o = new MyNatural();
+			o.setValue(this.getValue());
+		}
+	
+		return o;
+	}
+	
 
 }
