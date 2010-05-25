@@ -326,7 +326,8 @@ public class ASintactico {
 			else
 				errorDec1_dir = new ParBooleanInt(true, -1);
 		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getId())) {
-			if (ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
+			//if (ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
+			if (ts.existeId(id_tipo.getId())) {	
 				System.out.print("Error: El identificador '" + id_tipo.getId() + "' fue declarado previamente" + "\n");
 				return true;
 			}
@@ -357,8 +358,9 @@ public class ASintactico {
 				errorDec1_dir1 = rdecs2(tam + id_tipo.getProps().getTam());
 			else
 				errorDec1_dir1 = new ParBooleanInt(true, -1);
-		if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
-			if (ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
+		//if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
+		if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getId())) {
+			if (ts.existeId(id_tipo.getId())) {
 				System.out.print("Error: El identificador '" + id_tipo.getId() + "' fue declarado previamente" + "\n");
 				return new ParBooleanInt(true, -1);
 			}
@@ -707,7 +709,8 @@ public class ASintactico {
 			consume(tToken.parApertura);
 			tipoEtiq = exp(etiqIn);
 			///////////////////////////////////////////////////////////////
-			if (tipoEtiq.getTipo().getT() == tipoT.tError) {
+			//Sólo se imprimen en pantalla expresiones que se resuelvan en un tipo básico
+			if (tipoEtiq.getTipo().getT() == tipoT.tError || !esTipoBasico(tipoEtiq.getTipo())) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en la expresión de la instrucción de salida por pantalla." + "\n");
@@ -730,7 +733,60 @@ public class ASintactico {
 		}
 	}
 	
+	//2º Cuatrimestre
 	public ParBooleanInt sread(int etiqIn) {
+		//Declaración de las variables necesarias
+		String lexIden = new String();
+		ParTipoEtiq tipoEtiq;
+		//Cuerpo asociado a la funcionalidad de los no terminales
+		consume(tToken.entradaTeclado);
+		//Ahora en el token actual tenemos el parentesis de apertura
+		//si el análisis va bien, y luego el identificador correspondiente
+		if (tokActual.getTipoToken() == tToken.parApertura) {
+			consume(tToken.parApertura);
+			//Hacer referencia al mem
+			//Comprobar que el tipo es un tipo básico al final, sino no se puede hacer el read
+			if (tokActual.getTipoToken() == tToken.identificador &&
+					ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
+				lexIden = tokActual.getLexema();
+				//Llamada a mem()
+				tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+				//Control de errores
+				if (!esTipoBasico(tipoEtiq.getTipo())) {
+					errorProg = true;
+					vaciaCod();
+					System.out.println("Error: El parámetro de la operación 'in' debe ser una variable que aún siendo" + "\n" +
+							"compuesta se reuelva en un tipo básico.\n");
+					return new ParBooleanInt(true, etiqIn);
+				}
+				//Una vez parseado el identificador vamos con el simbolo de paréntesis de cierre
+				consume(tToken.parCierre);
+				//Emitimos las instrucciones
+				emite("leer");
+				emite("desapila-ind");
+				emit.emit(Emit.LEER);
+				//LEER de la MV sólo se emite en una instrucción
+				return new ParBooleanInt(false, tipoEtiq.getEtiq() + 2);
+			}
+			else {
+				errorProg = true;
+				vaciaCod();
+				System.out.println("Error: El identificador '" + lexIden + "' de la operación 'in' debe referirse a una\n"
+						+ "variable previamente declarada.");
+				return new ParBooleanInt(true, etiqIn);
+			}
+		}
+		else {
+			errorProg = true;
+			vaciaCod();
+			System.out.println("Error: Se esperaba paréntesis de apertura después de operación de entrada" + "\n" +
+					"por teclado.\n");
+			return new ParBooleanInt(true, etiqIn);
+		}
+	}
+	
+	//1º Cuatrimestre
+	/*public ParBooleanInt sread(int etiqIn) {
 		//Declaración de las variables necesarias
 		String lexIden = new String();
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -770,7 +826,8 @@ public class ASintactico {
 					"por teclado.\n");
 			return new ParBooleanInt(true, etiqIn);
 		}
-	}
+	}*/
+	
 	//Adaptación de la asignación al acceso a memoria
 	public ParBooleanInt sasign(int etiqIn) {
 		//Declaración de las variables necesarias
@@ -786,22 +843,28 @@ public class ASintactico {
 			//Una vez parseado el identificador vamos con el simbolo de la asignación
 			consume(tToken.asignacion);
 			//LLamada a epx()
-			tipoEtiq2 = exp(etiqIn);
+			tipoEtiq2 = exp(tipoEtiq1.getEtiq());
 			/////////////////////////////////////////////////////////////////////////
 			//if (tipoEtiq.getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getT())) {
 			//if (tipoEtiq.getTipo().getT() == tipoT.tError || !esCompatibleAsig(ts.getTabla().get(lexIden).getPropiedadesTipo().getT(), tipoEtiq.getTipo().getT())) {
-			if (tipoEtiq2.getTipo().getT() == tipoT.tError || !tiposCompatibles(new ParProps(tipoEtiq1.getTipo(), tipoEtiq2.getTipo()))) {
+			if (tipoEtiq1.getTipo().getT() == tipoT.tError || tipoEtiq2.getTipo().getT() == tipoT.tError
+					||!tiposCompatibles(new ParProps(tipoEtiq1.getTipo(), tipoEtiq2.getTipo())) 
+					//Esta linea realmente sobra?? A un natural no se le debería asignar un entero, y eso no lo analiza
+					|| !esCompatibleAsig(tipoEtiq1.getTipo().getT(), tipoEtiq2.getTipo().getT())) {
 				errorProg = true;
 				vaciaCod();
 				System.out.println("Error en la asignación: La expresión es errónea, o los tipos de la" + "\n" +
-						"asignación son incompatibles." + "\n");
+						"asignación son incompatibles. Variable afectada: " + lexIden + "\n");
 				return new ParBooleanInt(true, etiqIn);
 			}
 			else {
-				//Hacemos la distinción de tipos básicos y procedemos segun sea
-				emite("desapila_dir(" + ts.getTabla().get(lexIden).getDirM() + ")");
-				//emit.emit(emit.desapilaCode(ts.getTabla().get(lexIden).getPropiedadesTipo().getT()), 
-				//		new Token(tToken.natural,""+ts.getTabla().get(lexIden).getDirM()));
+				//Comprobamos si los tipos son básicos
+				if (esTipoBasico(tipoEtiq1.getTipo()) && esTipoBasico(tipoEtiq2.getTipo())) {
+					emite("desapila-ind");
+					return new ParBooleanInt(false, tipoEtiq2.getEtiq() + 1);
+				}
+				//Sino emitimos el mueve
+				emite("mueve(" + tipoEtiq1.getTipo().getTam() + ")");
 				return new ParBooleanInt(false, tipoEtiq2.getEtiq() + 1);
 			}
 		}
@@ -811,6 +874,12 @@ public class ASintactico {
 			System.out.println("Error: El identificador " + tokActual.getLexema() + " no fue declarado previamente." + "\n");
 			return new ParBooleanInt(true, etiqIn);
 		}
+	}
+	
+	public boolean esTipoBasico(PropsObjTS tipo) {
+		if (tipo.getT() == tipoT.tChar || tipo.getT() == tipoT.tBool || esTipoNum(tipo.getT()))
+			return true;
+		return false;
 	}
 	//Versión de la asignación del 1º Cuat
 	/*public ParBooleanInt sasign(int etiqIn) {
@@ -1173,7 +1242,7 @@ public class ASintactico {
 		//Consumimos el token del for
 		consume(tToken.forC);
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema(), tClase.variable, new Integer(0))) {
+				ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
 			lexIden = tokActual.getLexema();
 			consume(tToken.identificador);
 			//Una vez parseado el identificador vamos con el simbolo '='
@@ -1281,7 +1350,7 @@ public class ASintactico {
 		String lexIden;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema(), tClase.variable, new Integer(0))) {
+				ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
 			//Obtenemos el nombre del identificador
 			lexIden = tokActual.getLexema();
 			//Lo consumimos
