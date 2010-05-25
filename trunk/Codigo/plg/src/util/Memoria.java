@@ -4,16 +4,22 @@ import interprete.tipos.StackObject;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 
 public class Memoria {
-	private Hashtable<Integer,StackObject> memoria;
-	
+	private Vector<StackObject> memoria;
+	private Integer max;
+	private Integer minHeap;
+	private Integer maxStatic;
 	public Memoria(){
-		memoria=new Hashtable<Integer,StackObject>();
+		memoria=new Vector<StackObject>();
+		max = 1000;
+		maxStatic = 0;
+		minHeap = max;
 	}
 	
 	public void setPosicion(Integer pos,StackObject obj){
-		memoria.put(pos,obj);
+		memoria.add(pos,obj);
 	}
 	
 	public StackObject getPosicion(Integer pos){
@@ -35,5 +41,29 @@ public class Memoria {
 
 	public Enumeration<StackObject> elements() {
 		return memoria.elements();
+	}
+
+	public void setMax(Integer max) {
+		this.max = max;
+	}
+
+	public Integer getMax() {
+		return max;
+	}
+
+	public void setMinHeap(Integer minHeap) {
+		this.minHeap = minHeap;
+	}
+
+	public Integer getMinHeap() {
+		return minHeap;
+	}
+
+	public void setMaxStatic(Integer maxStatic) {
+		this.maxStatic = maxStatic;
+	}
+
+	public Integer getMaxStatic() {
+		return maxStatic;
 	}
 }
