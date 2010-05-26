@@ -17,6 +17,7 @@ registro : record {
 			};
 x : integer;
 y : integer;
+c : character;
 z : integer;
 v : pointer pointer pointer array10;
 v2 : pointer pointer pointer array [3] of boolean;
@@ -26,15 +27,30 @@ w : record {
 				c : boolean
 				};
 m : array10;
-miArray : array [10] of integer
+ar1 : array [5] of natural;
+ar2 : array [5] of integer;
+miArray : array [10] of integer;
+miReg1 : record {
+			a: integer;
+			b: float
+			};
+miReg2 : record {
+			c: integer;
+			d: natural
+			}
 &
 #out('h');
 #out(v -> -> -> [5]);
-out(v2 -> -> -> [2]);
+#out(v2 -> -> -> [2]);
 #out(miArray[5]);
 #out('h')
 #out(registro.a);
 #out(registro.b);
 #out(registro.r.h);
 #out(registro.r.i)
-out(registro.r.arr[10 + 10 * 2].c->)
+#out(registro.r.arr[10 + 10 * 2].c->)
+#ar1 := ar2
+#ar1[1] := ar2[3]
+#ar1[1] := c
+#miReg1 := miReg2
+registro.r.h[5] := 3
