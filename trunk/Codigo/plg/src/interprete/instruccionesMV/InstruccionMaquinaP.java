@@ -59,6 +59,8 @@ public abstract class InstruccionMaquinaP extends InstruccionesMaquinaPConstante
 			return Apila.fromBytes(bytes, pos);
 		case APILA_DIR:
 			return ApilaDir.fromBytes(bytes, pos);
+		case APILA_IND:
+			return ApilaInd.fromBytes(bytes, pos);
 		case DESAPILA:
 			return Desapila.fromBytes(bytes, pos);
 		case DESAPILA_DIR_BOOLEAN:
@@ -79,6 +81,16 @@ public abstract class InstruccionMaquinaP extends InstruccionesMaquinaPConstante
 			return ValorAbsoluto.fromBytes(bytes, pos);
 		case STOP: 
 			return Stop.fromBytes(bytes, pos);
+		case IR_A:
+			return Ir_a.fromBytes(bytes, pos);
+		case IR_F:
+			return Ir_f.fromBytes(bytes, pos);
+		case IR_V:
+				return Ir_v.fromBytes(bytes, pos);
+		case MUEVE:
+			return Mueve.fromBytes(bytes, pos);
+		case COPIA:
+			return Copia.fromBytes(bytes, pos);
 		default:
 			return null;
 

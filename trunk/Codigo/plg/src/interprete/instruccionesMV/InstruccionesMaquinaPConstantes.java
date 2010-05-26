@@ -105,4 +105,18 @@ public abstract class InstruccionesMaquinaPConstantes {
 	public static final byte ESCRIBIR =0X25;
 	public static final byte VALOR_ABSOLUTO = 0X26;
 	public static final byte STOP = 0X27;
+	
+	// Nuevas David
+	
+	/*Sin parametros*/
+	public static final byte APILA_IND = 0X45;
+	public static final byte IR_A = 0X46;
+	public static final byte IR_V = 0X47;
+	public static final byte IR_F = 0X48;
+	public static final byte MUEVE = 0X50;
+	public static final byte COPIA = 0X51;
+	
+	
+
+	
 }
