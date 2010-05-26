@@ -26,5 +26,11 @@ public enum OperacionesMaquinaP {
 	DESAPILA, // no Tiene parametro
 	DESAPILA_DIR, // Tiene un parametro que es una direccion
 	LEER,
-	ESCRIBIR
+	ESCRIBIR,
+	APILA_IND,
+	IR_A,
+	IR_F,
+	IR_V,
+	MUEVE,
+	COPIA
 }
