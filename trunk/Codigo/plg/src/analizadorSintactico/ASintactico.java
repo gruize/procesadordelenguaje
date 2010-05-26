@@ -28,10 +28,13 @@ public class ASintactico {
 	//						LISTAS DE PENDIENTES					 //
 	///////////////////////////////////////////////////////////////////
 	//Lista de pendientes para punteros y el forward
+	//Para punteros al final no se usa
 	private Vector<String> listaPendientes;
 	//Lista de tipos pendientes que ya han sido declarados pero todavía
 	//no se han añadido a la TS, y que se necesita preguntar por ellos
 	private Vector<ParIdProps> tiposPenTS;
+//	//Lista de pares de tipos visitados
+//	private Vector<ParProps> tiposVisitados;
 	//Lista de pares de tipos visitados
 	private Vector<ParProps> parTiposVisitados;
 	///////////////////////////////////////////////////////////////////
@@ -314,6 +317,10 @@ public class ASintactico {
 		ParIdProps id_tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		id_tipo = dec(nivel);
+		//Según obtenemos el id junto con su reg tipo a insertar, comprobamos si tiene
+		//algún puntero con tipos pendientes, y si es así lo modificamos estableciendo
+		//su tipo correspondiente
+		contieneTipoPend(id_tipo.getProps());
 		if (tokActual.getTipoToken() == tToken.puntoyComa) {
 			if (id_tipo.getProps() != null)
 				errorDec1_dir = rdecs1(nivel, tam + id_tipo.getProps().getTam());
@@ -335,9 +342,45 @@ public class ASintactico {
 				return true;
 		}
 		else {
-			ts.anadeId(id_tipo.getId(), id_tipo.props, tam, id_tipo.getClase(), id_tipo.getNivel());
+			ts.anadeId(id_tipo.getId(), id_tipo.getProps(), tam, id_tipo.getClase(), id_tipo.getNivel());
 			// faltan dos emits
 			return false;
+		}
+	}
+	
+	public void contieneTipoPend(PropsObjTS tipo) {
+		//tipos básicos
+		if (esTipoNum(tipo.getT()) || (tipo.getT() == tipoT.tBool) || (tipo.getT() == tipoT.tChar))
+			return;
+		//arrays
+		if (tipo.getT() == tipoT.array) {
+			contieneTipoPend(((Array)tipo).getTBase());
+			return;
+		}
+		//registros
+		if ((tipo.getT() == tipoT.registro)) {
+			//Recorremos los vectores de campos de los registros
+			for (int i = 0; i < ((Registro)tipo).getSizeCampos(); i++)
+				contieneTipoPend(((Registro)tipo).getCampoI(i).getTipo());
+			return;
+		}
+		//Punteros, los únicos que pueden tener algún tipo pendiente
+		if (tipo.getT() == tipoT.puntero) {
+			if (((Puntero)tipo).getTBase().getT() == tipoT.pendiente) {
+				//Comprobamos que el tipo está en la lista de tipos declarados
+				String lexTipoPend = ((Pendiente)((Puntero)tipo).getTBase()).getNomTipo();
+				int i = existeIdTiposPen(lexTipoPend);
+				if (i != -1) {
+					 ((Puntero)tipo).setTBase(new Referencia(lexTipoPend, tiposPenTS.get(i).getProps().getTam()));
+					 contieneTipoPend(((Puntero)tipo).getTBase());
+				}
+				else {
+					//Añadimos control de errores
+					errorProg = true;
+					System.out.print("El siguiente tipo no fue declarado previamente: '" + lexTipoPend + "'.\n");
+					return;
+				}
+			}
 		}
 	}
 	
@@ -347,6 +390,10 @@ public class ASintactico {
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.puntoyComa);
 		id_tipo = dec(nivel);
+		//Según obtenemos el id junto con su reg tipo a insertar, comprobamos si tiene
+		//algún puntero con tipos pendientes, y si es así lo modificamos estableciendo
+		//su tipo correspondiente
+		contieneTipoPend(id_tipo.getProps());
 		if (tokActual.getTipoToken() == tToken.puntoyComa) {
 			if (id_tipo.getProps() != null)
 				errorDec1_dir1 = rdecs1(nivel, tam + id_tipo.getProps().getTam());
@@ -368,7 +415,7 @@ public class ASintactico {
 				return new ParBooleanInt(true, -1);
 		}
 		else {
-			ts.anadeId(id_tipo.getId(), id_tipo.props, tam, id_tipo.getClase(), id_tipo.getNivel());
+			ts.anadeId(id_tipo.getId(), id_tipo.getProps(), tam, id_tipo.getClase(), id_tipo.getNivel());
 			return new ParBooleanInt(false, errorDec1_dir1.getIntVal());
 		}
 	}
@@ -409,13 +456,13 @@ public class ASintactico {
 		ParIdProps parOut = new ParIdProps(tClase.variable, nivel);
 		parOut.setId(consumeId().getLexema());
 		consume(tToken.dosPuntos);
-		parOut.setProps(tipoIden(parOut.getId()));
+		parOut.setProps(tipoIden(parOut.getId(), false));
 		return parOut;
 	}
 	
 	//También vale para los tBase
 	//Si devolvemos las propiedades a null es que ha habido errores
-	public PropsObjTS tipoIden(String id) {
+	public PropsObjTS tipoIden(String id, boolean esDecPuntero) {
 		//Primero los tipos básicos
 		if (tokActual.getTipoToken() == tToken.tipoVarEntero) {
 			consume(tToken.tipoVarEntero);
@@ -439,16 +486,24 @@ public class ASintactico {
 		}
 		//Referencias a otros tipos
 		if (tokActual.getTipoToken() == tToken.identificador) {
-			//Comprobamos si esxiste el tipo en la tabla de símbolos
+			//Comprobamos si esxiste el tipo en la lista de tipos ya declarados
+			//pero pendientes de ser añadidos en la TS
 			//if (ts.existeTipo(tokActual.getLexema())) {
 			int i;
-			i = existeIdTiposPen(tokActual.getLexema());
+			String lexId = tokActual.getLexema();
+			i = existeIdTiposPen(lexId);
 			if (i != -1) {
-				String lexId = tokActual.getLexema();
 				//tamRef = ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo().getTam();
 				consume(tToken.identificador);
 				//return new Referencia(tokActual.getLexema(), tamRef);
 				return new Referencia(lexId, tiposPenTS.get(i).getProps().getTam());
+			}
+			//Distinguimos el caso del puntero, ya que para el si se permiten declaraciones
+			//de tipos base que todavia no se han dado
+			if (esDecPuntero) {
+				//listaPendientes.add(lexId);
+				//Devolvemos el tipo Pendiente
+				return new Pendiente(lexId);
 			}
 			//Añadimos control de errores
 			errorProg = true;
@@ -479,7 +534,7 @@ public class ASintactico {
 				consume(tToken.corCierre);
 				consume(tToken.ofT);
 				//Vamos con el tipo base
-				tBase = tipoIden(id);
+				tBase = tipoIden(id, false);
 				//Devolvemos las propiedades del array
 				if (tBase == null || tBase.getT() == tipoT.tError) {
 					System.out.println("El tipo base declarado para el array es incorrecto.\n");
@@ -496,8 +551,8 @@ public class ASintactico {
 			//Devolvemos propiedades para nuevo puntero con su tipo base asociado
 			if (tokActual.getTipoToken() == tToken.nullM)
 				return new Puntero(null);
-			else
-				return new Puntero(tipoIden(id));
+			else 
+				return new Puntero(tipoIden(id, true));
 		}
 		//Registros
 		if (tokActual.getTipoToken() == tToken.recordT) {
@@ -595,7 +650,7 @@ public class ASintactico {
 		Campo campo = new Campo();
 		campo.setId(consumeId().getLexema());
 		consume(tToken.dosPuntos);
-		campo.setTipo(tipoIden(campo.getId()));
+		campo.setTipo(tipoIden(campo.getId(), false));
 		//campo.setDesp(campo.getTipo().getTam());
 		campo.setDesp(tam);
 		return campo;
@@ -607,8 +662,8 @@ public class ASintactico {
 		consume(tToken.decTipo);
 		parOut.setId(consumeId().getLexema());
 		consume(tToken.igual);
-		parOut.setProps(tipoIden(parOut.getId()));
-		if (!errorProg)
+		parOut.setProps(tipoIden(parOut.getId(), false));
+		if (!errorProg && (existeIdTiposPen(parOut.id) == -1))
 			tiposPenTS.add(parOut);
 		return parOut;
 	}
