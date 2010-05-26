@@ -14,5 +14,7 @@ public enum tipoT {
 	registro,
 	array,
 	procedimiento,
-	referencia
+	referencia,
+	//Tipo para las declaraciones de punteros con tipo base desconocido en el momento
+	pendiente
 }
