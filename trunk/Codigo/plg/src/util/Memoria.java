@@ -3,7 +3,6 @@ package util;
 import interprete.tipos.StackObject;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Vector;
 
 public class Memoria {
@@ -33,10 +32,13 @@ public class Memoria {
 	/**
      * Esta funcion obtiene el indice del ultimo elemento
 	 * almacenado en la memoria.
+	 * 
+	 * -> Al cambiarlo a vector nos da el tamaño, si en algún sitio se usa esta función va a estar mal
 	 */
 	
 	public Integer size(){
 		return memoria.size();
+		// Si se refiere a la última pos de la memoria estática devolver maxStatic
 	}
 
 	public Enumeration<StackObject> elements() {
