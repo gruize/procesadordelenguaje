@@ -33,11 +33,17 @@ public class Registro extends PropsObjTS{
 	}
 	
 	//Añadir un campo al registro
-	public void añadeCampo(Campo campo) {
-		campos.add(campo);
-		//Esto es así??
-		//tam = tam + campo.getDesp();
-		tam = tam + campo.getTipo().getTam();
+	public boolean añadeCampo(Campo campo) {
+		int i = existeCampo(campo.getId());
+		if (i == -1) {
+			campos.add(campo);
+			tam = tam + campo.getTipo().getTam();
+			return true;
+		}
+		else {
+			System.out.print("Error: El campo '" + campo.getId() + "' ya existe en su registro.");
+			return false;
+		}
 	}
 	
 	//Añadir un campo al registro

@@ -233,7 +233,8 @@ public class ALexico {
 									if (lex.equals("float") &&
 											(tokensOut.lastElement().getTipoToken() == tToken.dosPuntos || 
 											tokensOut.lastElement().getTipoToken() == tToken.ofT ||
-											tokensOut.lastElement().getTipoToken() == tToken.pointerT)) {
+											tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
+											tokensOut.lastElement().getTipoToken() == tToken.igual)) {
 										tokensOut.add(new Token(tToken.tipoVarReal));
 										iniciaScanner();
 										break;
@@ -704,7 +705,8 @@ public class ALexico {
 		if (palReservada.equals("boolean")) {
 			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos|| 
 					tokensOut.lastElement().getTipoToken() == tToken.ofT ||
-					tokensOut.lastElement().getTipoToken() == tToken.pointerT)
+					tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
+					tokensOut.lastElement().getTipoToken() == tToken.igual)
 				return new Token(tToken.tipoVarBooleano);
 			else {
 				error("Declaración incorrecta de tipo 'boolean'.");
@@ -714,7 +716,8 @@ public class ALexico {
 		if (palReservada.equals("character")) {
 			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos|| 
 					tokensOut.lastElement().getTipoToken() == tToken.ofT ||
-					tokensOut.lastElement().getTipoToken() == tToken.pointerT)
+					tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
+					tokensOut.lastElement().getTipoToken() == tToken.igual)
 				return new Token(tToken.tipoVarCaracter);
 			else {
 				error("Declaración incorrecta de tipo 'character'.");
@@ -724,7 +727,8 @@ public class ALexico {
 		if (palReservada.equals("natural")) {
 			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos|| 
 					tokensOut.lastElement().getTipoToken() == tToken.ofT ||
-					tokensOut.lastElement().getTipoToken() == tToken.pointerT)
+					tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
+					tokensOut.lastElement().getTipoToken() == tToken.igual)
 				return new Token(tToken.tipoVarNatural);
 			else {
 				error("Declaración incorrecta de tipo 'natural'.");
@@ -734,7 +738,8 @@ public class ALexico {
 		if (palReservada.equals("integer")) {
 			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos|| 
 					tokensOut.lastElement().getTipoToken() == tToken.ofT ||
-					tokensOut.lastElement().getTipoToken() == tToken.pointerT)
+					tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
+					tokensOut.lastElement().getTipoToken() == tToken.igual)
 				return new Token(tToken.tipoVarEntero);
 			else {
 				error("Declaración incorrecta de tipo 'integer'.");
@@ -911,7 +916,7 @@ public class ALexico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programa10.txt";
+		String nombreFichero = "Prueba33.txt";
 		
 		ALexico scanner = new ALexico();
 		
