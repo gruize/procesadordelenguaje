@@ -14,7 +14,6 @@ public class Copia extends InstruccionMaquinaP{
 			p.push(new MyExecutionError(MyExecutionError.STACK_ERROR,"Stack is empty"));
 			return -1;
 		}
-		
 		StackObject cop = p.pop().duplica();
 		p.push(cop);
 		StackObject cop2 = cop.duplica();

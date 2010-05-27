@@ -113,8 +113,16 @@ public abstract class InstruccionesMaquinaPConstantes {
 	public static final byte IR_A = 0X46;
 	public static final byte IR_V = 0X47;
 	public static final byte IR_F = 0X48;
-	public static final byte MUEVE = 0X50;
-	public static final byte COPIA = 0X51;
+	public static final byte IR_IND = 0X49;
+	public static final byte DESAPILA_IND_BOOLEAN= 0X50; 
+	public static final byte DESAPILA_IND_INTEGER= 0X51; 
+	public static final byte DESAPILA_IND_NATURAL= 0X52; 
+	public static final byte DESAPILA_IND_FLOAT= 0X53; 
+	public static final byte DESAPILA_IND_CHAR= 0X54;  
+	public static final byte NEW= 0X55; 
+	public static final byte DEL= 0X56; 
+	public static final byte MUEVE = 0X57;
+	public static final byte COPIA = 0X58;
 	
 	
 

@@ -33,7 +33,7 @@ public class Ir_v extends InstruccionMaquinaP{
 				return counter;
 			}
 			//sino incrementamos el contador en uno
-			else return counter + 1;
+			else return counter+1;
 		}
 		// error porque en la cima de la pila no hay un valor boolena
 		p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR,"Incorrect types"));
