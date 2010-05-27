@@ -317,10 +317,6 @@ public class ASintactico {
 		ParIdProps id_tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		id_tipo = dec(nivel);
-		//Según obtenemos el id junto con su reg tipo a insertar, comprobamos si tiene
-		//algún puntero con tipos pendientes, y si es así lo modificamos estableciendo
-		//su tipo correspondiente
-		contieneTipoPend(id_tipo.getProps());
 		if (tokActual.getTipoToken() == tToken.puntoyComa) {
 			if (id_tipo.getProps() != null)
 				errorDec1_dir = rdecs1(nivel, tam + id_tipo.getProps().getTam());
@@ -342,6 +338,12 @@ public class ASintactico {
 				return true;
 		}
 		else {
+			//Cuando ya hemos obtenido el id junto con su reg tipo a insertar, comprobamos si tiene
+			//algún puntero con tipos pendientes, y si es así lo modificamos estableciendo
+			//su tipo correspondiente
+			contieneTipoPend(id_tipo.getProps());
+			//Si el tamaño de la variable ha crecido con el cambio,
+			//lo actualizamos a la hora de insertar en la TS	
 			ts.anadeId(id_tipo.getId(), id_tipo.getProps(), tam, id_tipo.getClase(), id_tipo.getNivel());
 			// faltan dos emits
 			return false;
@@ -415,6 +417,12 @@ public class ASintactico {
 				return new ParBooleanInt(true, -1);
 		}
 		else {
+			//Cuando ya hemos obtenido el id junto con su reg tipo a insertar, comprobamos si tiene
+			//algún puntero con tipos pendientes, y si es así lo modificamos estableciendo
+			//su tipo correspondiente
+			contieneTipoPend(id_tipo.getProps());
+			//Si el tamaño de la variable ha crecido con el cambio,
+			//lo actualizamos a la hora de insertar en la TS	
 			ts.anadeId(id_tipo.getId(), id_tipo.getProps(), tam, id_tipo.getClase(), id_tipo.getNivel());
 			return new ParBooleanInt(false, errorDec1_dir1.getIntVal());
 		}
@@ -2531,7 +2539,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "prueba11.txt";
+		String nombreFichero = "prueba33.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
