@@ -34,9 +34,15 @@ public class Procedimiento extends PropsObjTS {
 		lParams = params;
 	}
 
-	public void añadeParam(tModo modo, PropsObjTS tipo) {
-		lParams.add(new Param(modo, tipo));
+	public void añadeParam(tModo modo, PropsObjTS tipo, String id, int tam) {
+		lParams.add(new Param(modo, tipo, id, tam));
 		//Esto es así??
-		//tam = tam + desp;
+		this.tam =+ tam;
+	}
+	
+	public void añadeParam(Param param) {
+		lParams.add(param);
+		//Esto es así??
+		this.tam =+ param.getTam();
 	}
 }

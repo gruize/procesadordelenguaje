@@ -299,7 +299,7 @@ public class ASintactico {
 			emit.emit(Emit.STOP);
 		}
 		else {
-			errorDec = decs(0, 0);
+			errorDec = decs(0, 0, 0);
 			//Ya tenemos la ts construida. Comprobamos si le queda algún tipo pendiente
 			//y lo sustituimos por su tipo real en cada caso
 			//contieneTipoPend(id_tipo.getProps());
@@ -323,15 +323,15 @@ public class ASintactico {
 		}
 	}
 	
-	public boolean decs(int nivel, int tam){
+	public boolean decs(int nivel, int tam, int etiq){
 		//Declaración de las variables necesarias
 		ParBooleanInt errorDec1_dir = new ParBooleanInt();
 		ParIdProps id_tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		id_tipo = dec(nivel);
+		id_tipo = dec(nivel, etiq);
 		if (tokActual.getTipoToken() == tToken.puntoyComa) {
 			if (id_tipo.getProps() != null)
-				errorDec1_dir = rdecs1(nivel, tam + id_tipo.getProps().getTam());
+				errorDec1_dir = rdecs1(nivel, tam + id_tipo.getProps().getTam(), id_tipo.getEtiq());
 			else
 				errorDec1_dir = new ParBooleanInt(true, -1);
 		}	
@@ -392,15 +392,15 @@ public class ASintactico {
 		}
 	}
 	
-	public ParBooleanInt rdecs1(int nivel, int tam) {
+	public ParBooleanInt rdecs1(int nivel, int tam, int etiq) {
 		ParIdProps id_tipo;
 		ParBooleanInt errorDec1_dir1 = new ParBooleanInt();
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.puntoyComa);
-		id_tipo = dec(nivel);
+		id_tipo = dec(nivel, etiq);
 		if (tokActual.getTipoToken() == tToken.puntoyComa) {
 			if (id_tipo.getProps() != null)
-				errorDec1_dir1 = rdecs1(nivel, tam + id_tipo.getProps().getTam());
+				errorDec1_dir1 = rdecs1(nivel, tam + id_tipo.getProps().getTam(), id_tipo.getEtiq());
 			else 
 				errorDec1_dir1 = new ParBooleanInt(true, -1);
 		}
@@ -433,7 +433,7 @@ public class ASintactico {
 			return new ParBooleanInt(false, tam);
 	}
 	
-	public ParIdProps dec(int nivel) {
+	public ParIdProps dec(int nivel, int etiq) {
 		//Declaración de las variables necesarias
 		
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -444,7 +444,7 @@ public class ASintactico {
 			return decTipo(nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.procedure) {
-			return decProc(nivel);
+			return decProc(nivel, etiq);
 		}
 		//Añadimos control de errores
 		errorProg = true;
@@ -681,21 +681,141 @@ public class ASintactico {
 		parOut.setId(consumeId().getLexema());
 		consume(tToken.igual);
 		parOut.setProps(tipoIden(parOut.getId(), false));
-		if (!errorProg && (existeIdTiposPen(parOut.id) == -1))
+		if (!errorProg && (existeIdTiposPen(parOut.getId()) == -1))
 			tiposPenTS.add(parOut);
 		return parOut;
 	}
 	
-	public ParIdProps decProc(int nivel) {
+	public ParIdProps decProc(int nivel, int etiq) {
+		ParIdProps parOut = new ParIdProps(tClase.procedimiento, nivel);
+		ObjProc oProc = new ObjProc (new Procedimiento(), 0, creaTS());
+		//Consumimos el token 'procedure'
+		consume(tToken.procedure);
+		parOut.setId(consumeId().getLexema());
+		//Llamada a dParams
+		oProc = dParams(nivel + 1, 2, oProc.getTsP(), oProc);
+		//Para la recursión
+		oProc.getTsP().anadeId(parOut.getId(), oProc.getProc(), oProc.getDir(), tClase.procedimiento, nivel + 1);
+		//Llamada a pBloque. Sumamos el número de emites del prólogo a la etiqueta. Son 13
+		oProc = pBloque(nivel + 1, oProc.getDir() + oProc.getProc().getTam(), oProc.getTsP(), etiq + 13, oProc);
+		//Inicializar la lista de pendientes??
+		parOut.setProps(oProc.getProc());
+		return parOut;
+	}
+	
+	public void prologo(int nivel, int tamLocales) {
+		emite("apila_dir(0)");
+		emite("apila(2)");
+		emite("suma");
+		emite("apila_dir(" + (1 + nivel) + ")");
+		emite("desapila-ind");
+		emite("apila_dir(0)");
+		emite("apila(3)");
+		emite("suma");
+		emite("desapila_dir(" + (1 + nivel) + ")");
+		emite("apila_dir(0)");
+		emite("apila(" + (tamLocales + 2) + ")");
+		emite("suma");
+		emite("desapila_dir(0)");
+	}
+	
+	public ObjProc pBloque(int nivel, int dir, TS tsP, int etiq, ObjProc oProc) {
 		
-//		ParString parOut = new ParString();
-//		parOut.setIden(consumeId().getLexema());
-//		consume(tToken.dosPuntos);
-//		parOut.setTipo(dametipoT(consumeTipo().getTipoToken()));
-//		return parOut;
 		
-		//return new ParIdProps();
-		return null;
+		if (tokActual.getTipoToken() == tToken.forward){
+			consume(tToken.forward);
+			
+			return oProc
+		}
+	}
+	
+	public ObjProc dParams(int nivel, int dir, TS tsP, ObjProc oProc) {
+		consume(tToken.parApertura);
+		oProc = listaParams(nivel, dir, tsP, oProc);
+		consume(tToken.parCierre);
+		return oProc;
+	}
+	
+	public ObjProc listaParams(int nivel, int dir, TS tsP, ObjProc oProc) {
+		ObjParam oParam;
+		oParam = param(dir);
+		if (tokActual.getTipoToken() == tToken.coma) {
+			oProc = rlistaparams(nivel, dir + oParam.getParam().getTam(), tsP, oProc);
+		}
+		if (!errorProg) {
+			tClase clase;
+			if (oParam.getParam().getModo() == tModo.variable)
+				clase = tClase.pVar;
+			else
+				clase = tClase.variable;
+			oProc.getTsP().anadeId(oParam.getParam().getId(), oParam.getParam().getTipo(), 
+					dir, clase, nivel);
+			oProc.getProc().añadeParam(oParam.getParam());
+		}
+		return oProc;
+	}
+	
+	public ObjProc rlistaparams(int nivel, int dir, TS tsP, ObjProc oProc) {
+		ObjParam oParam;
+		consume(tToken.coma);
+		oParam = param(dir);
+		if (tokActual.getTipoToken() == tToken.coma) {
+			oProc = rlistaparams(nivel, dir + oParam.getParam().getTam(), tsP, oProc);
+		}
+		if (!errorProg) {
+			tClase clase;
+			if (oParam.getParam().getModo() == tModo.variable)
+				clase = tClase.pVar;
+			else
+				clase = tClase.variable;
+			oProc.getTsP().anadeId(oParam.getParam().getId(), oParam.getParam().getTipo(), 
+					dir, clase, nivel);
+			oProc.getProc().añadeParam(oParam.getParam());
+		}
+		return oProc;
+	}
+	
+	public ObjParam param(int dir) {
+		Param param = new Param();
+		if (tokActual.getTipoToken() == tToken.var) {
+			param.setModo(tModo.variable);
+			consume(tToken.var);
+		}
+		else
+			param.setModo(tModo.valor);
+		//Necesitamos el siguiente iden de parámetro del vector de tokens
+		//antes de obtener el tipo, ya que es necesario introducir 
+		//los param con punteros que tengan tipos pendientes en su lista.
+		//Para ello llamamos a la función sigParam()
+		String nomParam = sigParam();
+		param.setTipo(tipoIden(nomParam, false));
+		param.setId(consumeId().getLexema());
+		param.setTam(param.getTipo().getTam());
+		return new ObjParam(param, dir + param.getTipo().getTam());
+	}
+	
+	public String sigParam() {
+		int i = contTokens + 1;
+		boolean encontrado = false;
+		while (!encontrado && i < tokensIn.size()) {
+			if (tokensIn.get(i).getTipoToken() == tToken.identificador
+					&& (tokensIn.get(i - 1).getTipoToken() == tToken.tipoVarBooleano
+						|| tokensIn.get(i - 1).getTipoToken() == tToken.tipoVarCaracter
+						|| tokensIn.get(i - 1).getTipoToken() == tToken.tipoVarEntero
+						|| tokensIn.get(i - 1).getTipoToken() == tToken.tipoVarNatural
+						|| tokensIn.get(i - 1).getTipoToken() == tToken.tipoVarReal
+						|| tokensIn.get(i - 1).getTipoToken() == tToken.identificador
+						|| tokensIn.get(i - 1).getTipoToken() == tToken.llaveCierre)) {
+				encontrado = true;
+			}
+			else
+				i++;
+		}
+		if (!encontrado) { 
+			errorProg = true;
+			return null;
+		}
+		return tokensIn.get(i).getLexema();
 	}
 	
 	public ParBooleanInt sents(int etiqIn) {
