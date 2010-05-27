@@ -1,6 +1,5 @@
 package interprete.instruccionesMV;
 
-import interprete.tipos.MyBoolean;
 import interprete.tipos.MyChar;
 import interprete.tipos.MyExecutionError;
 import interprete.tipos.MyNatural;

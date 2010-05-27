@@ -73,6 +73,16 @@ public abstract class InstruccionMaquinaP extends InstruccionesMaquinaPConstante
 			return DesapilaDirFloat.fromBytes(bytes, pos);
 		case DESAPILA_DIR_CHAR:
 			return DesapilaDirChar.fromBytes(bytes, pos);
+		case DESAPILA_IND_BOOLEAN:
+			return DesapilaIndBoolean.fromBytes(bytes, pos);
+		case DESAPILA_IND_NATURAL:
+			return DesapilaIndNatural.fromBytes(bytes, pos);
+		case DESAPILA_IND_INTEGER:
+			return DesapilaIndEntero.fromBytes(bytes, pos);
+		case DESAPILA_IND_FLOAT:
+			return DesapilaIndFloat.fromBytes(bytes, pos);
+		case DESAPILA_IND_CHAR:
+			return DesapilaIndChar.fromBytes(bytes, pos);
 		case LEER:
 			return Leer.fromBytes(bytes, pos);
 		case ESCRIBIR:
@@ -87,8 +97,14 @@ public abstract class InstruccionMaquinaP extends InstruccionesMaquinaPConstante
 			return Ir_f.fromBytes(bytes, pos);
 		case IR_V:
 				return Ir_v.fromBytes(bytes, pos);
+		case IR_IND:
+				return Ir_ind.fromBytes(bytes, pos);
 		case MUEVE:
 			return Mueve.fromBytes(bytes, pos);
+		case NEW:
+			return New.fromBytes(bytes, pos);
+		case DEL:
+			return Del.fromBytes(bytes, pos);
 		case COPIA:
 			return Copia.fromBytes(bytes, pos);
 		default:
