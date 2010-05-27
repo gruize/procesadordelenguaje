@@ -3,23 +3,33 @@ package analizadorSintactico;
 import tablaSimbolos.*;
 
 public class ParIdProps {
-	String id;
-	PropsObjTS props;
-	tClase clase;
-	int nivel;
-	
-	public ParIdProps(String id, PropsObjTS props, tClase clase, int nivel) {
-		this.id = id;
-		this.props = props;
-		this.clase = clase;
-		this.nivel = nivel;
-	}
+	private String id;
+	private PropsObjTS props;
+	private tClase clase;
+	private int nivel;
+	private int etiq;
 	
 	public ParIdProps(tClase clase, int nivel) {
 		this.id = new String();
 		this.clase = clase;
 		this.nivel = nivel;
 		//this.props = new PropsObjTS();
+	}
+	
+	public ParIdProps(String id, PropsObjTS props, tClase clase, int nivel) {
+		this.id = id;
+		this.props = props;
+		this.clase = clase;
+		this.nivel = nivel;
+		this.etiq = 0;
+	}
+	
+	public ParIdProps(String id, PropsObjTS props, tClase clase, int nivel, int etiq) {
+		this.id = id;
+		this.props = props;
+		this.clase = clase;
+		this.nivel = nivel;
+		this.etiq = etiq;
 	}
 	
 	public String getId() {
@@ -49,6 +59,14 @@ public class ParIdProps {
 
 	public void setNivel(int nivel) {
 		this.nivel = nivel;
+	}
+
+	public int getEtiq() {
+		return etiq;
+	}
+
+	public void setEtiq(int etiq) {
+		this.etiq = etiq;
 	}
 	
 }
