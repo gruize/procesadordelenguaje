@@ -45,4 +45,19 @@ public class Procedimiento extends PropsObjTS {
 		//Esto es así??
 		this.tam =+ param.getTam();
 	}
+	
+	public int existeParam(String id) {
+		boolean encontrado = false;
+		int i = 0;
+		while (!encontrado && (i < lParams.size())) {
+			if (lParams.get(i).getId().equals(id))
+				encontrado = true;
+			else
+				i++;
+		}
+		if (i==lParams.size())
+			return -1;
+		else
+			return i;
+	}
 }

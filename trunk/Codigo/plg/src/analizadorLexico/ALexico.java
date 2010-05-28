@@ -234,7 +234,10 @@ public class ALexico {
 											(tokensOut.lastElement().getTipoToken() == tToken.dosPuntos || 
 											tokensOut.lastElement().getTipoToken() == tToken.ofT ||
 											tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
-											tokensOut.lastElement().getTipoToken() == tToken.igual)) {
+											tokensOut.lastElement().getTipoToken() == tToken.igual ||
+											tokensOut.lastElement().getTipoToken() == tToken.parApertura ||
+											tokensOut.lastElement().getTipoToken() == tToken.coma ||
+											tokensOut.lastElement().getTipoToken() == tToken.var)) {
 										tokensOut.add(new Token(tToken.tipoVarReal));
 										iniciaScanner();
 										break;
@@ -706,7 +709,10 @@ public class ALexico {
 			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos|| 
 					tokensOut.lastElement().getTipoToken() == tToken.ofT ||
 					tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
-					tokensOut.lastElement().getTipoToken() == tToken.igual)
+					tokensOut.lastElement().getTipoToken() == tToken.igual ||
+					tokensOut.lastElement().getTipoToken() == tToken.parApertura ||
+					tokensOut.lastElement().getTipoToken() == tToken.coma ||
+					tokensOut.lastElement().getTipoToken() == tToken.var)
 				return new Token(tToken.tipoVarBooleano);
 			else {
 				error("Declaración incorrecta de tipo 'boolean'.");
@@ -717,7 +723,10 @@ public class ALexico {
 			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos|| 
 					tokensOut.lastElement().getTipoToken() == tToken.ofT ||
 					tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
-					tokensOut.lastElement().getTipoToken() == tToken.igual)
+					tokensOut.lastElement().getTipoToken() == tToken.igual ||
+					tokensOut.lastElement().getTipoToken() == tToken.parApertura ||
+					tokensOut.lastElement().getTipoToken() == tToken.coma ||
+					tokensOut.lastElement().getTipoToken() == tToken.var)
 				return new Token(tToken.tipoVarCaracter);
 			else {
 				error("Declaración incorrecta de tipo 'character'.");
@@ -728,7 +737,10 @@ public class ALexico {
 			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos|| 
 					tokensOut.lastElement().getTipoToken() == tToken.ofT ||
 					tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
-					tokensOut.lastElement().getTipoToken() == tToken.igual)
+					tokensOut.lastElement().getTipoToken() == tToken.igual ||
+					tokensOut.lastElement().getTipoToken() == tToken.parApertura ||
+					tokensOut.lastElement().getTipoToken() == tToken.coma ||
+					tokensOut.lastElement().getTipoToken() == tToken.var)
 				return new Token(tToken.tipoVarNatural);
 			else {
 				error("Declaración incorrecta de tipo 'natural'.");
@@ -739,7 +751,10 @@ public class ALexico {
 			if (tokensOut.lastElement().getTipoToken() == tToken.dosPuntos|| 
 					tokensOut.lastElement().getTipoToken() == tToken.ofT ||
 					tokensOut.lastElement().getTipoToken() == tToken.pointerT ||
-					tokensOut.lastElement().getTipoToken() == tToken.igual)
+					tokensOut.lastElement().getTipoToken() == tToken.igual ||
+					tokensOut.lastElement().getTipoToken() == tToken.parApertura ||
+					tokensOut.lastElement().getTipoToken() == tToken.coma ||
+					tokensOut.lastElement().getTipoToken() == tToken.var)
 				return new Token(tToken.tipoVarEntero);
 			else {
 				error("Declaración incorrecta de tipo 'integer'.");

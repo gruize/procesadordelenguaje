@@ -6,11 +6,23 @@ public class ObjProc {
 	private Procedimiento proc;
 	private int dir;
 	private TS tsP;
+	private int etiq;
+	private boolean forward;
 	
-	public ObjProc(Procedimiento proc, int dir, TS tsP) {
+	public ObjProc(Procedimiento proc, int dir, TS tsP, int etiq) {
 		this.proc = proc;
 		this.dir = dir;
 		this.tsP = tsP;
+		this.etiq = etiq;
+		this.forward = false;
+	}
+	
+	public ObjProc(Procedimiento proc, int dir, TS tsP, int etiq, boolean forward) {
+		this.proc = proc;
+		this.dir = dir;
+		this.tsP = tsP;
+		this.etiq = etiq;
+		this.forward = forward;
 	}
 
 	public Procedimiento getProc() {
@@ -36,6 +48,21 @@ public class ObjProc {
 	public void setTsP(TS tsP) {
 		this.tsP = tsP;
 	}
-	
+
+	public int getEtiq() {
+		return etiq;
+	}
+
+	public void setEtiq(int etiq) {
+		this.etiq = etiq;
+	}
+
+	public boolean isForward() {
+		return forward;
+	}
+
+	public void setForward(boolean forward) {
+		this.forward = forward;
+	}
 	
 }

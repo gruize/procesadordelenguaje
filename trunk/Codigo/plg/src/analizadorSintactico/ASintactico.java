@@ -23,7 +23,8 @@ public class ASintactico {
 	private Vector<String> instMPOut;
 	private boolean errorProg;
 	//Atributos del 2º Cuat
-	
+	private static final int longPrologo = 13;
+	private static final int longEpilogo = 13;
 	///////////////////////////////////////////////////////////////////
 	//						LISTAS DE PENDIENTES					 //
 	///////////////////////////////////////////////////////////////////
@@ -205,6 +206,7 @@ public class ASintactico {
 	@SuppressWarnings("unchecked")
 	public TS creaTS() {
 		return new TS((Hashtable<String, ObjTS>) ts.getTabla().clone());
+		//return new TS();
 	}
 	
 	//Hay que hacer un método que obtenga el array de tokens de entrada
@@ -283,15 +285,17 @@ public class ASintactico {
 	}*/
 	
 	public void programa(){ //PROGRAMA ::= DECS & SENTS
-		boolean errorDec, errorSent;
-		errorProg = errorDec = errorSent = false;
+		ParBooleanInt errorDec = new ParBooleanInt();
+		boolean errorSent;
+		errorProg = errorSent = false;
+		errorDec.setBooleanVal(false);
 		//////////////////////////////////////////////////////////////////////////
 		if (tokActual.getTipoToken() == tToken.separador) {
 		//////////////////////////////////////////////////////////////////////////
 			//Si no hay declaraciones, devolvemos sin error, y sin añadir nada a la TS
 			consume(tToken.separador);
 			//Lanzamos sents() con la etiqueta a 0, ya que es la primera vez que se llama
-			errorSent = sents(0).getBooleanVal();
+			errorSent = sents(0, ts, 0).getBooleanVal();
 			//La linea de abajo habría que cambiarla por esta:
 			//errorProg = errorDec || errorSent;
 			errorProg = errorProg || errorSent;
@@ -299,60 +303,61 @@ public class ASintactico {
 			emit.emit(Emit.STOP);
 		}
 		else {
-			errorDec = decs(0, 0, 0);
+			errorDec = decs(0, 0, 0, ts);
 			//Ya tenemos la ts construida. Comprobamos si le queda algún tipo pendiente
 			//y lo sustituimos por su tipo real en cada caso
 			//contieneTipoPend(id_tipo.getProps());
 			if (!errorProg)	
-				contieneTipoPendTS();
+				contieneTipoPendTS(ts);
 			consume(tToken.separador);
 			//Lanzamos sents() con la etiqueta a 0, ya que es la primera vez que se llama
-			errorSent = sents(0).getBooleanVal();
+			errorSent = sents(errorDec.getEtiq(), ts, 0).getBooleanVal();
 			//La linea de abajo habría que cambiarla por esta:
 			//errorProg = errorDec || errorSent;
-			errorProg = errorProg || errorDec || errorSent;
+			errorProg = errorProg || errorDec.getBooleanVal() || errorSent;
 			emite("stop");
 			emit.emit(Emit.STOP);
 		}
 	}
 	
-	public void contieneTipoPendTS() {
+	public void contieneTipoPendTS(TS ts) {
 		//Tenemos que recorrer las variables con tipos pendientes de la lista
 		for (int i = 0; i < listaPendientes.size(); i++) {
 			contieneTipoPend(ts.getTabla().get(listaPendientes.get(i)).getPropiedadesTipo());
 		}
 	}
 	
-	public boolean decs(int nivel, int tam, int etiq){
+	public ParBooleanInt decs(int nivel, int tam, int etiq, TS ts){
 		//Declaración de las variables necesarias
 		ParBooleanInt errorDec1_dir = new ParBooleanInt();
+		errorDec1_dir.setEtiq(etiq);
 		ParIdProps id_tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		id_tipo = dec(nivel, etiq);
 		if (tokActual.getTipoToken() == tToken.puntoyComa) {
 			if (id_tipo.getProps() != null)
-				errorDec1_dir = rdecs1(nivel, tam + id_tipo.getProps().getTam(), id_tipo.getEtiq());
+				errorDec1_dir = rdecs1(nivel, tam + id_tipo.getProps().getTam(), id_tipo.getEtiq(), ts);
 			else
 				errorDec1_dir = new ParBooleanInt(true, -1);
 		}	
 		else
 			if (id_tipo.getProps() != null)
-				errorDec1_dir = rdecs2(tam + id_tipo.getProps().getTam());
+				errorDec1_dir = rdecs2(tam + id_tipo.getProps().getTam(), id_tipo.getEtiq());
 			else
 				errorDec1_dir = new ParBooleanInt(true, -1);
 		if (errorDec1_dir.getBooleanVal() || ts.existeId(id_tipo.getId())) {
 			//if (ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
 			if (ts.existeId(id_tipo.getId())) {	
 				System.out.print("Error: El identificador '" + id_tipo.getId() + "' fue declarado previamente" + "\n");
-				return true;
+				return new ParBooleanInt(true, -1);
 			}
 			else
-				return true;
+				return new ParBooleanInt(true, -1);
 		}
 		else {
 			ts.anadeId(id_tipo.getId(), id_tipo.getProps(), tam, id_tipo.getClase(), id_tipo.getNivel());
 			// faltan dos emits
-			return false;
+			return new ParBooleanInt(false, errorDec1_dir.getIntVal(), errorDec1_dir.getEtiq());
 		}
 	}
 	
@@ -392,21 +397,22 @@ public class ASintactico {
 		}
 	}
 	
-	public ParBooleanInt rdecs1(int nivel, int tam, int etiq) {
+	public ParBooleanInt rdecs1(int nivel, int tam, int etiq, TS ts) {
 		ParIdProps id_tipo;
 		ParBooleanInt errorDec1_dir1 = new ParBooleanInt();
+		errorDec1_dir1.setEtiq(etiq);
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.puntoyComa);
 		id_tipo = dec(nivel, etiq);
 		if (tokActual.getTipoToken() == tToken.puntoyComa) {
 			if (id_tipo.getProps() != null)
-				errorDec1_dir1 = rdecs1(nivel, tam + id_tipo.getProps().getTam(), id_tipo.getEtiq());
+				errorDec1_dir1 = rdecs1(nivel, tam + id_tipo.getProps().getTam(), id_tipo.getEtiq(), ts);
 			else 
 				errorDec1_dir1 = new ParBooleanInt(true, -1);
 		}
 		else
 			if (id_tipo.getProps() != null)
-				errorDec1_dir1 = rdecs2(tam + id_tipo.getProps().getTam());
+				errorDec1_dir1 = rdecs2(tam + id_tipo.getProps().getTam(), id_tipo.getEtiq());
 			else
 				errorDec1_dir1 = new ParBooleanInt(true, -1);
 		//if (errorDec1_dir1.getBooleanVal() || ts.existeId(id_tipo.getId(), tClase.variable, new Integer(0))) {
@@ -420,17 +426,17 @@ public class ASintactico {
 		}
 		else {
 			ts.anadeId(id_tipo.getId(), id_tipo.getProps(), tam, id_tipo.getClase(), id_tipo.getNivel());
-			return new ParBooleanInt(false, errorDec1_dir1.getIntVal());
+			return new ParBooleanInt(false, errorDec1_dir1.getIntVal(), errorDec1_dir1.getEtiq());
 		}
 	}
 	
 	//Devolvemos el par: (error = false, dir = 0)
-	public ParBooleanInt rdecs2(int tam) {
+	public ParBooleanInt rdecs2(int tam, int etiq) {
 		//La tabla se crea en el constructor, sino la crearíamos aquí
 		if (errorProg)
 			return new ParBooleanInt(true, -1);
 		else
-			return new ParBooleanInt(false, tam);
+			return new ParBooleanInt(false, tam, etiq);
 	}
 	
 	public ParIdProps dec(int nivel, int etiq) {
@@ -688,7 +694,7 @@ public class ASintactico {
 	
 	public ParIdProps decProc(int nivel, int etiq) {
 		ParIdProps parOut = new ParIdProps(tClase.procedimiento, nivel);
-		ObjProc oProc = new ObjProc (new Procedimiento(), 0, creaTS());
+		ObjProc oProc = new ObjProc (new Procedimiento(), 0, creaTS(), etiq);
 		//Consumimos el token 'procedure'
 		consume(tToken.procedure);
 		parOut.setId(consumeId().getLexema());
@@ -697,9 +703,17 @@ public class ASintactico {
 		//Para la recursión
 		oProc.getTsP().anadeId(parOut.getId(), oProc.getProc(), oProc.getDir(), tClase.procedimiento, nivel + 1);
 		//Llamada a pBloque. Sumamos el número de emites del prólogo a la etiqueta. Son 13
-		oProc = pBloque(nivel + 1, oProc.getDir() + oProc.getProc().getTam(), oProc.getTsP(), etiq + 13, oProc);
+		oProc = pBloque(nivel + 1, oProc.getDir() + oProc.getProc().getTam(), oProc.getTsP(), etiq, oProc);
+		if (oProc == null) {
+			return null;
+		}
+		epilogo(nivel + 1);
+		emite("ir-ind");
+		//El + 1 es por el ir-ind
+		oProc.setEtiq(oProc.getEtiq() + longEpilogo + 1);
 		//Inicializar la lista de pendientes??
 		parOut.setProps(oProc.getProc());
+		parOut.setEtiq(oProc.getEtiq());
 		return parOut;
 	}
 	
@@ -719,14 +733,55 @@ public class ASintactico {
 		emite("desapila_dir(0)");
 	}
 	
+	public void epilogo(int nivel) {
+		emite("apila_dir(" + (1 + nivel) + ")");
+		emite("apila(2)");
+		emite("resta");
+		emite("apila-ind");
+		emite("apila_dir(" + (1 + nivel) + ")");
+		emite("apila(3)");
+		emite("resta");
+		emite("copia");
+		emite("desapila_dir(0)");
+		emite("apila(2)");
+		emite("suma");
+		emite("apila-ind");
+		emite("desapila_dir(" + (1 + nivel) + ")");
+	}
+	
 	public ObjProc pBloque(int nivel, int dir, TS tsP, int etiq, ObjProc oProc) {
-		
-		
 		if (tokActual.getTipoToken() == tToken.forward){
 			consume(tToken.forward);
-			
-			return oProc
+			oProc.setForward(true);
 		}
+		if (tokActual.getTipoToken() == tToken.llaveApertura) {
+			ParBooleanInt errorSent = new ParBooleanInt();
+			consume(tToken.llaveApertura);
+			if (tokActual.getTipoToken() == tToken.separador) {
+				consume(tToken.separador);
+				errorSent = sents(etiq, tsP, nivel);
+				if (errorSent.getBooleanVal())
+					errorProg = true;
+			}
+			else {
+				ParBooleanInt errorDec = new ParBooleanInt();
+				errorDec = decs(nivel, dir, etiq, tsP);
+				//Obtenemos los emits del prólogo
+				prologo(nivel, errorDec.getIntVal());
+				/////////////////////////////////
+				consume(tToken.separador);
+				errorSent = sents(errorDec.getEtiq() + longPrologo, tsP, nivel);
+				if (errorDec.getBooleanVal() || errorSent.getBooleanVal())
+					errorProg = true;
+			}
+			oProc.setEtiq(errorSent.getEtiq());
+			oProc.setForward(false);
+			consume(tToken.llaveCierre);
+		}
+		if (errorProg)
+			return null;
+		else
+			return oProc;
 	}
 	
 	public ObjProc dParams(int nivel, int dir, TS tsP, ObjProc oProc) {
@@ -748,9 +803,16 @@ public class ASintactico {
 				clase = tClase.pVar;
 			else
 				clase = tClase.variable;
-			oProc.getTsP().anadeId(oParam.getParam().getId(), oParam.getParam().getTipo(), 
-					dir, clase, nivel);
-			oProc.getProc().añadeParam(oParam.getParam());
+			int i = oProc.getProc().existeParam(oParam.getParam().getId());
+			if (i == -1) {
+				oProc.getTsP().anadeId(oParam.getParam().getId(), oParam.getParam().getTipo(), 
+						dir, clase, nivel);
+				oProc.getProc().añadeParam(oParam.getParam());
+			}
+			else {
+				errorProg = true;
+				System.out.println("Se intentó declarar un parámetro ya existente en el mismo procedimiento.\n");
+			}
 		}
 		return oProc;
 	}
@@ -768,9 +830,16 @@ public class ASintactico {
 				clase = tClase.pVar;
 			else
 				clase = tClase.variable;
-			oProc.getTsP().anadeId(oParam.getParam().getId(), oParam.getParam().getTipo(), 
-					dir, clase, nivel);
-			oProc.getProc().añadeParam(oParam.getParam());
+			int i = oProc.getProc().existeParam(oParam.getParam().getId());
+			if (i == -1) {
+				oProc.getTsP().anadeId(oParam.getParam().getId(), oParam.getParam().getTipo(), 
+						dir, clase, nivel);
+				oProc.getProc().añadeParam(oParam.getParam());
+			}
+			else {
+				errorProg = true;
+				System.out.println("Se intentó declarar un parámetro ya existente en el mismo procedimiento.\n");
+			}
 		}
 		return oProc;
 	}
@@ -811,21 +880,21 @@ public class ASintactico {
 			else
 				i++;
 		}
-		if (!encontrado) { 
+		if (!encontrado) {
 			errorProg = true;
 			return null;
 		}
 		return tokensIn.get(i).getLexema();
 	}
 	
-	public ParBooleanInt sents(int etiqIn) {
+	public ParBooleanInt sents(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		//boolean errorSent1, errorSent2 = false;
 		ParBooleanInt errorEtiq1, errorEtiq2;
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		errorEtiq1 = sent(etiqIn);
+		errorEtiq1 = sent(etiqIn, tsIn, nivel);
 		if (tokActual.getTipoToken() == tToken.puntoyComa)
-			errorEtiq2 = rsents1(errorEtiq1.getIntVal());
+			errorEtiq2 = rsents1(errorEtiq1.getIntVal(), tsIn, nivel);
 		else
 			errorEtiq2 = rsents2(errorEtiq1.getIntVal());
 		//return errorSent1 || errorSent2;
@@ -833,14 +902,14 @@ public class ASintactico {
 				errorEtiq2.getIntVal());
 	}
 	
-	public ParBooleanInt rsents1(int etiqIn) {
+	public ParBooleanInt rsents1(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParBooleanInt errorEtiq1, errorEtiq2;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.puntoyComa);
-		errorEtiq1 = sent(etiqIn);
+		errorEtiq1 = sent(etiqIn, tsIn, nivel);
 		if (tokActual.getTipoToken() == tToken.puntoyComa)
-			errorEtiq2 = rsents1(errorEtiq1.getIntVal());
+			errorEtiq2 = rsents1(errorEtiq1.getIntVal(), tsIn, nivel);
 		else
 			errorEtiq2 = rsents2(errorEtiq1.getIntVal());
 		return new ParBooleanInt(errorEtiq1.getBooleanVal() || errorEtiq2.getBooleanVal(),
@@ -858,36 +927,40 @@ public class ASintactico {
 			return new ParBooleanInt(false, etiqIn);
 	}
 	
-	public ParBooleanInt sent(int etiqIn) {
+	public ParBooleanInt sent(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.entradaTeclado) {
-			return sread(etiqIn);
+			return sread(etiqIn, tsIn, nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.salidaPantalla) {
-			return swrite(etiqIn);
+			return swrite(etiqIn, tsIn, nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.llaveApertura) {
-			return sbloque(etiqIn);
+			return sbloque(etiqIn, tsIn, nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.ifC) {
-			return sif(etiqIn);
+			return sif(etiqIn, tsIn, nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.whileC) {
-			return swhile(etiqIn);
+			return swhile(etiqIn, tsIn, nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.forC) {
-			return sfor(etiqIn);
+			return sfor(etiqIn, tsIn, nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.newM) {
-			return snew(etiqIn);
+			return snew(etiqIn, tsIn, nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.disposeM) {
-			return sdel(etiqIn);
+			return sdel(etiqIn, tsIn, nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.identificador) {
-			return sasign(etiqIn);
+			if (tsIn.existeProc(tokActual.getLexema()))
+			//Llamada al iCall
+				return null;
+			else
+				return sasign(etiqIn, tsIn, nivel);
 		}
 		//Añadimos control de errores
 		errorProg = true;
@@ -905,7 +978,7 @@ public class ASintactico {
 //		consume(tToken.puntoyComa);
 	}
 	
-	public ParBooleanInt swrite(int etiqIn) {
+	public ParBooleanInt swrite(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -915,7 +988,7 @@ public class ASintactico {
 		if (tokActual.getTipoToken() == tToken.parApertura) {
 			//Consumimos el parentesis de apertura y vamos con la expresión
 			consume(tToken.parApertura);
-			tipoEtiq = exp(etiqIn);
+			tipoEtiq = exp(etiqIn, tsIn, nivel);
 			///////////////////////////////////////////////////////////////
 			//Sólo se imprimen en pantalla expresiones que se resuelvan en un tipo básico
 			if (tipoEtiq.getTipo().getT() == tipoT.tError || !esTipoBasico(tipoEtiq.getTipo())) {
@@ -942,7 +1015,7 @@ public class ASintactico {
 	}
 	
 	//2º Cuatrimestre
-	public ParBooleanInt sread(int etiqIn) {
+	public ParBooleanInt sread(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		String lexIden = new String();
 		ParTipoEtiq tipoEtiq;
@@ -955,10 +1028,10 @@ public class ASintactico {
 			//Hacer referencia al mem
 			//Comprobar que el tipo es un tipo básico al final, sino no se puede hacer el read
 			if (tokActual.getTipoToken() == tToken.identificador &&
-					ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
+					tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel)) {
 				lexIden = tokActual.getLexema();
 				//Llamada a mem()
-				tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+				tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 				//Control de errores
 				if (!esTipoBasico(tipoEtiq.getTipo())) {
 					errorProg = true;
@@ -1037,21 +1110,22 @@ public class ASintactico {
 	}*/
 	
 	//Adaptación de la asignación al acceso a memoria
-	public ParBooleanInt sasign(int etiqIn) {
+	public ParBooleanInt sasign(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2;
 		String lexIden = new String();
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
-				//ts.existeId(tokActual.getLexema(), tClase.variable) {
+				(tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel))) {
+						//|| tsIn.existeId(tokActual.getLexema(), tClase.pVar, nivel))) {
+				//tsIn.existeId(tokActual.getLexema(), tClase.variable) {
 			lexIden = tokActual.getLexema();
 			//Llamada a mem()
-			tipoEtiq1 = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+			tipoEtiq1 = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 			//Una vez parseado el identificador vamos con el simbolo de la asignación
 			consume(tToken.asignacion);
 			//LLamada a epx()
-			tipoEtiq2 = exp(tipoEtiq1.getEtiq());
+			tipoEtiq2 = exp(tipoEtiq1.getEtiq(), tsIn, nivel);
 			//boolean compatibles = tiposCompatibles(new ParProps(tipoEtiq1.getTipo(), tipoEtiq2.getTipo()));
 			/////////////////////////////////////////////////////////////////////////
 			parTiposVisitados.clear();
@@ -1278,7 +1352,7 @@ public class ASintactico {
 			return false;
 	}
 	
-	public ParBooleanInt snew(int etiqIn) {
+	public ParBooleanInt snew(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		String lexIden;
@@ -1287,11 +1361,11 @@ public class ASintactico {
 		consume(tToken.newM);
 		//Lo siguiente debe ser una variable de tipo puntero
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
+				tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel)) {
 				//ts.existeId(tokActual.getLexema(), tClase.variable) {
 			lexIden = tokActual.getLexema();
 			//Llamada a mem()
-			tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+			tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 			if (tipoEtiq.getTipo().getT() == tipoT.puntero) {
 				//Hacemos los emites correspondientes al 'new'
 				emite("new(" + ((Puntero)tipoEtiq.getTipo()).getTBase().getTam() + ")");
@@ -1314,7 +1388,7 @@ public class ASintactico {
 		}
 	}
 	
-	public ParBooleanInt sdel(int etiqIn) {
+	public ParBooleanInt sdel(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		String lexIden;
@@ -1323,11 +1397,11 @@ public class ASintactico {
 		consume(tToken.disposeM);
 		//Lo siguiente debe ser una variable de tipo puntero
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
+				tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel)) {
 				//ts.existeId(tokActual.getLexema(), tClase.variable) {
 			lexIden = tokActual.getLexema();
 			//Llamada a mem()
-			tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+			tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 			if (tipoEtiq.getTipo().getT() == tipoT.puntero) {
 				//Hacemos los emites correspondientes al 'dispose'
 				emite("del(" + ((Puntero)tipoEtiq.getTipo()).getTBase().getTam() + ")");
@@ -1349,14 +1423,14 @@ public class ASintactico {
 		}
 	}
 	
-	public ParBooleanInt sbloque(int etiqIn) {
+	public ParBooleanInt sbloque(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParBooleanInt errorEtiq;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//Consumimos el token 'llave de apertura'
 		consume(tToken.llaveApertura);
 		//Llamada a sents()
-		errorEtiq = sents(etiqIn);
+		errorEtiq = sents(etiqIn, tsIn, nivel);
 		if (errorEtiq.getBooleanVal()) {
 			errorProg = true;
 			vaciaCod();
@@ -1370,7 +1444,7 @@ public class ASintactico {
 		}
 	}
 	
-	public ParBooleanInt sif(int etiqIn) {
+	public ParBooleanInt sif(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		//tSintetiz tipo; //Ahora necesitamos guardar tipo y etiqueta
 		ParTipoEtiq tipoEtiq = new ParTipoEtiq();
@@ -1379,7 +1453,7 @@ public class ASintactico {
 		//Consumimos el token del while
 		consume(tToken.ifC);
 		//LLamada a la epx()
-		tipoEtiq = exp(etiqIn);
+		tipoEtiq = exp(etiqIn, tsIn, nivel);
 		if (tipoEtiq.getTipo().getT() != tipoT.tBool) { 
 			errorProg = true;
 			vaciaCod();
@@ -1393,7 +1467,7 @@ public class ASintactico {
 			//Instrucción a parchear
 			emite("ir-f(?)");
 			//Llamada a la sentencia que conforma el cuerpo del if
-			errorEtiq1 = sent(tipoEtiq.getEtiq() + 1);
+			errorEtiq1 = sent(tipoEtiq.getEtiq() + 1, tsIn, nivel);
 			if (errorEtiq1.getBooleanVal()) {
 				errorProg = true;
 				vaciaCod();
@@ -1402,7 +1476,7 @@ public class ASintactico {
 			}
 			else {
 				//Llamada a pelse
-				errorEtiq2 = pelse(errorEtiq1.getIntVal());
+				errorEtiq2 = pelse(errorEtiq1.getIntVal(), tsIn, nivel);
 				if (errorEtiq2.getBooleanVal()) {
 					errorProg = true;
 					vaciaCod();
@@ -1426,7 +1500,7 @@ public class ASintactico {
 		}
 	}
 	
-	public ParBooleanInt pelse(int etiqIn) {
+	public ParBooleanInt pelse(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParBooleanInt errorEtiq;
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -1439,7 +1513,7 @@ public class ASintactico {
 			consume(tToken.elseC);
 			emite("ir-a(?)");
 			//Llamada a la sentencia que conforma el cuerpo del else
-			errorEtiq = sent(etiqIn + 1);
+			errorEtiq = sent(etiqIn + 1, tsIn, nivel);
 			if (errorEtiq.getBooleanVal()) {
 				errorProg = true;
 				vaciaCod();
@@ -1537,7 +1611,7 @@ public class ASintactico {
 		}
 	}*/
 	
-	public ParBooleanInt swhile(int etiqIn) {
+	public ParBooleanInt swhile(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		//tSintetiz tipo; //Ahora necesitamos guardar tipo y etiqueta
 		ParTipoEtiq tipoEtiq;
@@ -1546,7 +1620,7 @@ public class ASintactico {
 		//Consumimos el token del while
 		consume(tToken.whileC);
 		//LLamada a la epx()
-		tipoEtiq = exp(etiqIn);
+		tipoEtiq = exp(etiqIn, tsIn, nivel);
 		if (tipoEtiq.getTipo().getT() != tipoT.tBool) { 
 			errorProg = true;
 			vaciaCod();
@@ -1560,7 +1634,7 @@ public class ASintactico {
 			//Instrucción a parchear
 			emite("ir-f(?)");
 			//Llamada a la sentencia que conforma el cuerpo del while
-			errorEtiq = sent(tipoEtiq.getEtiq() + 1);
+			errorEtiq = sent(tipoEtiq.getEtiq() + 1, tsIn, nivel);
 			if (errorEtiq.getBooleanVal()) {
 				errorProg = true;
 				vaciaCod();
@@ -1579,7 +1653,7 @@ public class ASintactico {
 	}
 	
 	//For adaptado al acceso a memoria
-	public ParBooleanInt sfor(int etiqIn) {
+	public ParBooleanInt sfor(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		//tSintetiz tipo; //Ahora necesitamos guardar tipo y etiqueta, 1 variable para cada expresión
 		ParTipoEtiq tipoEtiq1, tipoEtiq2, tipoEtiq;
@@ -1589,10 +1663,10 @@ public class ASintactico {
 		//Consumimos el token del for
 		consume(tToken.forC);
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
+				tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel)) {
 			lexIden = tokActual.getLexema();
 			//Obtenemos el contador
-			tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+			tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 			//Realizamos tres copias a nivel de máquina a pila de la dirección asociada al mem().
 			//La primera para obtener su valor una vez hecho el 1º desapila-ind y poder compararlo
 			//de cara al for. La segunda copia para obtener el dato del contador e incrmentarlo.
@@ -1601,7 +1675,7 @@ public class ASintactico {
 			//Una vez parseado el contador vamos con el simbolo '='
 			consume(tToken.igual);
 			//LLamada a la 1ª epx()
-			tipoEtiq1 = exp(tipoEtiq.getEtiq() + 1);
+			tipoEtiq1 = exp(tipoEtiq.getEtiq() + 1, tsIn, nivel);
 			/////////////////////////////////////////////////////////////////////////
 			if (!(tipoEtiq1.getTipo().getT() == tipoT.tNat || tipoEtiq1.getTipo().getT() == tipoT.tInt) 
 					|| !tiposCompatiblesAsig(tipoEtiq.getTipo(), tipoEtiq1.getTipo())) {
@@ -1625,7 +1699,7 @@ public class ASintactico {
 				//Consumimos el token 'to'
 				consume(tToken.toC);
 				//LLamada a la 2ª epx()
-				tipoEtiq2 = exp(tipoEtiq1.getEtiq() + 3);
+				tipoEtiq2 = exp(tipoEtiq1.getEtiq() + 3, tsIn, nivel);
 				/////////////////////////////////////////////////////////////////////////
 				if (!(tipoEtiq2.getTipo().getT() == tipoT.tNat || tipoEtiq2.getTipo().getT() == tipoT.tInt) 
 						|| !tiposCompatiblesAsig(tipoEtiq.getTipo(), tipoEtiq2.getTipo())) {
@@ -1645,7 +1719,7 @@ public class ASintactico {
 					//Consumimos el token del 'do'
 					consume(tToken.doC);
 					//Llamada a la sentencia que conforma el cuerpo del for
-					errorEtiq = sent(tipoEtiq2.getEtiq() + 2);
+					errorEtiq = sent(tipoEtiq2.getEtiq() + 2, tsIn, nivel);
 					if (errorEtiq.getBooleanVal()) {
 						errorProg = true;
 						vaciaCod();
@@ -1793,14 +1867,14 @@ public class ASintactico {
 		System.out.print("Error: Se intentó parchear la siguiente instrucción: " + linAParchear + "." + "\n");
 	}
 	
-	public ParTipoEtiq mem(int etiqIn, PropsObjTS tipo) {
+	public ParTipoEtiq mem(int etiqIn, PropsObjTS tipo, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		//Para obtener el registro de propiedades de la TS
 		String lexIden;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.identificador &&
-				ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
+				tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel)) {
 			//Obtenemos el nombre del identificador
 			lexIden = tokActual.getLexema();
 			//Lo consumimos
@@ -1808,7 +1882,7 @@ public class ASintactico {
 			//Hacemos el emite correspondiente
 			emite("apila(" + ts.getTabla().get(lexIden).getDirM() + ")");
 			//Vamos con lo siguiente que puede venir tras un identificador
-			tipoEtiq = rmem(etiqIn + 1, tipo, lexIden);
+			tipoEtiq = rmem(etiqIn + 1, tipo, lexIden, tsIn, nivel);
 		}
 		else {
 			errorProg = true;
@@ -1819,13 +1893,13 @@ public class ASintactico {
 		return tipoEtiq;
 	}
 	
-	public ParTipoEtiq rmem(int etiqIn, PropsObjTS tipoIn, String lexId) {
+	public ParTipoEtiq rmem(int etiqIn, PropsObjTS tipoIn, String lexId, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq, tipoEtiq2;
 		PropsObjTS tipo = new ErrorT();
 		//Obtenemos el tipo real en caso de que la variable haga 
 		//referencia a un tipo previamente declarado
-		tipo = dameTipoRef(tipoIn);
+		tipo = dameTipoRef(tipoIn, tsIn);
 		//Vamos primero con los punteros
 		if (tokActual.getTipoToken() == tToken.puntero) {
 			//Comprobamos que el tipo actual es 'puntero' en la declaracion, sino error!!
@@ -1835,7 +1909,7 @@ public class ASintactico {
 				//Hacemos el emite correspondiente
 				emite("apila-ind");
 				//Vamos con lo siguiente que puede venir tras el puntero
-				tipoEtiq = rmem(etiqIn + 1, ((Puntero)tipo).getTBase(), lexId);
+				tipoEtiq = rmem(etiqIn + 1, ((Puntero)tipo).getTBase(), lexId, tsIn, nivel);
 				return tipoEtiq;
 			}
 			else {
@@ -1854,7 +1928,7 @@ public class ASintactico {
 				//Consumimos el token '['
 				consume(tToken.corApertura);
 				//Llamada a exp(), que debería finalizar con int o nat
-				tipoEtiq = exp(etiqIn);
+				tipoEtiq = exp(etiqIn, tsIn, nivel);
 				if (tipoEtiq.getTipo().getT() == tipoT.tInt || tipoEtiq.getTipo().getT() == tipoT.tNat) {
 					//Consumimos el token ']'
 					consume(tToken.corCierre);
@@ -1863,7 +1937,7 @@ public class ASintactico {
 					emite(tToken.multiplicacion.toString());
 					//No termino de entender este emit. Suma a la dir de la variable?
 					emite(tToken.suma.toString());
-					tipoEtiq2 = rmem(tipoEtiq.getEtiq() + 3, ((Array)tipo).getTBase(), lexId);
+					tipoEtiq2 = rmem(tipoEtiq.getEtiq() + 3, ((Array)tipo).getTBase(), lexId, tsIn, nivel);
 					return tipoEtiq2;
 				}
 				else {
@@ -1898,7 +1972,7 @@ public class ASintactico {
 						//Hacemos los emites correspondientes
 						emite("apila(" + ((Registro)tipo).getCampoI(i).getDesp() + ")");
 						emite(tToken.suma.toString());
-						tipoEtiq = rmem(etiqIn + 2, ((Registro)tipo).getCampoI(i).getTipo(), lexId);
+						tipoEtiq = rmem(etiqIn + 2, ((Registro)tipo).getCampoI(i).getTipo(), lexId, tsIn, nivel);
 						return tipoEtiq;
 					}
 					else {
@@ -1930,10 +2004,10 @@ public class ASintactico {
 		return new ParTipoEtiq(tipo, etiqIn);
 	}
 	
-	public PropsObjTS dameTipoRef(PropsObjTS tipoIn) {
+	public PropsObjTS dameTipoRef(PropsObjTS tipoIn, TS tsIn) {
 		if (tipoIn.getT() == tipoT.referencia) {
-			if (ts.existeTipo(((Referencia)tipoIn).getId()))
-				return dameTipoRef(ts.getTabla().get(((Referencia)tipoIn).getId()).getPropiedadesTipo());
+			if (tsIn.existeTipo(((Referencia)tipoIn).getId()))
+				return dameTipoRef(ts.getTabla().get(((Referencia)tipoIn).getId()).getPropiedadesTipo(), tsIn);
 			else
 				return new ErrorT();
 		}
@@ -1941,13 +2015,13 @@ public class ASintactico {
 			return tipoIn;
 	}
 	
-	public ParTipoEtiq exp(int etiqIn) {
+	public ParTipoEtiq exp(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2, tipoEtiqH;
 		//tipoT tipoH = tipoT.tError;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//LLamada a epx1()
-		tipoEtiq1 = exp1(etiqIn);
+		tipoEtiq1 = exp1(etiqIn, tsIn, nivel);
 		tipoEtiqH = tipoEtiq1;
 		if (tipoEtiq1.getTipo().getT() == tipoT.tError) {
 			errorProg = true;
@@ -1957,7 +2031,7 @@ public class ASintactico {
 		}
 		else {
 			if (esTokenOp0(tokActual.getTipoToken())) {
-				tipoEtiq2 = rexp1(tipoEtiqH);
+				tipoEtiq2 = rexp1(tipoEtiqH, tsIn, nivel);
 				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
@@ -1974,7 +2048,7 @@ public class ASintactico {
 		}
 	}
 	
-	public ParTipoEtiq rexp1(ParTipoEtiq tipoEtiqH) {
+	public ParTipoEtiq rexp1(ParTipoEtiq tipoEtiqH, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		//tipoT tipo;
@@ -1983,7 +2057,7 @@ public class ASintactico {
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//Necesitamos obtener el operador concreto
 		op = op0();
-		tipoEtiq = exp1(tipoEtiqH.getEtiq());
+		tipoEtiq = exp1(tipoEtiqH.getEtiq(), tsIn, nivel);
 		tipo = dameTipo(tipoEtiqH.getTipo(), tipoEtiq.getTipo(), op);
 		if (tipo.getT() == tipoT.tError) {
 			errorProg = true;
@@ -2014,15 +2088,15 @@ public class ASintactico {
 		}	
 	}
 	
-	public ParTipoEtiq exp1(int etiqIn) {
+	public ParTipoEtiq exp1(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2, tipoEtiqH;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//LLamada a epx2()
-		tipoEtiq1 = exp2(etiqIn);
+		tipoEtiq1 = exp2(etiqIn, tsIn, nivel);
 		tipoEtiqH = tipoEtiq1;
 		if (esTokenOp1(tokActual.getTipoToken())) {
-			tipoEtiq2 = rexp11(tipoEtiqH);
+			tipoEtiq2 = rexp11(tipoEtiqH, tsIn, nivel);
 			if (tipoEtiq1.getTipo().getT() == tipoT.tError || tipoEtiq2.getTipo().getT() == tipoT.tError) {
 				errorProg = true;
 				vaciaCod();
@@ -2039,7 +2113,7 @@ public class ASintactico {
 	}
 	
 	//Definición con el cortocircuito para 'or'
-	public ParTipoEtiq rexp11(ParTipoEtiq tipoEtiqH) {
+	public ParTipoEtiq rexp11(ParTipoEtiq tipoEtiqH, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2;
 		PropsObjTS tipoH1;
@@ -2049,14 +2123,14 @@ public class ASintactico {
 		op = op1();
 		//Si no es una oLogica, actuamos como siempre
 		if (op != tOp.oLogica) {
-			tipoEtiq1 = exp2(tipoEtiqH.getEtiq());
+			tipoEtiq1 = exp2(tipoEtiqH.getEtiq(), tsIn, nivel);
 			tipoH1 = dameTipo(tipoEtiqH.getTipo(), tipoEtiq1.getTipo(), op);
 			if (tipoH1.getT() != tipoT.tError) {
 				emite(op.toString());
 				emit.emit(opUtils.getOperationCode(op));
 			}
 			if (esTokenOp1(tokActual.getTipoToken())) {
-				tipoEtiq2 = rexp11(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1));
+				tipoEtiq2 = rexp11(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1), tsIn, nivel);
 				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
@@ -2081,10 +2155,10 @@ public class ASintactico {
 			emite("copia");
 			emite("ir-v(?)");
 			emite("desapila");
-			tipoEtiq1 = exp2(tipoEtiqH.getEtiq() + 3);
+			tipoEtiq1 = exp2(tipoEtiqH.getEtiq() + 3, tsIn, nivel);
 			tipoH1 = dameTipo(tipoEtiqH.getTipo(), tipoEtiq1.getTipo(), op);
 			if (esTokenOp1(tokActual.getTipoToken())) {
-				tipoEtiq2 = rexp11(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq()));
+				tipoEtiq2 = rexp11(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq()), tsIn, nivel);
 				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
@@ -2143,15 +2217,15 @@ public class ASintactico {
 		}
 	}*/
 	
-	public ParTipoEtiq exp2(int etiqIn) {
+	public ParTipoEtiq exp2(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2, tipoEtiqH;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		//LLamada a epx3()
-		tipoEtiq1 = exp3(etiqIn);
+		tipoEtiq1 = exp3(etiqIn, tsIn, nivel);
 		tipoEtiqH = tipoEtiq1;
 		if (esTokenOp2(tokActual.getTipoToken())) {
-			tipoEtiq2 = rexp21(tipoEtiqH);
+			tipoEtiq2 = rexp21(tipoEtiqH, tsIn, nivel);
 			if (tipoEtiq1.getTipo().getT() == tipoT.tError || tipoEtiq2.getTipo().getT() == tipoT.tError) {
 				errorProg = true;
 				vaciaCod();
@@ -2168,7 +2242,7 @@ public class ASintactico {
 	}
 	
 	//Definición con el cortocircuito para 'and'
-	public ParTipoEtiq rexp21(ParTipoEtiq tipoEtiqH) {
+	public ParTipoEtiq rexp21(ParTipoEtiq tipoEtiqH, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2;
 		PropsObjTS tipoH1;
@@ -2178,14 +2252,14 @@ public class ASintactico {
 		op = op2();
 		//Si no es una yLogica, actuamos como siempre
 		if (op != tOp.yLogica) {
-			tipoEtiq1 = exp3(tipoEtiqH.getEtiq());
+			tipoEtiq1 = exp3(tipoEtiqH.getEtiq(), tsIn, nivel);
 			tipoH1 = dameTipo(tipoEtiqH.getTipo(), tipoEtiq1.getTipo(), op);
 			if (tipoH1.getT() != tipoT.tError) {
 				emite(op.toString());
 				emit.emit(opUtils.getOperationCode(op));
 			}
 			if (esTokenOp2(tokActual.getTipoToken())) {
-				tipoEtiq2 = rexp21(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1));
+				tipoEtiq2 = rexp21(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq() + 1), tsIn, nivel);
 				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
@@ -2208,10 +2282,10 @@ public class ASintactico {
 		//para el cortocircuito
 		else {
 			emite("ir-f(?)");
-			tipoEtiq1 = exp3(tipoEtiqH.getEtiq() + 1);
+			tipoEtiq1 = exp3(tipoEtiqH.getEtiq() + 1, tsIn, nivel);
 			tipoH1 = dameTipo(tipoEtiqH.getTipo(), tipoEtiq1.getTipo(), op);
 			if (esTokenOp2(tokActual.getTipoToken())) {
-				tipoEtiq2 = rexp21(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq()));
+				tipoEtiq2 = rexp21(new ParTipoEtiq(tipoH1, tipoEtiq1.getEtiq()), tsIn, nivel);
 				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
@@ -2275,17 +2349,17 @@ public class ASintactico {
 		}
 	}*/
 	
-	public ParTipoEtiq exp3(int etiqIn) {
+	public ParTipoEtiq exp3(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq1, tipoEtiq2, tipoEtiqH;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		if (tokActual.getTipoToken() == tToken.opVAbs)
-			tipoEtiq1 = exp42(etiqIn);
+			tipoEtiq1 = exp42(etiqIn, tsIn, nivel);
 		else
 			if (esTokenOp41(tokActual.getTipoToken()))
-				tipoEtiq1 = exp41(etiqIn);
+				tipoEtiq1 = exp41(etiqIn, tsIn, nivel);
 			else
-				tipoEtiq1 = exp43(etiqIn);
+				tipoEtiq1 = exp43(etiqIn, tsIn, nivel);
 //Antes
 //		else
 //			tipo1 = exp43();
@@ -2299,7 +2373,7 @@ public class ASintactico {
 		else {
 			//Aquí es donde venía esta signación => 'tipoH = tipo1;' Se opta por poner arriba
 			if (esTokenOp3(tokActual.getTipoToken())) {
-				tipoEtiq2 = rexp31(tipoEtiqH);
+				tipoEtiq2 = rexp31(tipoEtiqH, tsIn, nivel);
 				if (tipoEtiq2.getTipo().getT() == tipoT.tError) {
 					errorProg = true;
 					vaciaCod();
@@ -2316,14 +2390,14 @@ public class ASintactico {
 		}
 	}
 	
-	public ParTipoEtiq rexp31(ParTipoEtiq tipoEtiqH) {
+	public ParTipoEtiq rexp31(ParTipoEtiq tipoEtiqH, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		PropsObjTS tipo;
 		tOp op;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		op = op3();
-		tipoEtiq = exp3(tipoEtiqH.getEtiq());
+		tipoEtiq = exp3(tipoEtiqH.getEtiq(), tsIn, nivel);
 		tipo = dameTipo(tipoEtiq.getTipo(), tipoEtiqH.getTipo(), op);
 		if (tipo.getT() == tipoT.tError) {
 			errorProg = true;
@@ -2338,14 +2412,14 @@ public class ASintactico {
 		}
 	}
 	
-	public ParTipoEtiq exp41(int etiqIn) {
+	public ParTipoEtiq exp41(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		PropsObjTS tipo;
 		tOp op;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		op = op41();
-		tipoEtiq = term(etiqIn);
+		tipoEtiq = term(etiqIn, tsIn, nivel);
 		tipo = dameTipo(tipoEtiq.getTipo(), op);
 		if (tipo.getT() == tipoT.tError) {
 			errorProg = true;
@@ -2360,14 +2434,14 @@ public class ASintactico {
 		}
 	}
 	
-	public ParTipoEtiq exp42(int etiqIn) {
+	public ParTipoEtiq exp42(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		PropsObjTS tipo;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.opVAbs);
 		//tipo1 = term();
-		tipoEtiq = exp(etiqIn);
+		tipoEtiq = exp(etiqIn, tsIn, nivel);
 		tipo = dameTipo(tipoEtiq.getTipo(), tOp.opVAbs);
 		if (tipo.getT() == tipoT.tError) {
 			errorProg = true;
@@ -2383,15 +2457,15 @@ public class ASintactico {
 		}
 	}
 	
-	public ParTipoEtiq exp43(int etiqIn) {
+	public ParTipoEtiq exp43(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		//Cuerpo asociado a la funcionalidad de los no terminales
-		tipoEtiq = term(etiqIn);
+		tipoEtiq = term(etiqIn, tsIn, nivel);
 		return tipoEtiq;
 	}
 	
-	public ParTipoEtiq term(int etiqIn) {
+	public ParTipoEtiq term(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		//Cuerpo asociado a la funcionalidad de los no terminales
@@ -2411,8 +2485,8 @@ public class ASintactico {
 		//un identificador
 		if (tokActual.getTipoToken() == tToken.identificador) {
 			//OBTENEMOS EL TIPO DEL IDENTIFICADOR A PARTIR DE LA TS//
-			if (ts.existeId(tokActual.getLexema(), tClase.variable, 0)) {
-				tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo());
+			if (tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel)) {
+				tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 				//if (tipoEtiq.getTipo().getT() == tipoT.array || tipoEtiq.getTipo().getT() == tipoT.registro)
 				if (!esTipoBasico(tipoEtiq.getTipo()))
 					return tipoEtiq;
@@ -2425,7 +2499,7 @@ public class ASintactico {
 			//return term6(etiqIn);
 		}
 		if (tokActual.getTipoToken() == tToken.parApertura)
-			return term7(etiqIn);
+			return term7(etiqIn, tsIn, nivel);
 		return new ParTipoEtiq(new ErrorT(), etiqIn);
 	}
 	
@@ -2498,12 +2572,12 @@ public class ASintactico {
 		}
 	}*/
 	
-	public ParTipoEtiq term7(int etiqIn) {
+	public ParTipoEtiq term7(int etiqIn, TS tsIn, int nivel) {
 		//Declaración de las variables necesarias
 		ParTipoEtiq tipoEtiq;
 		//Cuerpo asociado a la funcionalidad de los no terminales
 		consume(tToken.parApertura);
-		tipoEtiq = exp(etiqIn);
+		tipoEtiq = exp(etiqIn, tsIn, nivel);
 		consume(tToken.parCierre);
 		return tipoEtiq;
 	}
@@ -2807,7 +2881,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "prueba11.txt";
+		String nombreFichero = "prueba32.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
