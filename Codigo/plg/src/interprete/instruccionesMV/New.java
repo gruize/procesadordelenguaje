@@ -24,6 +24,19 @@ public class New extends InstruccionMaquinaP{
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Null size"));
 			return -1;
 		}
+		
+		//La idea es llamar a la función memoria.DameNew(pos) que nos devuelva la posición.
+		StackObject orig = new MyInteger();
+		Integer pos= m.newPosicion(tam);
+		if ( pos.intValue()==-1){
+			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Stack overflow"));
+			return -1;
+		}
+		else
+			orig.setValue(pos);
+			p.push(orig);
+			return counter+1;
+		/*
 		//recalculamos el nuevo límite del heap
 		Integer pos = m.getMinHeap();
 		pos = pos - this.tam;
@@ -40,7 +53,7 @@ public class New extends InstruccionMaquinaP{
 		else {
 			p.push(new MyExecutionError(MyExecutionError.OPERATION_ERROR, "Stack overflow"));
 			return -1;
-		}
+		}*/
 	}
 	
 	public int size(){

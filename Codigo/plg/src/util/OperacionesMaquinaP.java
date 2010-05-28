@@ -25,12 +25,22 @@ public enum OperacionesMaquinaP {
 	APILA_DIR, // Tiene un parametro que es la direccion
 	DESAPILA, // no Tiene parametro
 	DESAPILA_DIR, // Tiene un parametro que es una direccion
+	DESAPILA_IND,
 	LEER,
 	ESCRIBIR,
-	APILA_IND,
-	IR_A,
-	IR_F,
-	IR_V,
-	MUEVE,
-	COPIA
+	APILA_IND, // Sin parametro
+	IR_A,// 1 parámetro dirección destino
+	IR_F,// 1 parámetro dirección destino si salto
+	IR_V,// 1 parámetro dirección destino si salto
+	IR_IND,//Sin parametro
+	MUEVE,//1 parametro tamaño a desplazar
+	COPIA, // sin parámetro, se duplica la cima de la pila
+	NEW,
+	DEL,
+	DESAPILA_IND_FLOAT,
+	DESAPILA_INT_NATURAL,
+	DESAPILA_INT_ENTERO,
+	DESAPILA_INT_CHAR,
+	DESAPILA_INT_BOOLEAN
+	
 }
