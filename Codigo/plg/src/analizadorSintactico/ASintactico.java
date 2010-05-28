@@ -25,6 +25,7 @@ public class ASintactico {
 	//Atributos del 2º Cuat
 	private static final int longPrologo = 13;
 	private static final int longEpilogo = 13;
+	private static final int longApilaRet = 13;
 	///////////////////////////////////////////////////////////////////
 	//						LISTAS DE PENDIENTES					 //
 	///////////////////////////////////////////////////////////////////
@@ -751,6 +752,14 @@ public class ASintactico {
 		emite("desapila_dir(" + (1 + nivel) + ")");
 	}
 	
+	public void apilaRet() {
+		emite("apila_dir(0)");
+		emite("apila(1)");
+		emite("suma");
+		emite("apila(" + "?" + ")");
+		emite("desapila-ind");
+	}
+	
 	public ObjProc pBloque(int nivel, int dir, TS tsP, int etiq, ObjProc oProc) {
 		if (tokActual.getTipoToken() == tToken.forward){
 			consume(tToken.forward);
@@ -959,9 +968,10 @@ public class ASintactico {
 			return sdel(etiqIn, tsIn, nivel);
 		}
 		if (tokActual.getTipoToken() == tToken.identificador) {
-			if (tsIn.existeProc(tokActual.getLexema()))
-			//Llamada al iCall
-				return null;
+			if (tsIn.existeProc(tokActual.getLexema())) {
+			//Llamada al procedimiento
+				return scall(etiqIn, tsIn, nivel);
+			}
 			else
 				return sasign(etiqIn, tsIn, nivel);
 		}
@@ -979,6 +989,23 @@ public class ASintactico {
 				"Token en análisis: " + tokActual.getTipoToken() + "\n");
 		return new ParBooleanInt(true, etiqIn);
 //		consume(tToken.puntoyComa);
+	}
+	
+	//Llamada a los procedimientos
+	///////////////////////////////////////////////////////////
+	// NO ESTÁ TERMINADO!!!!!!!!!!!!!!!!!!!!
+	///////////////////////////////////////////////////////////
+	public ParBooleanInt scall(int etiqIn, TS tsIn, int nivel) {
+		//Consumimos el token de los procedimientos
+		consume(tToken.identificador);
+		if (tokActual.getTipoToken() != tToken.parApertura) {
+			apilaRet();
+		}
+		consume(tToken.parApertura);
+		
+		//Leemos los parámetros que nos vienen con la llamada
+		
+		return new ParBooleanInt(true, etiqIn);
 	}
 	
 	public ParBooleanInt swrite(int etiqIn, TS tsIn, int nivel) {
@@ -1867,6 +1894,11 @@ public class ASintactico {
 			instMPOut.setElementAt(linAParchear, nLinea);
 			return;
 		}
+		if (linAParchear.equals("apila-ret(?)")) {
+			linAParchear = "apila-ret(" + etiq + ")";
+			instMPOut.setElementAt(linAParchear, nLinea);
+			return;
+		}
 		System.out.print("Error: Se intentó parchear la siguiente instrucción: " + linAParchear + "." + "\n");
 	}
 	
@@ -2363,9 +2395,7 @@ public class ASintactico {
 				tipoEtiq1 = exp41(etiqIn, tsIn, nivel);
 			else
 				tipoEtiq1 = exp43(etiqIn, tsIn, nivel);
-//Antes
-//		else
-//			tipo1 = exp43();
+
 		tipoEtiqH = tipoEtiq1;
 		if (tipoEtiqH.getTipo().getT() == tipoT.tError) {
 			errorProg = true;
@@ -2614,7 +2644,7 @@ public class ASintactico {
 		if (esOp2(op)) {
 			switch (op) {
 			case yLogica:
-				if (tipoEXPIzq.getT() == tipoT.tBool && tipoEXPIzq == tipoEXPDer)
+				if (tipoEXPIzq.getT() == tipoT.tBool && tipoEXPIzq.getT() == tipoEXPDer.getT())
 					return new Booleano();
 				else
 					return new ErrorT();
@@ -2889,7 +2919,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "programaPlantilla.txt";
+		String nombreFichero = "programa10.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();
