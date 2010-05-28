@@ -13,7 +13,7 @@ public class Memoria {
 	public Memoria(){
 		memoria=new Vector<StackObject>();
 		max = 1000;
-		memoria.setSize(max);
+		memoria.setSize(max+1);
 		maxStatic = 0;
 		minHeap = max;
 		ocupados_heap=new Vector<Integer>();
@@ -44,8 +44,9 @@ public class Memoria {
 			}			
 		}
 		for (int i=0; i<tam.intValue();i++){
-			ocupados_heap.remove((Integer)pos + i);
-			memoria.remove((Integer)pos + i);
+			ocupados_heap.removeElement((Integer)pos + i);
+			//ocupados_heap.remove((int)pos + i);
+			memoria.removeElement((Integer)pos + i);
 		}// En caso de que se borre la posción minimo del heap se actualiza a la nueva.
 		if ( pos.intValue() ==(Integer)this.getMinHeap().intValue()){
 			this.setMinHeap((Integer)(pos.intValue()+tam.intValue()));			
