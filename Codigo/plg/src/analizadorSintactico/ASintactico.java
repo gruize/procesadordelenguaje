@@ -711,9 +711,11 @@ public class ASintactico {
 		emite("ir-ind");
 		//El + 1 es por el ir-ind
 		oProc.setEtiq(oProc.getEtiq() + longEpilogo + 1);
+		//oProc.getProc()
 		//Inicializar la lista de pendientes??
 		parOut.setProps(oProc.getProc());
 		parOut.setEtiq(oProc.getEtiq());
+		
 		return parOut;
 	}
 	
@@ -769,6 +771,7 @@ public class ASintactico {
 				//Obtenemos los emits del prólogo
 				prologo(nivel, errorDec.getIntVal());
 				/////////////////////////////////
+				contieneTipoPendTS(tsP);
 				consume(tToken.separador);
 				errorSent = sents(errorDec.getEtiq() + longPrologo, tsP, nivel);
 				if (errorDec.getBooleanVal() || errorSent.getBooleanVal())
@@ -1031,7 +1034,7 @@ public class ASintactico {
 					tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel)) {
 				lexIden = tokActual.getLexema();
 				//Llamada a mem()
-				tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
+				tipoEtiq = mem(etiqIn, tsIn.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 				//Control de errores
 				if (!esTipoBasico(tipoEtiq.getTipo())) {
 					errorProg = true;
@@ -1121,7 +1124,7 @@ public class ASintactico {
 				//tsIn.existeId(tokActual.getLexema(), tClase.variable) {
 			lexIden = tokActual.getLexema();
 			//Llamada a mem()
-			tipoEtiq1 = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
+			tipoEtiq1 = mem(etiqIn, tsIn.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 			//Una vez parseado el identificador vamos con el simbolo de la asignación
 			consume(tToken.asignacion);
 			//LLamada a epx()
@@ -1365,7 +1368,7 @@ public class ASintactico {
 				//ts.existeId(tokActual.getLexema(), tClase.variable) {
 			lexIden = tokActual.getLexema();
 			//Llamada a mem()
-			tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
+			tipoEtiq = mem(etiqIn, tsIn.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 			if (tipoEtiq.getTipo().getT() == tipoT.puntero) {
 				//Hacemos los emites correspondientes al 'new'
 				emite("new(" + ((Puntero)tipoEtiq.getTipo()).getTBase().getTam() + ")");
@@ -1401,7 +1404,7 @@ public class ASintactico {
 				//ts.existeId(tokActual.getLexema(), tClase.variable) {
 			lexIden = tokActual.getLexema();
 			//Llamada a mem()
-			tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
+			tipoEtiq = mem(etiqIn, tsIn.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 			if (tipoEtiq.getTipo().getT() == tipoT.puntero) {
 				//Hacemos los emites correspondientes al 'dispose'
 				emite("del(" + ((Puntero)tipoEtiq.getTipo()).getTBase().getTam() + ")");
@@ -1666,7 +1669,7 @@ public class ASintactico {
 				tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel)) {
 			lexIden = tokActual.getLexema();
 			//Obtenemos el contador
-			tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
+			tipoEtiq = mem(etiqIn, tsIn.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 			//Realizamos tres copias a nivel de máquina a pila de la dirección asociada al mem().
 			//La primera para obtener su valor una vez hecho el 1º desapila-ind y poder compararlo
 			//de cara al for. La segunda copia para obtener el dato del contador e incrmentarlo.
@@ -1880,7 +1883,7 @@ public class ASintactico {
 			//Lo consumimos
 			consume(tToken.identificador);
 			//Hacemos el emite correspondiente
-			emite("apila(" + ts.getTabla().get(lexIden).getDirM() + ")");
+			emite("apila(" + tsIn.getTabla().get(lexIden).getDirM() + ")");
 			//Vamos con lo siguiente que puede venir tras un identificador
 			tipoEtiq = rmem(etiqIn + 1, tipo, lexIden, tsIn, nivel);
 		}
@@ -2007,7 +2010,7 @@ public class ASintactico {
 	public PropsObjTS dameTipoRef(PropsObjTS tipoIn, TS tsIn) {
 		if (tipoIn.getT() == tipoT.referencia) {
 			if (tsIn.existeTipo(((Referencia)tipoIn).getId()))
-				return dameTipoRef(ts.getTabla().get(((Referencia)tipoIn).getId()).getPropiedadesTipo(), tsIn);
+				return dameTipoRef(tsIn.getTabla().get(((Referencia)tipoIn).getId()).getPropiedadesTipo(), tsIn);
 			else
 				return new ErrorT();
 		}
@@ -2486,7 +2489,7 @@ public class ASintactico {
 		if (tokActual.getTipoToken() == tToken.identificador) {
 			//OBTENEMOS EL TIPO DEL IDENTIFICADOR A PARTIR DE LA TS//
 			if (tsIn.existeId(tokActual.getLexema(), tClase.variable, nivel)) {
-				tipoEtiq = mem(etiqIn, ts.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
+				tipoEtiq = mem(etiqIn, tsIn.getTabla().get(tokActual.getLexema()).getPropiedadesTipo(), tsIn, nivel);
 				//if (tipoEtiq.getTipo().getT() == tipoT.array || tipoEtiq.getTipo().getT() == tipoT.registro)
 				if (!esTipoBasico(tipoEtiq.getTipo()))
 					return tipoEtiq;
@@ -2500,6 +2503,11 @@ public class ASintactico {
 		}
 		if (tokActual.getTipoToken() == tToken.parApertura)
 			return term7(etiqIn, tsIn, nivel);
+		if (tokActual.getTipoToken() == tToken.nullM) {
+			//Si reconocemos el token null, apilamos un null
+			emite("apila(null)");
+			return new ParTipoEtiq(new Null(), etiqIn);
+		}
 		return new ParTipoEtiq(new ErrorT(), etiqIn);
 	}
 	
@@ -2881,7 +2889,7 @@ public class ASintactico {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String nombreFichero = "prueba32.txt";
+		String nombreFichero = "programaPlantilla.txt";
 		
 		ALexico scanner = new ALexico();
 		ASintactico parser = new ASintactico();

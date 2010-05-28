@@ -39,9 +39,8 @@ public class TS {
 	}
 	
 	public boolean existeId(String id, tClase clase, int nivel) {
-		if (tabla.containsKey(id.toString()))
-		//if (tabla.containsKey(id) && tabla.get(id).clase == clase
-		//		&& tabla.get(id).getNivel().intValue() == nivel)
+		if (tabla.containsKey(id) && tabla.get(id).clase == clase
+				&& tabla.get(id).getNivel().intValue() == nivel)
 			return true;
 		else
 			return false;
