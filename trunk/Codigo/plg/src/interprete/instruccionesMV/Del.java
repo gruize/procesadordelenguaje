@@ -33,13 +33,10 @@ public class Del extends InstruccionMaquinaP{
 		StackObject o = p.pop();
 		Integer dir = (Integer) o.getValue();
 		// Se mira que la dirección pertenezca al heap 
-		if ( dir.intValue()>=m.getMinHeap()){
-			for (int i = 0; i<dir.intValue();i++){
-				m.delPosicion((dir.intValue()+i));
-			}
-		 return counter +1;
+		if (m.delPosicion(dir, tam)==false){
+			return-1;
 		}
-		else return -1;
+		else return counter+1;
 	}
 	
 	public int size(){
