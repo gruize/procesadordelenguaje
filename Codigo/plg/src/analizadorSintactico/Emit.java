@@ -4,16 +4,24 @@ package analizadorSintactico;
 import interprete.instruccionesMV.And;
 import interprete.instruccionesMV.Apila;
 import interprete.instruccionesMV.ApilaDir;
+import interprete.instruccionesMV.ApilaInd;
 import interprete.instruccionesMV.CastChar;
 import interprete.instruccionesMV.CastFloat;
 import interprete.instruccionesMV.CastInteger;
 import interprete.instruccionesMV.CastNatural;
+import interprete.instruccionesMV.Copia;
+import interprete.instruccionesMV.Del;
 import interprete.instruccionesMV.Desapila;
 import interprete.instruccionesMV.DesapilaDirBoolean;
 import interprete.instruccionesMV.DesapilaDirChar;
 import interprete.instruccionesMV.DesapilaDirEntero;
 import interprete.instruccionesMV.DesapilaDirFloat;
 import interprete.instruccionesMV.DesapilaDirNatural;
+import interprete.instruccionesMV.DesapilaIndBoolean;
+import interprete.instruccionesMV.DesapilaIndChar;
+import interprete.instruccionesMV.DesapilaIndEntero;
+import interprete.instruccionesMV.DesapilaIndFloat;
+import interprete.instruccionesMV.DesapilaIndNatural;
 import interprete.instruccionesMV.DesplazamientoDerechas;
 import interprete.instruccionesMV.DesplazamientoIzquierda;
 import interprete.instruccionesMV.Division;
@@ -21,12 +29,18 @@ import interprete.instruccionesMV.Escribir;
 import interprete.instruccionesMV.Distinto;
 import interprete.instruccionesMV.InstruccionMaquinaP;
 import interprete.instruccionesMV.InstruccionesMaquinaPConstantes;
+import interprete.instruccionesMV.Ir_a;
+import interprete.instruccionesMV.Ir_f;
+import interprete.instruccionesMV.Ir_ind;
+import interprete.instruccionesMV.Ir_v;
 import interprete.instruccionesMV.Leer;
 import interprete.instruccionesMV.Mayor;
 import interprete.instruccionesMV.MayorIgual;
 import interprete.instruccionesMV.Menor;
 import interprete.instruccionesMV.MenorIgual;
 import interprete.instruccionesMV.Modulo;
+import interprete.instruccionesMV.Mueve;
+import interprete.instruccionesMV.New;
 import interprete.instruccionesMV.Not;
 import interprete.instruccionesMV.Or;
 import interprete.instruccionesMV.Producto;
@@ -72,12 +86,6 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 			return DESAPILA_DIR_FLOAT;
 		case tChar:
 			return DESAPILA_DIR_CHAR;
-
-			
-			
-
-
-
 		default:
 			return -1;
 		}
@@ -219,6 +227,76 @@ public class Emit extends InstruccionesMaquinaPConstantes{
 			return new Escribir();
 		case VALOR_ABSOLUTO :
 			return new ValorAbsoluto();
+		case APILA_IND :
+			return new ApilaInd();
+		case IR_IND:
+			return new Ir_ind();
+		case IR_A:
+			if (token != null){
+				MyBuffer bf = new MyBuffer();
+				bf.setValue(token.getLexema());
+				MyInteger o = null;
+				o = new MyInteger();
+				return new Ir_a(((Integer)o.getValue()).intValue());
+			}
+			else return null;
+		case IR_V:
+			if (token != null){
+				MyBuffer bf = new MyBuffer();
+				bf.setValue(token.getLexema());
+				MyInteger o = null;
+				o = new MyInteger();
+				return new Ir_v(((Integer)o.getValue()).intValue());
+			}
+			else return null;
+		case IR_F:
+			if (token != null){
+				MyBuffer bf = new MyBuffer();
+				bf.setValue(token.getLexema());
+				MyInteger o = null;
+				o = new MyInteger();
+				return new Ir_f(((Integer)o.getValue()).intValue());
+			}
+			else return null;
+		case MUEVE:
+			if (token != null){
+				MyBuffer bf = new MyBuffer();
+				bf.setValue(token.getLexema());
+				MyInteger o = null;
+				o = new MyInteger();
+				return new Mueve(((Integer)o.getValue()).intValue());
+			}
+			else return null;
+		case COPIA:
+			return new Copia();
+		case NEW:
+			if (token != null){
+				MyBuffer bf = new MyBuffer();
+				bf.setValue(token.getLexema());
+				MyInteger o = null;
+				o = new MyInteger();
+				return new New(((Integer)o.getValue()).intValue());
+			}
+			else return null;
+		case DEL:
+			if (token != null){
+				MyBuffer bf = new MyBuffer();
+				bf.setValue(token.getLexema());
+				MyInteger o = null;
+				o = new MyInteger();
+				return new Del(((Integer)o.getValue()).intValue());
+			}
+			else return null;
+		case DESAPILA_IND_BOOLEAN:
+			return new DesapilaIndBoolean();
+		case DESAPILA_IND_INTEGER:
+			return new DesapilaIndEntero();
+		case DESAPILA_IND_NATURAL:
+			return new DesapilaIndNatural();
+		case DESAPILA_IND_FLOAT:
+			return new DesapilaIndFloat();
+		case DESAPILA_IND_CHAR:
+			return new DesapilaIndChar();		
 		case STOP:
 			return new Stop();
 		default:
